@@ -5,8 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using xAPI.Core;
-using xAPI.Core.Models;
+using Doctrina.xAPI;
+using Doctrina.xAPI.Models;
 
 namespace Doctrina.Web.Controllers
 {

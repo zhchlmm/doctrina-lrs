@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using xAPI.Core.Models;
+using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Persistence.Models
 {

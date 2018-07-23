@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using xAPI.Core.Models;
+using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Persistence.Models
 {

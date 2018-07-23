@@ -6,8 +6,8 @@ using System.IO;
 using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Text;
-using xAPI.Core;
-using xAPI.Core.Documents;
+using Doctrina.xAPI;
+using Doctrina.xAPI.Documents;
 
 namespace Doctrina.Core.Services
 {

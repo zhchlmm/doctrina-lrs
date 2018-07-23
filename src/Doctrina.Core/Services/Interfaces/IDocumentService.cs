@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Mime;
 using Doctrina.Core.Persistence.Models;
-using xAPI.Core.Documents;
+using Doctrina.xAPI.Documents;
 
 namespace Doctrina.Core.Services
 {

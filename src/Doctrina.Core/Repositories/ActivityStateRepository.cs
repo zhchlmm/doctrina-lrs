@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using xAPI.Core.Models;
+using Doctrina.xAPI.Models;
 using Doctrina.Core.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 

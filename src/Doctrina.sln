@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.Web", "Doctrina.We
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{09390684-6AF6-4E60-B025-D6143D051B49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xAPI.Core", "xAPI.Core\xAPI.Core.csproj", "{ACF66BE0-D279-4F47-AAF3-3681CF4E2803}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.xAPI", "Doctrina.xAPI\Doctrina.xAPI.csproj", "{ACF66BE0-D279-4F47-AAF3-3681CF4E2803}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doctrina.Core", "Doctrina.Core\Doctrina.Core.csproj", "{F6E7788B-2ACD-4670-A55B-21A49AD88903}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.Core", "Doctrina.Core\Doctrina.Core.csproj", "{F6E7788B-2ACD-4670-A55B-21A49AD88903}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

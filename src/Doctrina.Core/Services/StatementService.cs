@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using xAPI.Core;
-using xAPI.Core.Models;
+using Doctrina.xAPI;
+using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Services
 {

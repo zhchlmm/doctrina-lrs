@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Doctrina.Core.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
-using xAPI.Core;
+using Doctrina.xAPI;
 
 namespace Doctrina.Core.Repositories
 {

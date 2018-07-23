@@ -2,7 +2,7 @@
 using Doctrina.Core.Repositories;
 using Newtonsoft.Json;
 using System;
-using xAPI.Core.Models;
+using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Services
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Doctrina.Core.Persistence.Models;
-using xAPI.Core.Models;
+using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Services
 {

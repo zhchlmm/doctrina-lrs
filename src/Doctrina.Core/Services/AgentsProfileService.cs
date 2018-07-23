@@ -3,8 +3,8 @@ using Doctrina.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using xAPI.Core.Documents;
-using xAPI.Core.Models;
+using Doctrina.xAPI.Documents;
+using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Services
 {
