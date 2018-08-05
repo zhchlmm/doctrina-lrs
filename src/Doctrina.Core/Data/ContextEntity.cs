@@ -26,7 +26,7 @@ namespace Doctrina.Core.Data
 
         public Guid? StatementId { get; set; }
 
-        public Guid ContextActivitiesId { get; set; }
+        public Guid? ContextActivitiesId { get; set; }
 
         [ForeignKey(nameof(InstructorId))]
         public virtual AgentEntity Instructor { get; set; }

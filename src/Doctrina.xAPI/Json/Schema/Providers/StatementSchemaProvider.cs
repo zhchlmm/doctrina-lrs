@@ -14,21 +14,47 @@ namespace Doctrina.xAPI.Json.Schema.Providers
     {
         public override JSchema GetSchema(JSchemaTypeGenerationContext context)
         {
+            var statementBaseSchema = context.Generator.Generate(typeof(StatementBase));
             var agentSchema = context.Generator.Generate(typeof(Agent));
+            var groupSchema = context.Generator.Generate(typeof(Group));
 
             var statementSchema = new JSchema()
             {
                 Id = new Uri("Statement", UriKind.Relative),
                 AllowAdditionalProperties = false,
+                AllOf =
+                {
+                    statementBaseSchema
+                },
                 Properties =
                 {
                     { "id", new JSchema(){ Type = JSchemaType.String, Format = "uuid" } },
-                    { "actor", agentSchema }
+                    { "stored", new JSchema(){ Type = JSchemaType.String, Format = "date-time" } },
+                    { "authority", new JSchema(){
+                        Type = JSchemaType.Object,
+                        OneOf =
+                        {
+                            agentSchema,
+                            groupSchema
+                        },
+                        Properties =
+                        {
+                            { "objectType", new JSchema()
+                                {
+                                    Type = JSchemaType.String,
+                                    Enum = { "Agent", "Group" }
+                                }
+                            }
+                        }
+                    }
+                    },
+                    { "version", new JSchema(){ Type = JSchemaType.String } }
                 },
                 ExtensionData =
                 {
                     ["definitions"] = new JObject()
                     {
+                        ["StatementBase"] = statementBaseSchema,
                         ["Agent"] = agentSchema
                     }
                 }

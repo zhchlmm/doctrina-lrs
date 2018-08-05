@@ -12,7 +12,9 @@ namespace Doctrina.Core
         public DbSet<AgentEntity> Agents { get; set; }
         public DbSet<GroupMemberEntity> GroupMembers { get; set; }
         public DbSet<StatementEntity> Statements { get; set; }
+        public DbSet<SubStatementEntity> SubStatements { get; set; }
         public DbSet<ContextEntity> StatementContexts { get; set; }
+        public DbSet<ContextActivitiesEntity> ContextActivities { get; set; }
         public DbSet<AgentProfileEntity> AgentProfiles { get; set; }
         public DbSet<ActivityProfileEntity> ActivityProfiles { get; set; }
         public DbSet<ActivityStateEntity> ActivityStates { get; set; }

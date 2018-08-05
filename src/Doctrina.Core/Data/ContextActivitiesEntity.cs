@@ -23,48 +23,44 @@ namespace Doctrina.Core.Data
     public class ContextActivitiesParent
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public Guid ContextId { get; set; }
-        public virtual ContextEntity Context { get; set; }
 
         public string ActivityId { get; set; }
-        public virtual ActivityEntity Activity { get; set; }
     }
 
     public class ContextActivitiesGrouping
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public Guid ContextId { get; set; }
-        public virtual ContextEntity Context { get; set; }
 
         public string ActivityId { get; set; }
-        public virtual ActivityEntity Activity { get; set; }
     }
 
     public class ContextActivitiesCategory
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public Guid ContextId { get; set; }
-        public virtual ContextEntity Context { get; set; }
 
         public string ActivityId { get; set; }
-        public virtual ActivityEntity Activity { get; set; }
     }
 
     public class ContextActivitiesOther
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public Guid ContextId { get; set; }
-        public virtual ContextEntity Context { get; set; }
 
         public string ActivityId { get; set; }
-        public virtual ActivityEntity Activity { get; set; }
     }
 }

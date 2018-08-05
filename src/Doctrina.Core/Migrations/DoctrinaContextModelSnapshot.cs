@@ -34,6 +34,8 @@ namespace Doctrina.Core.Migrations
 
                     b.HasKey("Key");
 
+                    b.HasIndex("ActivityId");
+
                     b.HasIndex("AuthorityId")
                         .IsUnique()
                         .HasFilter("[AuthorityId] IS NOT NULL");
@@ -124,19 +126,13 @@ namespace Doctrina.Core.Migrations
 
                     b.Property<string>("ActivityId");
 
-                    b.Property<Guid?>("ActivityKey");
-
                     b.Property<Guid?>("ContextActivitiesEntityKey");
 
                     b.Property<Guid>("ContextId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityKey");
-
                     b.HasIndex("ContextActivitiesEntityKey");
-
-                    b.HasIndex("ContextId");
 
                     b.ToTable("ContextActivitiesCategory");
                 });
@@ -148,7 +144,7 @@ namespace Doctrina.Core.Migrations
 
                     b.HasKey("Key");
 
-                    b.ToTable("ContextActivitiesEntity");
+                    b.ToTable("ContextActivities");
                 });
 
             modelBuilder.Entity("Doctrina.Core.Data.ContextActivitiesGrouping", b =>
@@ -159,19 +155,13 @@ namespace Doctrina.Core.Migrations
 
                     b.Property<string>("ActivityId");
 
-                    b.Property<Guid?>("ActivityKey");
-
                     b.Property<Guid?>("ContextActivitiesEntityKey");
 
                     b.Property<Guid>("ContextId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityKey");
-
                     b.HasIndex("ContextActivitiesEntityKey");
-
-                    b.HasIndex("ContextId");
 
                     b.ToTable("ContextActivitiesGrouping");
                 });
@@ -184,19 +174,13 @@ namespace Doctrina.Core.Migrations
 
                     b.Property<string>("ActivityId");
 
-                    b.Property<Guid?>("ActivityKey");
-
                     b.Property<Guid?>("ContextActivitiesEntityKey");
 
                     b.Property<Guid>("ContextId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityKey");
-
                     b.HasIndex("ContextActivitiesEntityKey");
-
-                    b.HasIndex("ContextId");
 
                     b.ToTable("ContextActivitiesOther");
                 });
@@ -209,19 +193,13 @@ namespace Doctrina.Core.Migrations
 
                     b.Property<string>("ActivityId");
 
-                    b.Property<Guid?>("ActivityKey");
-
                     b.Property<Guid?>("ContextActivitiesEntityKey");
 
                     b.Property<Guid>("ContextId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityKey");
-
                     b.HasIndex("ContextActivitiesEntityKey");
-
-                    b.HasIndex("ContextId");
 
                     b.ToTable("ContextActivitiesParent");
                 });
@@ -231,7 +209,7 @@ namespace Doctrina.Core.Migrations
                     b.Property<Guid>("ContextId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("ContextActivitiesId");
+                    b.Property<Guid?>("ContextActivitiesId");
 
                     b.Property<string>("Extensions");
 
@@ -257,7 +235,7 @@ namespace Doctrina.Core.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("ContextEntity");
+                    b.ToTable("StatementContexts");
                 });
 
             modelBuilder.Entity("Doctrina.Core.Data.DoctrinaUser", b =>
@@ -481,9 +459,6 @@ namespace Doctrina.Core.Migrations
 
                     b.Property<Guid?>("ObjectSubStatementId");
 
-                    b.Property<int>("ObjectType")
-                        .HasMaxLength(12);
-
                     b.Property<Guid?>("ResultId");
 
                     b.Property<DateTime>("Stored");
@@ -510,8 +485,6 @@ namespace Doctrina.Core.Migrations
                     b.HasIndex("ObjectActivityKey");
 
                     b.HasIndex("ObjectAgentKey");
-
-                    b.HasIndex("ObjectStatementRefId");
 
                     b.HasIndex("ObjectSubStatementId");
 
@@ -555,13 +528,11 @@ namespace Doctrina.Core.Migrations
 
                     b.HasIndex("ObjectAgentKey");
 
-                    b.HasIndex("ObjectStatementRefId");
-
                     b.HasIndex("ResultId");
 
                     b.HasIndex("VerbKey");
 
-                    b.ToTable("SubStatementEntity");
+                    b.ToTable("SubStatements");
                 });
 
             modelBuilder.Entity("Doctrina.Core.Data.VerbEntity", b =>
@@ -596,74 +567,37 @@ namespace Doctrina.Core.Migrations
 
             modelBuilder.Entity("Doctrina.Core.Data.ContextActivitiesCategory", b =>
                 {
-                    b.HasOne("Doctrina.Core.Data.ActivityEntity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityKey");
-
                     b.HasOne("Doctrina.Core.Data.ContextActivitiesEntity")
                         .WithMany("Category")
                         .HasForeignKey("ContextActivitiesEntityKey");
-
-                    b.HasOne("Doctrina.Core.Data.ContextEntity", "Context")
-                        .WithMany()
-                        .HasForeignKey("ContextId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Doctrina.Core.Data.ContextActivitiesGrouping", b =>
                 {
-                    b.HasOne("Doctrina.Core.Data.ActivityEntity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityKey");
-
                     b.HasOne("Doctrina.Core.Data.ContextActivitiesEntity")
                         .WithMany("Grouping")
                         .HasForeignKey("ContextActivitiesEntityKey");
-
-                    b.HasOne("Doctrina.Core.Data.ContextEntity", "Context")
-                        .WithMany()
-                        .HasForeignKey("ContextId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Doctrina.Core.Data.ContextActivitiesOther", b =>
                 {
-                    b.HasOne("Doctrina.Core.Data.ActivityEntity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityKey");
-
                     b.HasOne("Doctrina.Core.Data.ContextActivitiesEntity")
                         .WithMany("Other")
                         .HasForeignKey("ContextActivitiesEntityKey");
-
-                    b.HasOne("Doctrina.Core.Data.ContextEntity", "Context")
-                        .WithMany()
-                        .HasForeignKey("ContextId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Doctrina.Core.Data.ContextActivitiesParent", b =>
                 {
-                    b.HasOne("Doctrina.Core.Data.ActivityEntity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityKey");
-
                     b.HasOne("Doctrina.Core.Data.ContextActivitiesEntity")
                         .WithMany("Parent")
                         .HasForeignKey("ContextActivitiesEntityKey");
-
-                    b.HasOne("Doctrina.Core.Data.ContextEntity", "Context")
-                        .WithMany()
-                        .HasForeignKey("ContextId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Doctrina.Core.Data.ContextEntity", b =>
                 {
                     b.HasOne("Doctrina.Core.Data.ContextActivitiesEntity", "ContextActivities")
                         .WithMany()
-                        .HasForeignKey("ContextActivitiesId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ContextActivitiesId");
 
                     b.HasOne("Doctrina.Core.Data.AgentEntity", "Instructor")
                         .WithMany()
@@ -753,10 +687,6 @@ namespace Doctrina.Core.Migrations
                         .WithMany()
                         .HasForeignKey("ObjectAgentKey");
 
-                    b.HasOne("Doctrina.Core.Data.StatementEntity", "ObjectStatementRef")
-                        .WithMany()
-                        .HasForeignKey("ObjectStatementRefId");
-
                     b.HasOne("Doctrina.Core.Data.SubStatementEntity", "ObjectSubStatement")
                         .WithMany()
                         .HasForeignKey("ObjectSubStatementId");
@@ -789,10 +719,6 @@ namespace Doctrina.Core.Migrations
                     b.HasOne("Doctrina.Core.Data.AgentEntity", "ObjectAgent")
                         .WithMany()
                         .HasForeignKey("ObjectAgentKey");
-
-                    b.HasOne("Doctrina.Core.Data.StatementEntity", "ObjectStatementRef")
-                        .WithMany()
-                        .HasForeignKey("ObjectStatementRefId");
 
                     b.HasOne("Doctrina.Core.Data.ResultEntity", "Result")
                         .WithMany()

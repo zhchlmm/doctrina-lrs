@@ -8,6 +8,7 @@ using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -127,6 +128,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                 {
                     return BadRequest(ModelState);
                 }
+                _logger.LogDebug("Saving statements \n\r {0}", JsonConvert.SerializeObject(model.Statements));
                 var ids = this._statementService.SaveStatements(CurrentAuthority, model.Statements);
 
                 Response.Headers.Add(Constants.Headers.ConsistentThrough, DateTime.UtcNow.ToString(Constants.Formats.DateTimeFormat));
@@ -134,7 +136,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogDebug(ex, "Failed to save statement.");
+                _logger.LogDebug(ex, "Failed to save statements \n\r {0}", JsonConvert.SerializeObject(model.Statements));
                 return BadRequest(ex);
             }
         }

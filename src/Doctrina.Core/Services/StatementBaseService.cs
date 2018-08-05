@@ -5,6 +5,7 @@ using Doctrina.xAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Doctrina.Core.Services
@@ -45,7 +46,10 @@ namespace Doctrina.Core.Services
             if (context == null)
                 return;
 
-            stmt.Context = new ContextEntity();
+            stmt.Context = new ContextEntity
+            {
+                ContextId = Guid.NewGuid()
+            };
 
             if (context.Instructor != null)
             {
@@ -79,6 +83,53 @@ namespace Doctrina.Core.Services
 
             if (context.Extensions != null)
                 stmt.Context.Extensions = context.Extensions.ToString();
+
+            if(context.ContextActivities != null)
+            {
+                stmt.Context.ContextActivities = new ContextActivitiesEntity() {
+                    Key = Guid.NewGuid()
+                };
+                // TODO: Validate there are any filled before setting key.
+                if(context.ContextActivities.Category != null)
+                {
+                    stmt.Context.ContextActivities.Category = new List<ContextActivitiesCategory>();
+                    foreach (var ent in context.ContextActivities.Category)
+                        stmt.Context.ContextActivities.Category.Add(new ContextActivitiesCategory()
+                        {
+                            ActivityId = ent.Id.ToString()
+                        });
+                }
+
+                if (context.ContextActivities.Parent != null)
+                {
+                    stmt.Context.ContextActivities.Parent = new List<ContextActivitiesParent>();
+                    foreach (var ent in context.ContextActivities.Parent)
+                        stmt.Context.ContextActivities.Parent.Add(new ContextActivitiesParent()
+                        {
+                            ActivityId = ent.Id.ToString()
+                        });
+                }
+
+                if (context.ContextActivities.Grouping != null)
+                {
+                    stmt.Context.ContextActivities.Grouping = new List<ContextActivitiesGrouping>();
+                    foreach (var ent in context.ContextActivities.Grouping)
+                        stmt.Context.ContextActivities.Grouping.Add(new ContextActivitiesGrouping()
+                        {
+                            ActivityId = ent.Id.ToString()
+                        });
+                }
+
+                if (context.ContextActivities.Other != null)
+                {
+                    stmt.Context.ContextActivities.Other = new List<ContextActivitiesOther>();
+                    foreach (var ent in context.ContextActivities.Other)
+                        stmt.Context.ContextActivities.Other.Add(new ContextActivitiesOther()
+                        {
+                            ActivityId = ent.Id.ToString()
+                        });
+                }
+            }
         }
 
         public void MergeResult(TStatement stmt, Result result)

@@ -18,12 +18,18 @@ namespace Doctrina.Web.Mvc.ModelBinders
             {
                 if(_schema == null)
                 {
-                    JSchemaGenerator generator  = new JSchemaGenerator();
-                    generator.GenerationProviders.Add(new StringEnumGenerationProvider());
-                    JSchema schema = generator .Generate(typeof(Statement));
-                    //_schema = JSchema.From.FromTypeAsync<Statement>().Result;
-                    schema.AllowAdditionalProperties = false;
-                    _schema = schema;
+                    //JSchemaGenerator generator  = new JSchemaGenerator();
+                    //generator.GenerationProviders.Add(new StringEnumGenerationProvider());
+                    //JSchema schema = generator .Generate(typeof(Statement));
+                    ////_schema = JSchema.From.FromTypeAsync<Statement>().Result;
+                    //schema.AllowAdditionalProperties = false;
+                    //_schema = schema;
+
+                    using (System.IO.StreamReader file = System.IO.File.OpenText(@"result.schema.json"))
+                    using (JsonTextReader reader = new JsonTextReader(file))
+                    {
+                        _schema = JSchema.Load(reader);
+                    }
                 }
                 return _schema;
             }

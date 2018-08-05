@@ -44,8 +44,9 @@ namespace Doctrina.Core.Data
         [ForeignKey(nameof(ObjectActivityKey))]
         public virtual ActivityEntity ObjectActivity { get; set; }
 
-        [ForeignKey(nameof(ObjectStatementRefId))]
-        public virtual StatementEntity ObjectStatementRef { get; set; }
+        // Might not exist yet
+        //[ForeignKey(nameof(ObjectStatementRefId))]
+        //public virtual StatementEntity ObjectStatementRef { get; set; }
 
         [ForeignKey(nameof(VerbKey))]
         public virtual VerbEntity Verb { get; set; }
@@ -70,8 +71,9 @@ namespace Doctrina.Core.Data
                         return ObjectAgent;
                     case EntityObjectType.Activity:
                         return ObjectActivity;
-                    case EntityObjectType.StatementRef:
-                        return ObjectStatementRef;
+                        // TODO: StatementRef is nullable
+                    //case EntityObjectType.StatementRef:
+                    //    return ObjectStatementRef;
                 }
 
                 return null;

@@ -24,24 +24,39 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
             {
                 if (_schema == null)
                 {
-                    JSchemaGenerator generator = new JSchemaGenerator();
-                    generator.SchemaIdGenerationHandling = SchemaIdGenerationHandling.TypeName;
-                    generator.SchemaLocationHandling = SchemaLocationHandling.Definitions;
-                    generator.SchemaReferenceHandling = SchemaReferenceHandling.All;
-                    generator.GenerationProviders.Add(new StringEnumGenerationProvider());
-                    JSchema schema = generator.Generate(typeof(Statement));
-                    //_schema = JSchema.From.FromTypeAsync<Statement>().Result;
-                    schema.AllowAdditionalProperties = false;
+                    //JSchemaGenerator generator = new JSchemaGenerator();
+                    //generator.SchemaIdGenerationHandling = SchemaIdGenerationHandling.TypeName;
+                    //generator.SchemaLocationHandling = SchemaLocationHandling.Definitions;
+                    //generator.SchemaReferenceHandling = SchemaReferenceHandling.All;
+                    //generator.GenerationProviders.Add(new StringEnumGenerationProvider());
+                    //JSchema schema = generator.Generate(typeof(Statement));
+                    ////_schema = JSchema.From.FromTypeAsync<Statement>().Result;
+                    //schema.AllowAdditionalProperties = false;
                     //System.IO.File.WriteAllText("statement.schema.json", schema.ToString(), Encoding.UTF8);
 
                     // serialize JSchema directly to a file
-                    using (System.IO.StreamWriter file = System.IO.File.CreateText("statement.schema.json"))
-                    using (JsonTextWriter writer = new JsonTextWriter(file))
+                    //using (System.IO.StreamWriter file = System.IO.File.CreateText("statement.schema.json"))
+                    //using (JsonTextWriter writer = new JsonTextWriter(file))
+                    //{
+                    //    schema.WriteTo(writer);
+                    //}
+
+                    //_schema = schema;
+
+                    //using (System.IO.StreamReader file = System.IO.File.OpenText(@"wwwroot/result.schema.json"))
+                    //using (JsonTextReader reader = new JsonTextReader(file))
+                    //{
+                    //    _schema = JSchema.Load(reader);
+
+                    //    // validate JSON
+                    //}
+
+                    using (System.IO.StreamReader file = System.IO.File.OpenText(@"result.schema.json"))
+                    using (JsonTextReader reader = new JsonTextReader(file))
                     {
-                        schema.WriteTo(writer);
+                        _schema = JSchema.Load(reader);
                     }
 
-                    _schema = schema;
                 }
                 return _schema;
             }

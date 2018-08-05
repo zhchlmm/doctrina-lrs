@@ -35,15 +35,8 @@ namespace Doctrina.Core.Services
             MergeTarget(entity, model.Target);
             MergeContext(entity, model.Context);
             MergeResult(entity, model.Result);
-            try
-            {
-                this.subStatements.Create(entity);
-            }
-            catch (Exception e)
-            {
-                //LogHelper.Error<SubStatementService>("SaveSubStatement: \r\n {0}", new Exception(model.ToJson()));
-                throw e;
-            }
+
+            this.subStatements.Create(entity);
 
             return entity;
         }

@@ -68,8 +68,9 @@ namespace Doctrina.Core.Data
         [ForeignKey(nameof(ObjectSubStatementId))]
         public virtual SubStatementEntity ObjectSubStatement { get; set; }
 
-        [ForeignKey(nameof(ObjectStatementRefId))]
-        public virtual StatementEntity ObjectStatementRef { get; set; }
+        // Might not exist yet
+        //[ForeignKey(nameof(ObjectStatementRefId))]
+        //public virtual StatementEntity ObjectStatementRef { get; set; }
 
         [ForeignKey(nameof(VerbKey))]
         public virtual VerbEntity Verb { get; set; }
@@ -102,8 +103,8 @@ namespace Doctrina.Core.Data
                         return ObjectActivity;
                     case EntityObjectType.SubStatement:
                         return ObjectSubStatement;
-                    case EntityObjectType.StatementRef:
-                        return ObjectStatementRef;
+                    //case EntityObjectType.StatementRef:
+                    //    return ObjectStatementRef;
                 }
 
                 return null;
