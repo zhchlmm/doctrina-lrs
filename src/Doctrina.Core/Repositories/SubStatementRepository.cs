@@ -1,14 +1,14 @@
 ﻿using Doctrina.Core;
-using Doctrina.Core.Persistence.Models;
+using Doctrina.Core.Data;
 using System;
 
 namespace Doctrina.Core.Repositories
 {
     public class SubStatementRepository : ISubStatementRepository
     {
-        private readonly DoctrinaDbContext context;
+        private readonly DoctrinaContext context;
 
-        public SubStatementRepository(DoctrinaDbContext context)
+        public SubStatementRepository(DoctrinaContext context)
         {
             this.context = context;
         }

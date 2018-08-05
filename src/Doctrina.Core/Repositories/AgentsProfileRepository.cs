@@ -1,20 +1,25 @@
-﻿using Doctrina.Core;
-using Doctrina.Core.Persistence.Extensions;
-using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
+using Doctrina.Core.Data.Documents;
+using Doctrina.Core.Data.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Repositories
 {
-    public class AgentsProfileRepository : IAgentProfileRepository
+    public class AgentProfileRepository : IAgentProfileRepository
     {
-        private readonly DoctrinaDbContext dbContext;
+        private readonly DoctrinaContext dbContext;
 
-        public AgentsProfileRepository(DoctrinaDbContext context)
+        public AgentProfileRepository(DoctrinaContext context)
         {
             this.dbContext = context;
+        }
+
+        public void CreateAndSaveChanges(AgentProfileEntity profile)
+        {
+            dbContext.AgentProfiles.Add(profile);
+            dbContext.SaveChanges();
         }
 
         public AgentProfileEntity GetProfile(AgentEntity agent, string profileId)
@@ -39,21 +44,17 @@ namespace Doctrina.Core.Repositories
             return sql;
         }
 
-        public void Delete(Guid id)
-        {
-            var profile = this.dbContext.AgentProfiles.Find(id);
-            this.dbContext.AgentProfiles.Remove(profile);
-        }
-
-        public void Create(AgentProfileEntity profile)
-        {
-            dbContext.AgentProfiles.Add(profile);
-            dbContext.SaveChanges();
-        }
-
         public void Update(AgentProfileEntity profile)
         {
             dbContext.AgentProfiles.Update(profile);
+            dbContext.SaveChanges();
+        }
+
+        public void Delete(IAgentProfileEntity profile)
+        {
+            this.dbContext.AgentProfiles.Remove((AgentProfileEntity)profile);
+            this.dbContext.SaveChanges();
+            //this.dbContext.Entry(profile).State = EntityState.Deleted;
         }
     }
 }

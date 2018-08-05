@@ -1,4 +1,4 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
 using Newtonsoft.Json;
 using System;
@@ -8,12 +8,11 @@ namespace Doctrina.Core.Services
 {
     public class VerbService : IVerbService
     {
-        private readonly VerbRepository Verbs;
-        private readonly IVerbRepository verbRepository;
+        private readonly IVerbRepository _verbsRepo;
 
-        public VerbService(DoctrinaDbContext dbContext, IVerbRepository verbRepository)
+        public VerbService(DoctrinaContext dbContext, IVerbRepository verbRepository)
         {
-            this.verbRepository = verbRepository;
+            _verbsRepo = verbRepository;
         }
 
         public VerbEntity MergeVerb(Verb verb)
@@ -21,7 +20,7 @@ namespace Doctrina.Core.Services
             if (verb == null)
                 throw new ArgumentNullException("verb");
 
-            var curr = this.Verbs.GetByVerbId(verb.Id);
+            var curr = _verbsRepo.GetByVerbId(verb.Id);
             if(curr != null)
             {
                 // Update canonical data
@@ -33,10 +32,11 @@ namespace Doctrina.Core.Services
             {
                 curr = new VerbEntity()
                 {
+                    Key = Guid.NewGuid(),
                     CanonicalData = verb.Display.ToJson(),
-                    VerbId = verb.Id.ToString()
+                    Id = verb.Id.ToString()
                 };
-                this.Verbs.CreateVerb(curr);
+                this._verbsRepo.CreateVerb(curr);
             }
 
             return curr;

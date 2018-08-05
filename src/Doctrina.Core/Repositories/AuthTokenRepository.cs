@@ -4,9 +4,9 @@ namespace Doctrina.Core.Repositories
 {
     public class AuthTokenRepository
     {
-        private readonly DoctrinaDbContext dbContext;
+        private readonly DoctrinaContext dbContext;
 
-        public AuthTokenRepository(DoctrinaDbContext dbContext)
+        public AuthTokenRepository(DoctrinaContext dbContext)
         {
             this.dbContext = dbContext;
         }

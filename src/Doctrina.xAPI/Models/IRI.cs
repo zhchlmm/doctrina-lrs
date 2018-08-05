@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Models
@@ -12,16 +13,17 @@ namespace Doctrina.xAPI.Models
     /// Internationalized Resource Identifiers
     /// </summary>
     [TypeConverter(typeof(IRITypeConverter))]
-    public class IRI
+    public class Iri
     {
         private readonly string _iriString = null;
 
-        public IRI() { }
+        public Iri() { }
 
-        public IRI(string iriString)
+        public Iri(string iriString)
         {
-            if (!Uri.IsWellFormedUriString(iriString, UriKind.Absolute))
-                throw new Exception("Not a well format IRI string.");
+            var regex = new Regex("(\b(https?|ftp|file)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
+            if (!regex.Match(iriString).Success)
+                throw new FormatException($"IRI '{iriString}' not a well formated IRI string.");
 
             this._iriString = iriString;
         }
@@ -31,12 +33,12 @@ namespace Doctrina.xAPI.Models
             return _iriString;
         }
 
-        public static bool TryParse(string iriString, out IRI iri)
+        public static bool TryParse(string iriString, out Iri iri)
         {
             iri = null;
             try
             {
-                iri = new IRI(iriString);
+                iri = new Iri(iriString);
                 return true;
             }
             catch (Exception)
@@ -45,9 +47,9 @@ namespace Doctrina.xAPI.Models
             }
         }
 
-        public static implicit operator IRI(string iriString)
+        public static implicit operator Iri(string iriString)
         {
-            return new IRI(iriString);
+            return new Iri(iriString);
         }
     }
 
@@ -67,8 +69,8 @@ namespace Doctrina.xAPI.Models
         {
             if(value is string)
             {
-                IRI iri = null;
-                if (IRI.TryParse(value as string, out iri))
+                Iri iri = null;
+                if (Iri.TryParse(value as string, out iri))
                 {
                     return iri;
                 }

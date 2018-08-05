@@ -1,4 +1,4 @@
-﻿using Doctrina.xAPI.Converters;
+﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 

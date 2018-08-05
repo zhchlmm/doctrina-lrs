@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Doctrina.Core.Persistence.Models;
+using Doctrina.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Doctrina.xAPI;
 
@@ -9,9 +9,9 @@ namespace Doctrina.Core.Repositories
 {
     public class StatementRepository : IStatementRepository
     {
-        private readonly DoctrinaDbContext dbContext;
+        private readonly DoctrinaContext dbContext;
 
-        public StatementRepository(DoctrinaDbContext context)
+        public StatementRepository(DoctrinaContext context)
         {
             this.dbContext = context;
         }
@@ -21,31 +21,14 @@ namespace Doctrina.Core.Repositories
             return this.dbContext.Statements.Find(statementId);
         }
 
-        public IQueryable<StatementEntity> GetAll(bool voided = false)
+        public IQueryable<StatementEntity> GetAll(bool voided, bool includeAttachments)
         {
+            if (includeAttachments)
+            {
+                return this.dbContext.Statements.Include(x => x.Attachments).Where(x => x.Voided == voided);
+            }
+
             return this.dbContext.Statements.Where(x => x.Voided == voided);
-
-            //var sql = this.dbContext.Statements
-
-            //    // Actor
-            //    .Include(x => x.Actor)
-
-            //    // Verb
-            //    .Include(x => x.Verb)
-
-            //    // Authority
-            //    .Include(x => x.Authority)
-
-            //    // Object Activity
-            //    .Include(x => x.ObjectActivity)
-
-            //    // Object Agent
-            //    .Include(x => x.ObjectAgent)
-
-            //    // Object SubStatement
-            //    .Include(x => x.ObjectSubStatement);
-
-            //return sql;
         }
 
         public bool Exist(Guid statementId, bool voided = false)
@@ -90,7 +73,7 @@ namespace Doctrina.Core.Repositories
         {
             var voidingStatement = (
                 from stmt in this.dbContext.Statements
-                where stmt.VerbId == Verbs.Voided
+                where stmt.Verb.Id == Verbs.Voided
                 && stmt.ObjectType == EntityObjectType.StatementRef
                 && stmt.ObjectSubStatementId == voidedStatementId
                 select new {

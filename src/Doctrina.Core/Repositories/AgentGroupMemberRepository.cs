@@ -1,5 +1,5 @@
 ﻿using Doctrina.Core;
-using Doctrina.Core.Persistence.Models;
+using Doctrina.Core.Data;
 using System;
 using System.Linq;
 
@@ -7,9 +7,9 @@ namespace Doctrina.Core.Repositories
 {
     public class AgentGroupMemberRepository : IAgentGroupMemberRepository
     {
-        private readonly DoctrinaDbContext context;
+        private readonly DoctrinaContext context;
 
-        public AgentGroupMemberRepository(DoctrinaDbContext context)
+        public AgentGroupMemberRepository(DoctrinaContext context)
         {
             this.context = context;
         }

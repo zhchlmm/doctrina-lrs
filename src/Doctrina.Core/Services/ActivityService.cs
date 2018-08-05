@@ -1,4 +1,4 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
 using Newtonsoft.Json;
 using System;
@@ -6,20 +6,25 @@ using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Services
 {
-    public class ActivityService
+    public class ActivityService : IActivityService
     {
-        private readonly DoctrinaDbContext dbContext;
+        private readonly DoctrinaContext dbContext;
         private readonly IAgentService agentService;
         private readonly IActivityRepository activities;
 
-        public ActivityService(DoctrinaDbContext dbContext, IAgentService agentService, IActivityRepository activityRepository)
+        public ActivityService(DoctrinaContext dbContext, IAgentService agentService, IActivityRepository activityRepository)
         {
             this.dbContext = dbContext;
             this.agentService = agentService;
             this.activities = activityRepository;
         }
 
-        internal ActivityEntity MergeActivity(Activity activity)
+        public ActivityEntity MergeActivity(Uri activityId)
+        {
+            return MergeActivity(new Activity() { Id = activityId });
+        }
+
+        public ActivityEntity MergeActivity(Activity activity)
         {
             if (activity == null)
                 throw new ArgumentNullException("activity");
@@ -33,6 +38,7 @@ namespace Doctrina.Core.Services
 
             var entity = new ActivityEntity()
             {
+                Key = Guid.NewGuid(),
                 ActivityId = activity.Id.ToString(),
                 CanonicalData = activity.Definition?.ToJson(),
                 // TODO: Activity Authority

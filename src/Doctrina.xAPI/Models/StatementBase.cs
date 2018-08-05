@@ -1,12 +1,6 @@
-﻿using Doctrina.xAPI.Converters;
+﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Models
 {

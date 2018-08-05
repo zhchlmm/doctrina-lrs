@@ -1,4 +1,4 @@
-﻿using Doctrina.xAPI.Converters;
+﻿using Doctrina.xAPI.Json.Converters;
 using Doctrina.xAPI.Schema.Providers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -61,7 +61,7 @@ namespace Doctrina.xAPI.Models
             Order = 5,
             Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
-        public IRI OpenId { get; set; }
+        public Iri OpenId { get; set; }
 
         /// <summary>
         /// A user account on an existing system e.g. an LMS or intranet.

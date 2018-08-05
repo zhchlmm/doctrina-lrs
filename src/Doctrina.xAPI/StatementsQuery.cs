@@ -36,7 +36,6 @@ namespace Doctrina.xAPI
         public bool? Ascending { get; set; }
         public string Language { get; set; }
         public bool? Attachments { get; set; }
-        public int? Page { get; set; }
 
         public StatementsQuery() { }
 
@@ -91,10 +90,6 @@ namespace Doctrina.xAPI
             if (Ascending != null)
             {
                 result.Add("ascending", Ascending.Value.ToString());
-            }
-            if(Page != null)
-            {
-                result.Add("page", Page.Value.ToString());
             }
 
             return result;

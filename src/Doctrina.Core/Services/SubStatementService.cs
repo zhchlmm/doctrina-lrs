@@ -1,34 +1,36 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
 using System;
 using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Services
 {
-    sealed class SubStatementService : StatementBaseService<SubStatementEntity>, ISubStatementService
+    public class SubStatementService : StatementBaseService<SubStatementEntity>, ISubStatementService
     {
         private readonly ISubStatementRepository subStatements;
-        private readonly IVerbService verbService;
-        private readonly IAgentService agentService;
+        private readonly IVerbService _verbService;
+        private readonly IAgentService _agentService;
 
-        public SubStatementService(ISubStatementRepository subStatementRepository, StatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService)
-            : base(statementRepository, agentService, activityService)
+        public SubStatementService(DoctrinaContext dbContext, ISubStatementRepository subStatementRepository, IStatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService)
+            : base(dbContext, statementRepository, agentService, activityService)
         {
             this.subStatements = subStatementRepository;
-            this.verbService = verbService;
-            this.agentService = agentService;
+            this._verbService = verbService;
+            this._agentService = agentService;
         }
 
         public SubStatementEntity CreateSubStatement(SubStatement model)
         {
-            this.verbService.MergeVerb(model.Verb);
-            var actor = this.agentService.MergeAgent(model.Actor);
+            var verb = this._verbService.MergeVerb(model.Verb);
+            var actor = this._agentService.MergeAgent(model.Actor);
 
             var entity = new SubStatementEntity()
             {
-                ActorId = actor.Id,
-                VerbId = model.Verb.Id.ToString(),
+                ActorKey = actor.Key,
+                VerbKey = verb.Key,
             };
+            entity.Actor = actor;
+            entity.Verb = verb;
 
             MergeTarget(entity, model.Target);
             MergeContext(entity, model.Context);
@@ -46,7 +48,7 @@ namespace Doctrina.Core.Services
             return entity;
         }
 
-        public override void MergeTarget(IStatementBase stmt, StatementTargetBase target)
+        public override void MergeTarget(IStatementEntityBase stmt, StatementTargetBase target)
         {
             if (target == null)
                 return;

@@ -1,4 +1,5 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 
@@ -6,9 +7,9 @@ namespace Doctrina.Core.Repositories
 {
     public class ActivityRepository : IActivityRepository
     {
-        private readonly DoctrinaDbContext context;
+        private readonly DoctrinaContext context;
 
-        public ActivityRepository(DoctrinaDbContext context)
+        public ActivityRepository(DoctrinaContext context)
         {
             this.context = context;
         }
@@ -26,6 +27,7 @@ namespace Doctrina.Core.Repositories
         public ActivityEntity Create(ActivityEntity entity)
         {
             context.Activities.Add(entity);
+            context.Entry(entity).State = EntityState.Added;
             context.SaveChanges();
             return entity;
         }

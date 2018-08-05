@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  doctrina:
+    image: ${DOCKER_REGISTRY}doctrina
+    build:
+      context: .
+      dockerfile: Doctrina.Web\Dockerfile

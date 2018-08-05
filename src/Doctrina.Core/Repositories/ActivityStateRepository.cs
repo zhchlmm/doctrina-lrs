@@ -1,18 +1,19 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
+using Doctrina.Core.Data.Documents;
+using Doctrina.Core.Data.Extensions;
+using Doctrina.xAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Doctrina.xAPI.Models;
-using Doctrina.Core.Persistence.Extensions;
-using Microsoft.EntityFrameworkCore;
 
 namespace Doctrina.Core.Repositories
 {
     public class ActivityStateRepository : IActivityStateRepository
     {
-        private readonly DoctrinaDbContext dbcontext;
+        private readonly DoctrinaContext dbcontext;
 
-        public ActivityStateRepository(DoctrinaDbContext context)
+        public ActivityStateRepository(DoctrinaContext context)
         {
             this.dbcontext = context;
         }
@@ -49,7 +50,7 @@ namespace Doctrina.Core.Repositories
             //    .Where<ActivityStateEntity>(x => x.ActivityId == strActivityId, this.context.SqlSyntax);
 
             var sql = this.dbcontext.ActivityStates.WhereAgent(agent)
-                .Where(x => x.ActivityId == strActivityId);
+                .Where(x => x.Activity.ActivityId == strActivityId);
 
             if (registration.HasValue)
             {
@@ -85,7 +86,7 @@ namespace Doctrina.Core.Repositories
             //}
 
             sql.Where(x => x.StateId == stateId)
-                .Where(x => x.ActivityId == strActivityId);
+                .Where(x => x.Activity.ActivityId == strActivityId);
 
             if (registration.HasValue)
             {
@@ -110,7 +111,7 @@ namespace Doctrina.Core.Repositories
 
             var sql = this.dbcontext.ActivityStates.WhereAgent(agent);
 
-            sql.Where(x => x.ActivityId == strActivityId);
+            sql.Where(x => x.Activity.ActivityId == strActivityId);
 
             if (registration.HasValue)
             {
@@ -152,7 +153,7 @@ namespace Doctrina.Core.Repositories
             //    .Where<ActivityStateEntity>(x => x.ActivityId == strActivityId, this.context.SqlSyntax);
 
             var sql = this.dbcontext.ActivityStates.WhereAgent(agent)
-                .Where(x => x.ActivityId == strActivityId);
+                .Where(x => x.Activity.ActivityId == strActivityId);
 
             if (registration.HasValue)
             {

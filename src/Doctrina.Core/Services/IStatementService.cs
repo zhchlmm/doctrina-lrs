@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Models;
+using Doctrina.Core.Data;
+using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Doctrina.Core.Services
 {
     public interface IStatementService
     {
-        Statement GetStatement(Guid statementId, bool voided = false);
-        //IEnumerable<StatementEntity> GetStatements();
-        Guid[] SaveStatements(params Statement[] statements);
+        Guid[] SaveStatements(Agent authority, params Statement[] statements);
         Guid SaveStatement(Statement statement);
+        Statement GetStatement(Guid statementId, bool voided = false);
+        IEnumerable<Statement> GetStatements(StatementsQuery parameters);
+        //IEnumerable<StatementEntity> GetStatements();
         bool Exist(Guid statementId, bool voided = false);
     }
 }

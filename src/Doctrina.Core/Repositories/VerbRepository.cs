@@ -1,14 +1,15 @@
 ﻿using Doctrina.Core;
-using Doctrina.Core.Persistence.Models;
+using Doctrina.Core.Data;
 using System;
+using System.Linq;
 
 namespace Doctrina.Core.Repositories
 {
     public class VerbRepository : IVerbRepository
     {
-        private readonly DoctrinaDbContext context;
+        private readonly DoctrinaContext context;
 
-        public VerbRepository(DoctrinaDbContext context)
+        public VerbRepository(DoctrinaContext context)
         {
             this.context = context;
         }
@@ -25,7 +26,7 @@ namespace Doctrina.Core.Repositories
 
         public VerbEntity GetByVerbId(string verbId)
         {
-            return this.context.Verbs.Find(verbId);
+            return this.context.Verbs.FirstOrDefault(x=> x.Id == verbId);
         }
 
         public bool Exist(string verbId)

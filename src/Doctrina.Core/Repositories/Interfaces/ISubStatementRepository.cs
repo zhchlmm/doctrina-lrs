@@ -1,4 +1,4 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
 
 namespace Doctrina.Core.Repositories
 {

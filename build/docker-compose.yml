@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  xapi.lrs:
-    image: ${DOCKER_REGISTRY}doctrinalrs
-    build:
-      context: .
-      dockerfile: Doctrina.Web\Dockerfile

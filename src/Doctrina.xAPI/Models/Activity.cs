@@ -1,16 +1,13 @@
-﻿using Doctrina.xAPI.Converters;
+﻿using Doctrina.xAPI.Json.Converters;
+using Doctrina.xAPI.Schema.Providers;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Schema.Generation;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Models
 {
     [JsonObject]
+    [JSchemaGenerationProvider(typeof(ActivitySchemaProvider))]
     public class Activity : StatementTargetBase
     {
         protected override ObjectType OBJECT_TYPE => ObjectType.Activity;

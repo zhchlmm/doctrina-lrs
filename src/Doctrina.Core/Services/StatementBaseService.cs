@@ -1,29 +1,30 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
 
 namespace Doctrina.Core.Services
 {
     public abstract class StatementBaseService<TStatement>
-        where TStatement : IStatementBase
+        where TStatement : IStatementEntityBase
     {
-        private readonly IStatementRepository statements;
-        private readonly IAgentService agentService;
-        private readonly IActivityService activityService;
-        private readonly ISubStatementService subStatementService;
+        public readonly DoctrinaContext _dbContext;
+        private readonly IAgentService _agentService;
+        private readonly IActivityService _activityService;
+        private readonly ISubStatementService _subStatementService;
+        private readonly ILogger _logger;
 
-        public StatementBaseService(IStatementRepository statementRepository,IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService)
+        public StatementBaseService(DoctrinaContext dbContext, IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService, ILogger logger)
         {
-            this.statements = statementRepository;
-            this.agentService = agentService;
-            this.activityService = activityService;
-            this.subStatementService = subStatementService;
+            _dbContext = dbContext;
+            _agentService = agentService;
+            _activityService = activityService;
+            _subStatementService = subStatementService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -32,11 +33,11 @@ namespace Doctrina.Core.Services
         /// <param name="statementRepository"></param>
         /// <param name="agentService"></param>
         /// <param name="activityService"></param>
-        public StatementBaseService(IStatementRepository statementRepository, IAgentService agentService, IActivityService activityService)
+        public StatementBaseService(DoctrinaContext dbContext, IStatementRepository statementRepository, IAgentService agentService, IActivityService activityService)
         {
-            this.statements = statementRepository;
-            this.agentService = agentService;
-            this.activityService = activityService;
+            _dbContext = dbContext;
+            _agentService = agentService;
+            _activityService = activityService;
         }
 
         public void MergeContext(TStatement stmt, Context context)
@@ -48,8 +49,8 @@ namespace Doctrina.Core.Services
 
             if (context.Instructor != null)
             {
-                var instructor = this.agentService.MergeAgent(context.Instructor);
-                stmt.Context.InstructorId = instructor.Id;
+                var instructor = this._agentService.MergeAgent(context.Instructor);
+                stmt.Context.InstructorId = instructor.Key;
             }
 
             if (!string.IsNullOrEmpty(context.Language))
@@ -72,8 +73,8 @@ namespace Doctrina.Core.Services
 
             if (context.Team != null)
             {
-                var agent = this.agentService.MergeAgent(context.Team);
-                stmt.Context.TeamId = agent.Id;
+                var agent = this._agentService.MergeAgent(context.Team);
+                stmt.Context.TeamId = agent.Key;
             }
 
             if (context.Extensions != null)
@@ -104,7 +105,7 @@ namespace Doctrina.Core.Services
             }
         }
 
-        public virtual void MergeTarget(IStatementBase stmt, StatementTargetBase target)
+        public virtual void MergeTarget(IStatementEntityBase stmt, StatementTargetBase target)
         {
             if (target == null)
                 return;
@@ -113,17 +114,17 @@ namespace Doctrina.Core.Services
             {
                 case ObjectType.Group:
                 case ObjectType.Agent:
-                    var agent = this.agentService.MergeAgent((Agent)target);
-                    stmt.ObjectAgentId = agent.Id;
+                    var agent = this._agentService.MergeAgent((Agent)target);
+                    stmt.ObjectAgentKey = agent.Key;
                     break;
 
                 case ObjectType.Activity:
-                    ActivityEntity activity = this.activityService.MergeActivity((Activity)target);
-                    stmt.ObjectActivityId = activity.ActivityId;
+                    ActivityEntity activity = this._activityService.MergeActivity((Activity)target);
+                    stmt.ObjectActivityKey = activity.Key;
                     break;
 
                 case ObjectType.SubStatement:
-                    SubStatementEntity subStatement = this.subStatementService.CreateSubStatement((SubStatement)target);
+                    SubStatementEntity subStatement = this._subStatementService.CreateSubStatement((SubStatement)target);
                     ((StatementEntity)stmt).ObjectSubStatementId = subStatement.Id;
                     break;
 
@@ -132,16 +133,9 @@ namespace Doctrina.Core.Services
                     stmt.ObjectStatementRefId = statementRef.Id;
 
                     // Void statement?
-                    if (stmt.VerbId == Verbs.Voided && stmt.ObjectStatementRefId.HasValue)
+                    if (stmt.Verb.Id == Verbs.Voided && stmt.ObjectStatementRefId.HasValue)
                     {
-                        try
-                        {
-                            VoidStatement(stmt);
-                        }
-                        catch (Exception e)
-                        {
-                            //LogHelper.Info<StatementService>(() => e.Message);
-                        }
+                       VoidStatement(stmt);
                     }
                     break;
                 default:
@@ -154,25 +148,25 @@ namespace Doctrina.Core.Services
         /// </summary>
         /// <param name="stmt">Statement to be voided</param>
         // https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#requirements-1
-        public void VoidStatement(IStatementBase voidingStatement)
+        public void VoidStatement(IStatementEntityBase voidingStatement)
         {
             // When issuing a Statement that voids another, the Object of that voiding Statement MUST have the "objectType" property set to StatementRef.
             if (!voidingStatement.ObjectStatementRefId.HasValue)
                 throw new Exception("When issuing a Statement that voids another, the Object of that voiding Statement MUST have the 'objectType' property set to StatementRef.");
 
             // An LRS MUST consider a Statement it contains voided if and only if the Statement is not itself a voiding Statement and the LRS also contains a voiding Statement referring to the first Statement.
-            if (voidingStatement.VerbId != Verbs.Voided)
+            if (voidingStatement.Verb.Id != Verbs.Voided)
                 throw new Exception("Any Statement that voids another must have the verb: \"" + Verbs.Voided + "\"");
 
             var statementRefId = voidingStatement.ObjectStatementRefId.Value;
-            var voidedStatement = this.statements.GetById(statementRefId);
+            var voidedStatement = this._dbContext.Statements.Find(statementRefId);
 
             // Upon receiving a Statement that voids another, the LRS SHOULD NOT* reject the request on the grounds of the Object of that voiding Statement not being present.
             if (voidedStatement == null)
                 return;
 
             // Any Statement that voids another cannot itself be voided.
-            if (voidedStatement.VerbId == Verbs.Voided)
+            if (voidedStatement.Verb.Id == Verbs.Voided)
                 return;
 
             // voidedStatement has been voided, return.
@@ -181,7 +175,37 @@ namespace Doctrina.Core.Services
 
             voidedStatement.Voided = true;
 
-            this.statements.Update(voidedStatement);
+            this._dbContext.Statements.Update(voidedStatement);
+            this._dbContext.Entry(voidedStatement).State = EntityState.Modified;
+        }
+
+        public void AddAttachments(StatementEntity entity, Attachment[] attachments)
+        {
+            if (attachments == null || attachments.Length <= 0)
+                return;
+
+            foreach(var attachment in attachments)
+            {
+                var current = attachment.ToJObject();
+                var canonicalData = new Newtonsoft.Json.Linq.JObject();
+                if(current["display"] != null)
+                {
+                    canonicalData["display"] = current["display"];
+                }
+                if(current["description"] != null)
+                {
+                    canonicalData["description"] = current["description"];
+                }
+                var attachmentEntity = new AttachmentEntity()
+                {
+                    Payload = attachment.SHA2,
+                    ContentType = attachment.ContentType,
+                    StatementId = entity.StatementId,
+                    CanonicalData = canonicalData.ToString()
+                };
+
+                entity.Attachments.Add(attachmentEntity);
+            }
         }
     }
 }

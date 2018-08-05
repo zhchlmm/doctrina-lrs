@@ -1,0 +1,106 @@
+{
+  "$id": "Statement",
+  "definitions": {
+    "Agent": {
+      "$id": "Agent",
+      "title": "Agent",
+      "definitions": {
+        "InverseFunctionalIdentifiers": {
+          "$id": "InverseFunctional",
+          "oneOf": [
+            {
+              "$id": "MboxIdentity",
+              "type": "object",
+              "properties": {
+                "mbox": {
+                  "type": "string",
+                  "format": "mbox"
+                },
+                "mbox_sha1sum": { "type": "null" },
+                "openid": { "type": "null" },
+                "account": { "type": "null" }
+              },
+              "required": [ "mbox_sha1sum" ]
+            },
+            {
+              "$id": "MboxSHA1SumIdentity",
+              "type": "object",
+              "properties": {
+                "mbox_sha1sum": {
+                  "$id": "#mbox_sha1sum!core",
+                  "type": "object",
+                  "format": "sha1"
+                },
+                "mbox": { "type": "null" },
+                "openid": { "type": "null" },
+                "account": { "type": "null" }
+              },
+              "required": [ "mbox_sha1sum" ]
+            },
+            {
+              "$id": "OpenIdIdentify",
+              "type": "object",
+              "properties": {
+                "openid": {
+                  "$id": "#openid!core",
+                  "type": "object",
+                  "format": "iri"
+                },
+                "mbox": { "type": "null" },
+                "mbox_sha1sum": { "type": "null" },
+                "account": { "type": "null" }
+              },
+              "required": [ "openid" ]
+            },
+            {
+              "$id": "AccountIdentity",
+              "type": "object",
+              "properties": {
+                "account": {
+                  "$id": "#account!core",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "homePage": {
+                      "type": "string",
+                      "format": "iri"
+                    },
+                    "name": { "type": "string" }
+                  },
+                  "required": [ "homePage", "name" ]
+                },
+                "mbox": { "type": "null" },
+                "mbox_sha1sum": { "type": "null" },
+                "openid": { "type": "null" }
+              },
+              "required": [ "account" ]
+            }
+          ]
+        },
+        "MboxIdentity": { "$ref": "MboxIdentity" },
+        "MboxSHA1SumIdentity": { "$ref": "MboxSHA1SumIdentity" },
+        "OpenIDIdentity": { "$ref": "OpenIdIdentify" },
+        "AccountIdentity": { "$ref": "AccountIdentity" }
+      },
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "objectType": { "enum": [ "Agent" ] },
+        "mbox": { "type": "string" },
+        "mbox_sha1sum": { "type": "string" },
+        "account": { "type": "object" },
+        "openid": { "type": "string" }
+      },
+      "allOf": [ { "$ref": "InverseFunctional" } ]
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "actor": { "$ref": "Agent" }
+  }
+}

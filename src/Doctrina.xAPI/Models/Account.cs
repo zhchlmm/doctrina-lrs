@@ -19,7 +19,7 @@ namespace Doctrina.xAPI.Models
         /// </summary>
         [JsonProperty("homePage",
             Required = Required.Always)]
-        public IRI HomePage { get; set; }
+        public Iri HomePage { get; set; }
 
         /// <summary>
         /// The unique id or name used to log in to this account. This is based on FOAF's accountName.

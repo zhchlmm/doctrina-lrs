@@ -1,4 +1,4 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
 using Newtonsoft.Json.Linq;
 using System;
@@ -9,11 +9,11 @@ namespace Doctrina.Core.Services
 {
     public class AgentService : IAgentService
     {
-        private readonly DoctrinaDbContext dbContext;
+        private readonly DoctrinaContext dbContext;
         private readonly AgentGroupMemberRepository groupMembers;
         private readonly IAgentRepository agents;
 
-        public AgentService(DoctrinaDbContext dbContext, IAgentRepository agentRepository)
+        public AgentService(DoctrinaContext dbContext, IAgentRepository agentRepository)
         {
             this.dbContext = dbContext;
             this.agents = agentRepository;
@@ -99,21 +99,21 @@ namespace Doctrina.Core.Services
                 throw new Exception("A group must have objectType Group");
 
             // At this point, the group must exist
-            if (group == null || group.Id == null)
+            if (group == null || group.Key == null)
                 throw new ArgumentNullException("group");
 
             // New group member must exist
-            if (actor == null || actor.Id == null)
+            if (actor == null || actor.Key == null)
                 throw new ArgumentNullException("group");
 
-            var related = dbContext.GroupMembers.FirstOrDefault(x=> x.GroupId == group.Id && x.MemberId == actor.Id);
+            var related = dbContext.GroupMembers.FirstOrDefault(x=> x.GroupId == group.Key && x.MemberId == actor.Key);
 
             if (related == null)
             {
                 related = new GroupMemberEntity()
                 {
-                    GroupId = group.Id,
-                    MemberId = actor.Id
+                    GroupId = group.Key,
+                    MemberId = actor.Key
                 };
 
                 this.dbContext.GroupMembers.Add(related);
@@ -127,7 +127,7 @@ namespace Doctrina.Core.Services
 
             var entity = new AgentEntity()
             {
-                Id = Guid.NewGuid(),
+                Key = Guid.NewGuid(),
                 ObjectType = EntityObjectType.Group,
                 Name = group.Name
             };
@@ -162,7 +162,7 @@ namespace Doctrina.Core.Services
 
         public AgentEntity ConvertFrom(Agent agent)
         {
-            if(agent.ObjectType != ObjectType.Agent || agent.ObjectType != ObjectType.Group)
+            if(!(agent.ObjectType == ObjectType.Agent || agent.ObjectType == ObjectType.Group))
             {
                 throw new ArgumentException($"An actor must have objectType Agent or Group.", "agent");
             }
@@ -170,7 +170,7 @@ namespace Doctrina.Core.Services
             var entity = new AgentEntity()
             {
                 ObjectType = agent.ObjectType == ObjectType.Agent ? EntityObjectType.Agent : EntityObjectType.Group,
-                Id = Guid.NewGuid()
+                Key = Guid.NewGuid()
             };
 
             if (agent.Mbox != null)

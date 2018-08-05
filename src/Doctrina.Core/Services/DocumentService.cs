@@ -1,21 +1,19 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
+using Doctrina.Core.Data.Documents;
+using Doctrina.xAPI;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System;
-using System.IO;
-using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Text;
-using Doctrina.xAPI;
-using Doctrina.xAPI.Documents;
 
 namespace Doctrina.Core.Services
 {
     public sealed class DocumentService : IDocumentService
     {
-        private readonly DoctrinaDbContext dbContext;
+        private readonly DoctrinaContext dbContext;
 
-        public DocumentService(DoctrinaDbContext context)
+        public DocumentService(DoctrinaContext context)
         {
             this.dbContext = context;
         }
@@ -87,6 +85,15 @@ namespace Doctrina.Core.Services
             return entity;
         }
 
+        /// <summary>
+        /// Marks the document for deletion
+        /// </summary>
+        /// <param name="entity"></param>
+        public void DeleteDocument(IDocumentEntity entity)
+        {
+            this.dbContext.Documents.Remove((DocumentEntity)entity);
+        }
+
         #region Helpers
         /// <summary>
         /// Compute hash for string encoded as UTF8
@@ -131,6 +138,8 @@ namespace Doctrina.Core.Services
             }
             return sb.ToString();
         }
+
+       
         #endregion
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Net.Mime;
-using Doctrina.Core.Persistence.Models;
+using Doctrina.Core.Data;
 using Doctrina.xAPI.Documents;
 
 namespace Doctrina.Core.Services
@@ -12,5 +12,7 @@ namespace Doctrina.Core.Services
 
         string ComputeHash(byte[] buffer);
         IDocumentEntity UpdateDocument(IDocumentEntity entity, string contentType, byte[] content);
+
+        void DeleteDocument(IDocumentEntity entity);
     }
 }

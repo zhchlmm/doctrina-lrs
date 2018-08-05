@@ -1,5 +1,7 @@
-﻿using Doctrina.xAPI.Converters;
+﻿using Doctrina.xAPI.Json.Converters;
+using Doctrina.xAPI.Json.Schema.Providers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Schema.Generation;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,7 +11,8 @@ namespace Doctrina.xAPI.Models
     /// The Statement object
     /// </summary>
     //[JsonConverter(typeof(StatementConverter))]
-    [JsonObject]
+    [JsonObject(Id = "https://doctrina.com/statement.schema.json")]
+    [JSchemaGenerationProvider(typeof(StatementSchemaProvider))]
     public class Statement : StatementBase
     {
         /// <summary>

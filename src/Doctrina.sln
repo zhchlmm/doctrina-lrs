@@ -5,11 +5,11 @@ VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.Web", "Doctrina.Web\Doctrina.Web.csproj", "{BDFD681A-BC12-45BA-BB78-7591AC12E2D7}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{09390684-6AF6-4E60-B025-D6143D051B49}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.xAPI", "Doctrina.xAPI\Doctrina.xAPI.csproj", "{ACF66BE0-D279-4F47-AAF3-3681CF4E2803}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.Core", "Doctrina.Core\Doctrina.Core.csproj", "{F6E7788B-2ACD-4670-A55B-21A49AD88903}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{09390684-6AF6-4E60-B025-D6143D051B49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +21,6 @@ Global
 		{BDFD681A-BC12-45BA-BB78-7591AC12E2D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDFD681A-BC12-45BA-BB78-7591AC12E2D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDFD681A-BC12-45BA-BB78-7591AC12E2D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09390684-6AF6-4E60-B025-D6143D051B49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09390684-6AF6-4E60-B025-D6143D051B49}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09390684-6AF6-4E60-B025-D6143D051B49}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09390684-6AF6-4E60-B025-D6143D051B49}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ACF66BE0-D279-4F47-AAF3-3681CF4E2803}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ACF66BE0-D279-4F47-AAF3-3681CF4E2803}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACF66BE0-D279-4F47-AAF3-3681CF4E2803}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{F6E7788B-2ACD-4670-A55B-21A49AD88903}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6E7788B-2ACD-4670-A55B-21A49AD88903}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6E7788B-2ACD-4670-A55B-21A49AD88903}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09390684-6AF6-4E60-B025-D6143D051B49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09390684-6AF6-4E60-B025-D6143D051B49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09390684-6AF6-4E60-B025-D6143D051B49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09390684-6AF6-4E60-B025-D6143D051B49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,10 +1,9 @@
-﻿using Doctrina.xAPI.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 
 namespace Doctrina.xAPI.Models
 {
-    [JsonObject]
+    [JsonObject()]
     public class ActivityDefinition : JsonModel
     {
         [JsonProperty("name", 

@@ -1,5 +1,8 @@
 ﻿using Doctrina.Core;
+using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
+using Doctrina.Core.Services;
+using Doctrina.Web.Areas.xAPI.Mvc.Formatters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,15 +12,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using xAPI.LRS.Persistence;
+using Microsoft.Extensions.Logging;
 
-namespace xAPI.LRS
+namespace Doctrina.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILogger _logger;
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            _logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -26,56 +32,89 @@ namespace xAPI.LRS
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddDbContext<DoctrinaDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            _logger.LogInformation("Configuring DB");
+            services.AddDbContext<DoctrinaContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DoctrinaContext"))
+                //options.UseInMemoryDatabase("Doctrina")
+                );
 
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<DoctrinaDbContext>()
+            services.AddIdentity<DoctrinaUser, IdentityRole>()
+                .AddEntityFrameworkStores<DoctrinaContext>()
                 .AddDefaultTokenProviders();
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            // https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-2.1#annotate-class-with-apicontrollerattribute
+            services.AddMvc(opt => {
+                // Add input formatter. This should be inserted at position 0 or else the normal json input
+                // formatter will take precedence.
+                opt.InputFormatters.Insert(0, new StatementsInputFormatter());
+            })
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
             services.AddCors();
 
-            // Add application services.
+            services.AddHttpContextAccessor();
+
+            // Add application repositories.
             services.AddScoped<IStatementRepository, StatementRepository>();
+            services.AddScoped<IActivityRepository, ActivityRepository>();
             services.AddScoped<IActivityProfileRepository, ActivityProfileRepository>();
             services.AddScoped<IActivityStateRepository, ActivityStateRepository>();
             services.AddScoped<IAgentRepository, AgentRepository>();
-            services.AddScoped<IAgentsProfileRepository, AgentsProfileRepository>();
-            services.AddScoped<IAuthTokenRepository, AuthTokenRepository>();
-            services.AddScoped<IDocumentRepository, DocumentRepository>();
-            services.AddScoped<ISubStatementRespository, SubStatementRespository>();
+            services.AddScoped<IAgentProfileRepository, AgentProfileRepository>();
+            //services.AddScoped<IAuthTokenRepository, AuthTokenRepository>();
+            services.AddScoped<ISubStatementRepository, SubStatementRepository>();
             services.AddScoped<IVerbRepository, VerbRepository>();
 
-
+            // Add application services.
+            services.AddScoped<ISubStatementService, SubStatementService>();
+            services.AddScoped<IActivityService, ActivityService>();
             services.AddScoped<IStatementService, StatementService>();
             services.AddScoped<IActivityProfileService, ActivityProfileService>();
             services.AddScoped<IActivityStateService, ActivityStateService>();
             services.AddScoped<IAgentService, AgentService>();
-            services.AddScoped<IAgentsProfileService, AgentsProfileService>();
-            services.AddScoped<IAuthTokenService, AuthTokenService>();
+            services.AddScoped<IAgentProfileService, AgentProfileService>();
+            //services.AddScoped<IAuthTokenService, AuthTokenService>();
             services.AddScoped<IDocumentService, DocumentService>();
-            services.AddScoped<ISubStatementService, SubStatementService>();
             services.AddScoped<IVerbService, VerbService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+
+            loggerFactory.AddFile("Logs/doctrina-{Date}.txt");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
+                app.UseDatabaseErrorPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             }
 
-            app.UseMvc();
-        }
-    }
+            loggerFactory.AddDebug();
 
-    internal class ApplicationUser
-    {
+            //app.UseHttpsRedirection();
+
+            app.UseCookiePolicy();
+
+            app.UseStaticFiles();
+
+            app.UseAuthentication();
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
     }
 }

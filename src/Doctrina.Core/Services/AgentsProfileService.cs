@@ -1,35 +1,24 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
+using Doctrina.Core.Data.Documents;
 using Doctrina.Core.Repositories;
+using Doctrina.xAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Doctrina.xAPI.Documents;
-using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Services
 {
-    public class AgentsProfileService
+    public class AgentProfileService : IAgentProfileService
     {
         private readonly IAgentProfileRepository agentProfiles;
         private readonly IDocumentService documentService;
         private readonly IAgentService agentService;
 
-        public AgentsProfileService(DoctrinaDbContext dbContext, IAgentProfileRepository agentProfiles, IDocumentService documentService, IAgentService agentService)
+        public AgentProfileService(DoctrinaContext dbContext, IAgentProfileRepository agentProfiles, IDocumentService documentService, IAgentService agentService)
         {
             this.agentProfiles = agentProfiles;
             this.documentService = documentService;
             this.agentService = agentService;
-        }
-
-        public IDocumentEntity GetProfile(Agent agent, string profileId)
-        {
-            var agentEntity = agentService.ConvertFrom(agent);
-            var profile = this.agentProfiles.GetProfile(agentEntity, profileId);
-            if(profile == null)
-            {
-                return null;
-            }
-            return profile.Document;
         }
 
         /// <summary>
@@ -42,47 +31,44 @@ namespace Doctrina.Core.Services
         /// <param name="etag"></param>
         /// <param name="eTagMatch"></param>
         /// <returns></returns>
-        public IDocumentEntity CreateAgentProfile(Agent agent, string profileId, Document doc)
+        public IDocumentEntity MergeAgentProfile(Agent agent, string profileId, byte[] content, string contentType)
         {
             var agentEntity = agentService.ConvertFrom(agent);
             var profile = this.agentProfiles.GetProfile(agentEntity, profileId);
             if (profile == null)
             {
                 // Is new
-                return CreateNewAgentProfile(agent, profileId, doc);
+                return CreateNewAgentProfile(agent, profileId, content, contentType);
             }
-            return UpdateProfile(profile, doc);
+            return UpdateProfile(profile, content, contentType);
         }
 
-        private IDocumentEntity CreateNewAgentProfile(Agent agent, string profileId, Document doc)
+        private IDocumentEntity CreateNewAgentProfile(Agent agent, string profileId, byte[] content, string contentType)
         {
             var agentEntity = this.agentService.MergeAgent(agent);
 
             var profile = new AgentProfileEntity()
             {
-                AgentId = agentEntity.Id,
+                AgentId = agentEntity.Key,
                 ProfileId = profileId,
             };
 
-            var newDocument = documentService.CreateDocument(doc.ContentType, doc.Content);
+            var newDocument = documentService.CreateDocument(contentType, content);
             profile.DocumentId = newDocument.Id;
 
-            this.agentProfiles.Create(profile);
+            this.agentProfiles.CreateAndSaveChanges(profile);
             return profile.Document;
         }
 
-        public void DeleteProfile(Guid id)
+        public IAgentProfileEntity GetAgentProfile(Agent agent, string profileId)
         {
-            this.agentProfiles.Delete(id);
-        }
-
-        private IDocumentEntity UpdateProfile(AgentProfileEntity profile, Document doc)
-        {
-            documentService.UpdateDocument(profile.Document, doc);
-
-            this.agentProfiles.Update(profile);
-
-            return profile.Document;
+            var agentEntity = agentService.ConvertFrom(agent);
+            var profile = this.agentProfiles.GetProfile(agentEntity, profileId);
+            if(profile == null)
+            {
+                return null;
+            }
+            return profile;
         }
 
         /// <summary>
@@ -103,7 +89,21 @@ namespace Doctrina.Core.Services
             if (profiles == null)
                 return null;
 
-            return profiles.Select(x=>x.Document);
-        } 
+            return profiles.Select(x => x.Document);
+        }
+
+        private IDocumentEntity UpdateProfile(AgentProfileEntity profile, byte[] content, string contentType)
+        {
+            documentService.UpdateDocument(profile.Document,contentType, content);
+
+            this.agentProfiles.Update(profile);
+
+            return profile.Document;
+        }
+
+        public void DeleteProfile(IAgentProfileEntity entity)
+        {
+            this.agentProfiles.Delete(entity);
+        }
     }
 }

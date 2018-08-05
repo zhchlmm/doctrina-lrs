@@ -1,7 +1,7 @@
-﻿using Doctrina.Core.Persistence.Models;
+﻿using Doctrina.Core.Data;
+using Doctrina.Core.Data.Documents;
 using System;
 using System.Collections.Generic;
-using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Repositories
 {

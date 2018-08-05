@@ -54,20 +54,5 @@ namespace Doctrina.xAPI.Helpers
             }
             return sb.ToString();
         }
-
-        //private static string ComputeHash(string instance)
-        //{
-        //    var cryptoServiceProvider = new MD5CryptoServiceProvider();
-
-        //    using (var memoryStream = new MemoryStream())
-        //    using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8, 1024, true))
-        //    using (var jsonWriter = new Writer(streamWriter))
-        //    {
-        //        var serializer = new JsonSerializer();
-        //        serializer.Serialize(jsonWriter, instance);
-        //        cryptoServiceProvider.ComputeHash(memoryStream.ToArray());
-        //        return String.Join("", cryptoServiceProvider.Hash.Select(c => c.ToString("x2")));
-        //    }
-        //}
     }
 }

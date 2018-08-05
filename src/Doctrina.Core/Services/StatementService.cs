@@ -1,5 +1,5 @@
 ﻿using Doctrina.Core.Models;
-using Doctrina.Core.Persistence.Models;
+using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
 using Newtonsoft.Json;
 using System;
@@ -8,32 +8,31 @@ using System.Linq;
 using System.Linq.Expressions;
 using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Doctrina.Core.Services
 {
     public class StatementService : StatementBaseService<StatementEntity>, IStatementService
     {
-        private readonly DoctrinaDbContext dbContext;
-        private readonly IStatementRepository statements;
-        private readonly IVerbService verbService;
-        private readonly IAgentService agentService;
-        private readonly IActivityService activityService;
-        private readonly ISubStatementService subStatementService;
+        private readonly IStatementRepository _statements;
+        private readonly IVerbService _verbService;
+        private readonly IAgentService _agentService;
+        private readonly IActivityService _activityService;
+        private readonly ISubStatementService _subStatementService;
 
-        public StatementService(DoctrinaDbContext dbContext, IStatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService)
-            : base (statementRepository, agentService, activityService, subStatementService)
+        public StatementService(DoctrinaContext dbContext, IStatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService, ILogger<StatementService> logger)
+            : base (dbContext, agentService, activityService, subStatementService, logger)
         {
-            this.dbContext = dbContext;
-            this.statements = statementRepository;
-            this.verbService = verbService;
-            this.agentService = agentService;
-            this.activityService = activityService;
-            this.subStatementService = subStatementService;
+            _statements = statementRepository;
+            _verbService = verbService;
+            _agentService = agentService;
+            _activityService = activityService;
+            _subStatementService = subStatementService;
         }
 
         public Statement GetStatement(Guid statementId, bool voided = false)
         {
-            var stmt = this.statements.GetById(statementId);
+            var stmt = this._statements.GetById(statementId);
             if (stmt == null)
                 return null;
 
@@ -50,17 +49,26 @@ namespace Doctrina.Core.Services
         /// <param name="authority"></param>
         /// <param name="statements">An array of Statements or a single Statement to be stored.</param>
         /// <returns>Array of Statement id(s) (UUID) in the same order as the corresponding stored Statements.</returns>
-        public Guid[] SaveStatements(params Statement[] statements)
+        public Guid[] SaveStatements(Agent authority, params Statement[] statements)
         {
             var guids = new List<Guid>();
             foreach (var statement in statements)
             {
+                if(statement.Authority == null)
+                {
+                    statement.Authority = authority;
+                }
+                else
+                {
+                    // TODO: Validate authority
+                    //throw new NotImplementedException();
+                }
                 guids.Add(SaveStatement(statement)); // Now it does have a value
             }
 
             // Now save all the statements in a single commit
 
-            this.dbContext.SaveChanges();
+            this._dbContext.SaveChanges();
 
             return guids.ToArray();
         }
@@ -78,16 +86,18 @@ namespace Doctrina.Core.Services
                 }
             }
 
-            this.verbService.MergeVerb(model.Verb);
-            var actor = this.agentService.MergeAgent(model.Actor);
+            var verb = this._verbService.MergeVerb(model.Verb);
+            var actor = this._agentService.MergeAgent(model.Actor);
 
             model.Stamp();
 
             var entity = new StatementEntity()
             {
-                ActorId = actor.Id,
                 StatementId = model.Id.Value,
-                VerbId = model.Verb.Id.ToString(),
+                ActorKey = actor.Key,
+                Actor = actor,
+                VerbKey = verb.Key,
+                Verb = verb,
                 Stored = DateTime.UtcNow,
                 Timestamp = model.Timestamp.Value,
                 //User = Guid.NewGuid() // Default to Umbraco Master
@@ -100,6 +110,7 @@ namespace Doctrina.Core.Services
             MergeContext(entity, model.Context);
             MergeResult(entity, model.Result);
             MergeAuthority(entity, model.Authority);
+            AddAttachments(entity, model.Attachments);
 
             // Make sure the fullStatement is persistet
             model.Id = entity.StatementId;
@@ -108,31 +119,27 @@ namespace Doctrina.Core.Services
             model.Version = entity.Version; // Update version if not applied
 
             // Check if this new statement, has been voided by another statement.
-            entity.Voided = this.statements.HasVoidingStatement(model.Id.Value);
+            entity.Voided = this._statements.HasVoidingStatement(model.Id.Value);
 
             // TODO: Save the statement for quick parsing, or perhaps just cache the statements?
             entity.FullStatement = model.ToJson();
 
-            if (entity.VerbId == Verbs.Voided)
+            if (entity.Verb.Id == Verbs.Voided)
             {
                 VoidStatement(entity);
             }
 
-            this.statements.Save(entity);
+            this._statements.Save(entity);
 
             return model.Id.Value;
         }
 
-        public PagedResult<StatementEntity> GetStatements(StatementsQuery parameters)
+        public IEnumerable<Statement> GetStatements(StatementsQuery parameters)
         {
-            // Exclude voided statements
-            var query = statements.GetAll(voided: false);
+            bool includeAttachements = parameters.Attachments.GetValueOrDefault();
 
-            // Sort results acending?
-            if (parameters.Ascending.HasValue)
-                query.OrderBy(x => x.Stored);
-            else
-                query.OrderByDescending(x => x.Stored);
+            // Exclude voided statements
+            var query = _statements.GetAll(voided: false, includeAttachments: includeAttachements);
 
             // Limit results by stored date
             if (parameters.Since.HasValue)
@@ -158,7 +165,7 @@ namespace Doctrina.Core.Services
 
             if (parameters.VerbId != null)
             {
-                query.Where(x => x.VerbId == parameters.VerbId.ToString());
+                query.Where(x => x.Verb.Id == parameters.VerbId.ToString());
             }
 
             if (!string.IsNullOrWhiteSpace(parameters.ActivityId))
@@ -179,30 +186,33 @@ namespace Doctrina.Core.Services
                 query.Where(s => s.Context.Registration == parameters.Registration);
             }
 
-            bool includeAttachements = parameters.Attachments.GetValueOrDefault();
-            if (includeAttachements)
+            // Sort results acending?
+            if (parameters.Ascending.HasValue)
             {
-                // TODO: Include attachements
+                query.OrderBy(x => x.Stored);
+            }
+            else
+            {
+                query.OrderByDescending(x => x.Stored);
             }
 
-
-            int pageNumber = parameters.Page.HasValue ? parameters.Page.Value : 1;
-            parameters.Page = pageNumber; // Set page
-
             int limit = parameters.Limit.GetValueOrDefault();
-            limit = limit == 0 ? 1000 : limit;
-            limit = Math.Min(limit, 1000); // Cap limit at 1000
+            //limit = limit == 0 ? 1000 : limit;
+            //limit = Math.Min(limit, 1000); // Cap limit at 1000
 
-            int pageIndex = Math.Max(0, pageNumber - 1);
-            int skip = limit * pageIndex;
+            // Continuation Token
+            // https://blog.philipphauer.de/web-api-pagination-timestamp-id-continuation-token/
+            var items = query
+                .Take(limit)
+                .Select(x => new { x.StatementId, x.FullStatement })
+                .ToList()
+                .Select(x=> JsonConvert.DeserializeObject<Statement>(x.FullStatement))
+                .ToList();
 
-            int totalItemsCount = query.Count();
-            var currentPageItems = query.Skip(skip).Take(limit).ToList();
-            var pagedResult = new PagedResult<StatementEntity>(totalItemsCount, pageNumber, limit)
-            {
-                Items = currentPageItems
-            };
-            return pagedResult;
+            //var lastElement = items.Last();
+            //token = new ContinuationToken(lastElement.Stored, lastElement.Id);
+
+            return items;
         }
 
         private void MergeAuthority(StatementEntity statement, Agent authority)
@@ -210,8 +220,8 @@ namespace Doctrina.Core.Services
             if (authority == null)
                 throw new NullReferenceException("authority");
 
-            var agent = this.agentService.MergeAgent(authority);
-            statement.AuthorityId = agent.Id;
+            var agent = this._agentService.MergeAgent(authority);
+            statement.AuthorityId = agent.Key;
         }
 
         private Statement ConvertFrom(StatementEntity entity)
@@ -219,14 +229,9 @@ namespace Doctrina.Core.Services
             return JsonConvert.DeserializeObject<Statement>(entity.FullStatement);
         }
 
-        //public IEnumerable<StatementEntity> GetStatements()
-        //{
-        //    return this.statements.GetAll(voided: false).ToList();
-        //}
-
         public bool Exist(Guid statementId, bool voided = false)
         {
-            return statements.Exist(statementId, voided);
+            return _statements.Exist(statementId, voided);
         }
     }
 }

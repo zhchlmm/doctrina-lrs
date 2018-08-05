@@ -18,7 +18,7 @@ namespace Doctrina.xAPI.Models
             Name = new List<string>();
             Mbox = new List<Mbox>();
             Mbox_sha1sum = new List<string>();
-            OpenId = new List<IRI>();
+            OpenId = new List<Iri>();
             Account = new List<Account>();
         }
 
@@ -35,7 +35,7 @@ namespace Doctrina.xAPI.Models
         public List<string> Mbox_sha1sum { get; set; }
 
         [JsonProperty("openid")]
-        public List<IRI> OpenId { get; set; }
+        public List<Iri> OpenId { get; set; }
 
         [JsonProperty("account")]
         public List<Account> Account { get; set; }

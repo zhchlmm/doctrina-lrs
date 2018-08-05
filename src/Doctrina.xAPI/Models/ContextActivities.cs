@@ -1,9 +1,7 @@
-﻿using Doctrina.xAPI.Schema.Providers;
-using Doctrina.xAPI.Converters;
+﻿using Doctrina.xAPI.Json.Converters;
+using Doctrina.xAPI.Schema.Providers;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
-using System.Collections.Generic;
 
 namespace Doctrina.xAPI.Models
 {
