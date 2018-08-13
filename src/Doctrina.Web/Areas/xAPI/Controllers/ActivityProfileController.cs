@@ -1,6 +1,7 @@
 ﻿using Doctrina.Core.Services;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
 using Doctrina.xAPI;
+using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="profileId">The profile id associated with this Profile document.</param>
         /// <returns>200 OK, the Profile document</returns>
         [HttpGet]
-        public IActionResult GetDocument(Uri activityId, string profileId)
+        public IActionResult GetDocument(Iri activityId, string profileId)
         {
             try
             {
@@ -57,7 +58,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="since">Only ids of Profile documents stored since the specified Timestamp (exclusive) are returned.</param>
         /// <returns>200 OK, Array of Profile id(s)</returns>
         [HttpGet]
-        public ActionResult<Guid[]> GetMultipleDocuments(Uri activityId, DateTimeOffset? since = null)
+        public ActionResult<Guid[]> GetMultipleDocuments(Iri activityId, DateTimeOffset? since = null)
         {
             try
             {
@@ -88,7 +89,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="document">The document to be stored or updated.</param>
         /// <returns>204 No Content</returns>
         [AcceptVerbs("PUT", "POST")]
-        public IActionResult PostDocument(Uri activityId, string profileId, [FromBody]byte[] content, Guid? registration = null)
+        public IActionResult PostDocument(Iri activityId, string profileId, [FromBody]byte[] content, Guid? registration = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -123,7 +124,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="profileId">The profile id associated with this Profile document.</param>
         /// <returns>204 No Content</returns>
         [HttpDelete]
-        public IActionResult DeleteDocument(string profileId, Uri activityId)
+        public IActionResult DeleteDocument(string profileId, Iri activityId)
         {
             try
             {

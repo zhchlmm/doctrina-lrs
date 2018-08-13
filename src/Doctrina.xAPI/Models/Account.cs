@@ -19,7 +19,7 @@ namespace Doctrina.xAPI.Models
         /// </summary>
         [JsonProperty("homePage",
             Required = Required.Always)]
-        public Iri HomePage { get; set; }
+        public Uri HomePage { get; set; }
 
         /// <summary>
         /// The unique id or name used to log in to this account. This is based on FOAF's accountName.
@@ -27,6 +27,33 @@ namespace Doctrina.xAPI.Models
         [JsonProperty("name",
             Required = Required.Always)]
         public string Name { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var account = obj as Account;
+            return account != null &&
+                   base.Equals(obj) &&
+                   EqualityComparer<Uri>.Default.Equals(HomePage, account.HomePage) &&
+                   Name == account.Name;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 74222723;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Uri>.Default.GetHashCode(HomePage);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            return hashCode;
+        }
+
+        public static bool operator ==(Account account1, Account account2)
+        {
+            return EqualityComparer<Account>.Default.Equals(account1, account2);
+        }
+
+        public static bool operator !=(Account account1, Account account2)
+        {
+            return !(account1 == account2);
+        }
     }
 
     public class AccountSchema : JSchemaGenerationProvider

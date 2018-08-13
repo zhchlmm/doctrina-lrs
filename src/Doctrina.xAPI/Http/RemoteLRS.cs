@@ -32,7 +32,7 @@ namespace Doctrina.xAPI.Http
             _auth = Convert.ToBase64String(bytes);
 
             client.BaseAddress = Endpoint;
-            client.DefaultRequestHeaders.Add(Constants.Headers.APIVersion, version.ToString());
+            client.DefaultRequestHeaders.Add(Constants.Headers.XExperienceApiVersion, version.ToString());
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _auth);
         }
 
@@ -118,17 +118,17 @@ namespace Doctrina.xAPI.Http
 
         public Task<HttpResponseMessage> MoreStatements(StatementsResult result)
         {
-            if (result.More.IsAbsoluteUri)
-            {
-                var response = client.GetAsync(result.More);
-                return response;
-            }
-            else
-            {
-                var requestUri = new Uri(Endpoint, result.More);
-                var response = client.GetAsync(requestUri);
-                return response;
-            }
+            //if (result.More.IsAbsoluteUri)
+            //{
+            //    var response = client.GetAsync(result.More);
+            //    return response;
+            //}
+            //else
+            //{
+            var requestUri = new Uri(Endpoint, result.More);
+            var response = client.GetAsync(requestUri);
+            return response;
+            //}
         }
 
         public Task<HttpResponseMessage> VoidStatement(Guid id, Agent agent)
@@ -138,7 +138,7 @@ namespace Doctrina.xAPI.Http
                 Actor = agent,
                 Verb = new Verb
                 {
-                    Id = new Uri("http://adlnet.gov/expapi/verbs/voided"),
+                    Id = new Iri("http://adlnet.gov/expapi/verbs/voided"),
                     Display = new LanguageMap()
                     {
                         { "en-US", "voided" }

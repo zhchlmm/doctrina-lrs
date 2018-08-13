@@ -14,10 +14,10 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.Filters
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var supported = XAPIVersion.GetSupported();
-            if (!context.HttpContext.Request.Headers.ContainsKey(Constants.Headers.APIVersion))
+            if (!context.HttpContext.Request.Headers.ContainsKey(Constants.Headers.XExperienceApiVersion))
                 throw new Exception("Missing 'X-Experience-API-Version' header or it's null or empty");
 
-            string requestVersion = context.HttpContext.Request.Headers[Constants.Headers.APIVersion];
+            string requestVersion = context.HttpContext.Request.Headers[Constants.Headers.XExperienceApiVersion];
             if (string.IsNullOrEmpty(requestVersion))
                 throw new Exception("Missing 'X-Experience-API-Version' header or it's null or empty");
 

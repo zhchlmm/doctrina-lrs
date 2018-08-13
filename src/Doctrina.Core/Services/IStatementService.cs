@@ -10,9 +10,9 @@ namespace Doctrina.Core.Services
     public interface IStatementService
     {
         Guid[] SaveStatements(Agent authority, params Statement[] statements);
-        Guid SaveStatement(Statement statement);
+        //Guid SaveStatement(Statement statement);
         Statement GetStatement(Guid statementId, bool voided = false);
-        IEnumerable<Statement> GetStatements(StatementsQuery parameters);
+        IEnumerable<Statement> GetStatements(PagedStatementsQuery parameters, out int totalCount);
         //IEnumerable<StatementEntity> GetStatements();
         bool Exist(Guid statementId, bool voided = false);
     }

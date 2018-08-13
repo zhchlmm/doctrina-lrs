@@ -1,3 +1,0 @@
-﻿namespace Doctrina.xAPI.Models
-{
-}

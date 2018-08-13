@@ -73,7 +73,7 @@ namespace Doctrina.Core.Services
             return guids.ToArray();
         }
 
-        public Guid SaveStatement(Statement model)
+        private Guid SaveStatement(Statement model)
         {
             // Prevent conflic
             if (model.Id.HasValue)
@@ -129,13 +129,14 @@ namespace Doctrina.Core.Services
                 VoidStatement(entity);
             }
 
-            this._statements.Save(entity);
+            this._statements.SaveChanges(entity);
 
             return model.Id.Value;
         }
 
-        public IEnumerable<Statement> GetStatements(StatementsQuery parameters)
+        public IEnumerable<Statement> GetStatements(PagedStatementsQuery parameters, out int totalCount)
         {
+            totalCount = 0;
             bool includeAttachements = parameters.Attachments.GetValueOrDefault();
 
             // Exclude voided statements
@@ -144,12 +145,12 @@ namespace Doctrina.Core.Services
             // Limit results by stored date
             if (parameters.Since.HasValue)
             {
-                var since = parameters.Since.Value;
+                DateTime since = parameters.Since.Value;
                 query.Where(x => x.Stored >= since);
             }
             if (parameters.Until.HasValue)
             {
-                var until = parameters.Until.Value;
+                DateTime until = parameters.Until.Value;
                 query.Where(x => x.Stored <= until);
             }
 
@@ -196,23 +197,65 @@ namespace Doctrina.Core.Services
                 query.OrderByDescending(x => x.Stored);
             }
 
-            int limit = parameters.Limit.GetValueOrDefault();
-            //limit = limit == 0 ? 1000 : limit;
-            //limit = Math.Min(limit, 1000); // Cap limit at 1000
+           
+            // Ensure limit is not less than 0 or greather then MAX
+            int limit = parameters.Limit.GetValueOrDefault(0);
+            limit = Math.Max(limit, 0);
+            //limit = Math.Min(limit, 1000);
 
-            // Continuation Token
-            // https://blog.philipphauer.de/web-api-pagination-timestamp-id-continuation-token/
-            var items = query
-                .Take(limit)
-                .Select(x => new { x.StatementId, x.FullStatement })
-                .ToList()
-                .Select(x=> JsonConvert.DeserializeObject<Statement>(x.FullStatement))
-                .ToList();
+            // Ensure skip is not less than 
+            int skip = parameters.Skip.GetValueOrDefault(0);
+            skip = Math.Max(skip, 0);
+            parameters.Skip = skip; // Return skips
 
-            //var lastElement = items.Last();
-            //token = new ContinuationToken(lastElement.Stored, lastElement.Id);
+            var result = new List<Statement>();
+            if (limit > 0)
+            {
+                var page = query
+                    .Select(x => new
+                    {
+                        TotalCount = query.Count(),
+                        x.StatementId,
+                        x.FullStatement
+                    })
+                    .Skip(skip)
+                    .Take(limit)
+                    .ToList();
 
-            return items;
+                // Push out total rows count
+                totalCount = page.First().TotalCount;
+
+                // Parse page rows
+                result = page.Select(x => JsonConvert.DeserializeObject<Statement>(x.FullStatement))
+                    .ToList();
+            }
+            else
+            {
+                var page = query
+                    .Select(x => new
+                    {
+                        TotalCount = query.Count(),
+                        x.StatementId,
+                        x.FullStatement
+                    })
+                    .ToList();
+
+                if (!page.Any())
+                {
+                    return new List<Statement>();
+                }
+
+                // Push out total rows count
+                totalCount = page.First().TotalCount;
+
+                // Parse page rows
+                result = page.Select(x => JsonConvert.DeserializeObject<Statement>(x.FullStatement))
+                    .ToList();
+            }
+
+            
+
+            return result;
         }
 
         private void MergeAuthority(StatementEntity statement, Agent authority)

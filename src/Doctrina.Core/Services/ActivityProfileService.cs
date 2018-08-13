@@ -1,6 +1,7 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.Core.Data.Documents;
 using Doctrina.Core.Repositories;
+using Doctrina.xAPI.Models;
 using System;
 using System.Collections.Generic;
 
@@ -29,7 +30,7 @@ namespace Doctrina.Core.Services
         /// <param name="etag"></param>
         /// <param name="eTagMatch"></param>
         /// <returns></returns>
-        public IActivityProfileEntity CreateActivityProfile(string profileId, Uri activityId, Guid? registration, byte[] content, string contentType)
+        public IActivityProfileEntity CreateActivityProfile(string profileId, Iri activityId, Guid? registration, byte[] content, string contentType)
         {
             var profile = this.activityProfileRepository.GetProfile(activityId, profileId, registration);
             if (profile == null)
@@ -37,12 +38,12 @@ namespace Doctrina.Core.Services
             return UpdateProfile(profile, content, contentType);
         }
 
-        public IActivityProfileEntity GetActivityProfile(string profileId, Uri activityId, Guid? registration = null)
+        public IActivityProfileEntity GetActivityProfile(string profileId, Iri activityId, Guid? registration = null)
         {
             return this.activityProfileRepository.GetProfile(activityId, profileId, registration);
         }
 
-        private IActivityProfileEntity CreateProfile(Uri activityId, string profileId, Guid? registration, byte[] content, string contentType)
+        private IActivityProfileEntity CreateProfile(Iri activityId, string profileId, Guid? registration, byte[] content, string contentType)
         {
             var doc = this.documentService.CreateDocument(contentType, content);
             var activity = this._activityService.MergeActivity(activityId);
@@ -78,7 +79,7 @@ namespace Doctrina.Core.Services
         /// <param name="activityId"></param>
         /// <param name="since">This is limited to entries that have been stored or updated since the specified Timestamp</param>
         /// <returns></returns>
-        public IEnumerable<IDocumentEntity> GetActivityProfileDocuments(Uri activityId, DateTimeOffset? since = null)
+        public IEnumerable<IDocumentEntity> GetActivityProfileDocuments(Iri activityId, DateTimeOffset? since = null)
         {
             if (activityId == null)
                 throw new ArgumentNullException("activityId");

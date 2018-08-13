@@ -30,7 +30,7 @@ namespace Doctrina.Core.Services
             this._documentService = documentService;
         }
 
-        public IDocumentEntity MergeStateDocument(string stateId, Uri activityId, Agent agent, Guid? registration, string contentType, byte[] content)
+        public IDocumentEntity MergeStateDocument(string stateId, Iri activityId, Agent agent, Guid? registration, string contentType, byte[] content)
         {
             var agentEntity = this._agentService.ConvertFrom(agent);
 
@@ -56,7 +56,7 @@ namespace Doctrina.Core.Services
         /// <param name="registration"></param>
         /// <param name="doc"></param>
         /// <returns></returns>
-        private IDocumentEntity CreateStateDocument(Uri activityId, Agent agent, string stateId, Guid? registration, string contentType, byte[] content)
+        private IDocumentEntity CreateStateDocument(Iri activityId, Agent agent, string stateId, Guid? registration, string contentType, byte[] content)
         {
             var agentEntity = this._agentService.MergeAgent(agent);
             var activity = new Activity()
@@ -93,7 +93,7 @@ namespace Doctrina.Core.Services
             return activityState.Document;
         }
 
-        public IDocumentEntity GetStateDocument(string stateId, Uri activityId, Agent agent, Guid? registration)
+        public IDocumentEntity GetStateDocument(string stateId, Iri activityId, Agent agent, Guid? registration)
         {
             var agentEntity = this._agentService.ConvertFrom(agent);
 
@@ -112,7 +112,7 @@ namespace Doctrina.Core.Services
         /// <param name="registration"></param>
         /// <param name="since"></param>
         /// <returns>Array of State id(s), and Last modified date</returns>
-        public IEnumerable<IDocumentEntity> GetStates(Uri activityId, Agent agent, Guid? registration, DateTime? since)
+        public IEnumerable<IDocumentEntity> GetStates(Iri activityId, Agent agent, Guid? registration, DateTime? since)
         {
             var agentEntity = this._agentService.ConvertFrom(agent);
 
@@ -133,7 +133,7 @@ namespace Doctrina.Core.Services
         /// <param name="stateId"></param>
         /// <param name="agent"></param>
         /// <param name="registration"></param>
-        public void DeleteState(string stateId, Uri activityId, Agent agent, Guid? registration)
+        public void DeleteState(string stateId, Iri activityId, Agent agent, Guid? registration)
         {
             var agentEntity = _agentService.ConvertFrom(agent);
             this._activityStates.Delete(stateId, activityId, agentEntity, registration);
@@ -145,7 +145,7 @@ namespace Doctrina.Core.Services
         /// <param name="activityId"></param>
         /// <param name="agent"></param>
         /// <param name="registration"></param>
-        public void DeleteStates(Uri activityId, Agent agent, Guid? registration)
+        public void DeleteStates(Iri activityId, Agent agent, Guid? registration)
         {
             var agentEntity = _agentService.ConvertFrom(agent);
             this._activityStates.Delete(activityId, agentEntity, registration);

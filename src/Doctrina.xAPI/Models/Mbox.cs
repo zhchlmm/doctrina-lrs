@@ -51,6 +51,28 @@ namespace Doctrina.xAPI.Models
                 return false;
             }
         }
+
+        public override bool Equals(object obj)
+        {
+            var mbox = obj as Mbox;
+            return mbox != null &&
+                   _mbox == mbox._mbox;
+        }
+
+        public override int GetHashCode()
+        {
+            return -1076163258 + EqualityComparer<string>.Default.GetHashCode(_mbox);
+        }
+
+        public static bool operator ==(Mbox mbox1, Mbox mbox2)
+        {
+            return EqualityComparer<Mbox>.Default.Equals(mbox1, mbox2);
+        }
+
+        public static bool operator !=(Mbox mbox1, Mbox mbox2)
+        {
+            return !(mbox1 == mbox2);
+        }
     }
 
     public class MboxTypeConverter : TypeConverter

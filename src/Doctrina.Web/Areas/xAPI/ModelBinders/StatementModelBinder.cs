@@ -70,8 +70,6 @@ namespace Doctrina.Web.Mvc.ModelBinders
 
             JsonSerializer serializer = new JsonSerializer();
             serializer.CheckAdditionalContent = true;
-            //serializer.Converters.Add(new AgentConverter());
-            //serializer.Converters.Add(new StatementTargetConverter());
             serializer.Error += delegate (object sender, ErrorEventArgs args)
             {
                 bindingContext.ModelState.AddModelError(args.ErrorContext.Path, args.ErrorContext.Error.Message);
@@ -79,7 +77,7 @@ namespace Doctrina.Web.Mvc.ModelBinders
             };
 
             var statement = serializer.Deserialize<Statement>(validatingReader);
-            bindingContext.Result = ModelBindingResult.Success(new Statement[] { statement });
+            bindingContext.Result = ModelBindingResult.Success(statement);
 
             return Task.CompletedTask;
         }

@@ -21,9 +21,14 @@ namespace Doctrina.xAPI.Models
 
         public Iri(string iriString)
         {
-            var regex = new Regex("(\b(https?|ftp|file)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
-            if (!regex.Match(iriString).Success)
-                throw new FormatException($"IRI '{iriString}' not a well formated IRI string.");
+            try
+            {
+                var url = new Uri(iriString);
+            }
+            catch (Exception)
+            {
+                throw new FormatException($"IRI '{iriString}' is not a well formatted IRI string.");
+            }
 
             this._iriString = iriString;
         }
@@ -47,9 +52,36 @@ namespace Doctrina.xAPI.Models
             }
         }
 
-        public static implicit operator Iri(string iriString)
+        public override bool Equals(object obj)
         {
-            return new Iri(iriString);
+            var iri = obj as Iri;
+            return iri != null &&
+                   _iriString == iri._iriString;
+        }
+
+        public override int GetHashCode()
+        {
+            return 314876093 + EqualityComparer<string>.Default.GetHashCode(_iriString);
+        }
+
+        public static bool operator ==(Iri iri1, Iri iri2)
+        {
+            return EqualityComparer<Iri>.Default.Equals(iri1, iri2);
+        }
+
+        public static bool operator !=(Iri iri1, Iri iri2)
+        {
+            return !(iri1 == iri2);
+        }
+
+        public static implicit operator Uri(Iri d)
+        {
+            return new Uri(d.ToString());
+        }
+
+        public static implicit operator Iri(Uri d)
+        {
+            return new Iri(d.ToString());
         }
     }
 

@@ -10,7 +10,7 @@ namespace Doctrina.Web.Areas.xAPI.Models
     public class StateDocumentModel
     {
         [Required]
-        public Uri ActivityId { get; set; }
+        public Iri ActivityId { get; set; }
         [Required]
         public Agent Agent { get; set; }
         [Required]

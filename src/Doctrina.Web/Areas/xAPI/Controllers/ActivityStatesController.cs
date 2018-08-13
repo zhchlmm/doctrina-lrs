@@ -100,7 +100,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="registration"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetMutipleStates(Uri activityId, [FromQuery(Name = "agent")]string strAgent, Guid? registration = null, DateTime? since = null)
+        public IActionResult GetMutipleStates(Iri activityId, [FromQuery(Name = "agent")]string strAgent, Guid? registration = null, DateTime? since = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

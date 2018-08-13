@@ -9,7 +9,7 @@ namespace Doctrina.Core.Repositories
 {
     public interface IStatementRepository
     {
-        void Save(StatementEntity entity);
+        void SaveChanges(StatementEntity entity);
         StatementEntity GetById(Guid statementRefId);
         void Update(StatementEntity voidedStatement);
         IQueryable<StatementEntity> GetAll(bool voided, bool includeAttachments);

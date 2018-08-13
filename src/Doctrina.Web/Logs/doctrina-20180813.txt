@@ -1,0 +1,423 @@
+2018-08-13T16:50:44.3626310+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:29184"' instead. (a6cd99e2)
+2018-08-13T16:50:44.7354052+02:00 0HLG15GIU9M8J:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T16:50:45.2024682+02:00 0HLG15GIU9M8J:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T16:50:46.3094231+02:00 0HLG15GIU9M8J:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T16:50:46.5062569+02:00 0HLG15GIU9M8J:00000001 [ERR] PostStatements (f178514f)
+Newtonsoft.Json.JsonSerializationException: Self referencing loop detected with type 'Doctrina.xAPI.Models.LanguageMap'. Path '[0].verb'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeConvertable(JsonWriter writer, JsonConverter converter, Object value, JsonContract contract, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.Serialization.JsonSerializerProxy.SerializeInternal(JsonWriter jsonWriter, Object value, Type rootType)
+   at Newtonsoft.Json.JsonSerializer.Serialize(JsonWriter jsonWriter, Object value)
+   at Doctrina.xAPI.Json.Converters.LanguageMapJsonConverter.WriteJson(JsonWriter writer, Object value, JsonSerializer serializer) in C:\Repos\Doctrina\src\Doctrina.xAPI\Json\Converters\LanguageMapJsonConverter.cs:line 72
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeConvertable(JsonWriter writer, JsonConverter converter, Object value, JsonContract contract, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value)
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 136
+2018-08-13T16:50:46.5232046+02:00 0HLG15GIU9M8J:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 197.2815ms. (50a9e262)
+2018-08-13T16:50:46.5617484+02:00 0HLG15GIU9M8J:00000001 [INF] Executing ObjectResult, writing value of type '"Newtonsoft.Json.JsonSerializationException"'. (8a1b66c8)
+2018-08-13T16:50:46.6292523+02:00 0HLG15GIU9M8J:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 1417.5044ms (afa2e885)
+2018-08-13T16:50:46.6424687+02:00 0HLG15GIU9M8J:00000001 [INF] Request finished in 1913.1338ms 400 application/json; charset=utf-8 (791a596a)
+2018-08-13T16:52:33.0350278+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:26471"' instead. (a6cd99e2)
+2018-08-13T16:52:33.6003199+02:00 0HLG15HJCM3G6:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T16:52:33.9617129+02:00 0HLG15HJCM3G6:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T16:52:34.5443005+02:00 0HLG15HJCM3G6:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T16:52:34.6623564+02:00 0HLG15HJCM3G6:00000001 [ERR] PostStatements (f178514f)
+Newtonsoft.Json.JsonSerializationException: Self referencing loop detected with type 'Doctrina.xAPI.Models.LanguageMap'. Path '[0].attachments[0]'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeConvertable(JsonWriter writer, JsonConverter converter, Object value, JsonContract contract, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value)
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 136
+2018-08-13T16:52:34.6767920+02:00 0HLG15HJCM3G6:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 120.1856ms. (50a9e262)
+2018-08-13T16:52:34.7001359+02:00 0HLG15HJCM3G6:00000001 [INF] Executing ObjectResult, writing value of type '"Newtonsoft.Json.JsonSerializationException"'. (8a1b66c8)
+2018-08-13T16:52:34.7740287+02:00 0HLG15HJCM3G6:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 799.714ms (afa2e885)
+2018-08-13T16:52:34.7894950+02:00 0HLG15HJCM3G6:00000001 [INF] Request finished in 1194.18ms 400 application/json; charset=utf-8 (791a596a)
+2018-08-13T16:59:24.6576337+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:26922"' instead. (a6cd99e2)
+2018-08-13T16:59:25.0472439+02:00 0HLG15LE0IRMM:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T16:59:25.4207059+02:00 0HLG15LE0IRMM:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T16:59:26.0762534+02:00 0HLG15LE0IRMM:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T16:59:26.1892532+02:00 0HLG15LE0IRMM:00000001 [ERR] PostStatements (f178514f)
+Newtonsoft.Json.JsonSerializationException: Self referencing loop detected with type 'Doctrina.xAPI.Models.LanguageMap'. Path '[0].attachments[0]'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeConvertable(JsonWriter writer, JsonConverter converter, Object value, JsonContract contract, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value)
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 136
+2018-08-13T16:59:26.1981558+02:00 0HLG15LE0IRMM:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 113.2868ms. (50a9e262)
+2018-08-13T16:59:26.2191467+02:00 0HLG15LE0IRMM:00000001 [INF] Executing ObjectResult, writing value of type '"Newtonsoft.Json.JsonSerializationException"'. (8a1b66c8)
+2018-08-13T16:59:26.2539064+02:00 0HLG15LE0IRMM:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 825.153ms (afa2e885)
+2018-08-13T16:59:26.2676441+02:00 0HLG15LE0IRMM:00000001 [INF] Request finished in 1224.8599ms 400 application/json; charset=utf-8 (791a596a)
+2018-08-13T17:07:26.1639600+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:20312"' instead. (a6cd99e2)
+2018-08-13T17:07:26.5776270+02:00 0HLG15PTGVDQ9:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T17:07:27.2786919+02:00 0HLG15PTGVDQ9:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T17:07:27.9449391+02:00 0HLG15PTGVDQ9:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T17:07:28.0287921+02:00 0HLG15PTGVDQ9:00000001 [ERR] PostStatements (f178514f)
+Newtonsoft.Json.JsonSerializationException: Self referencing loop detected with type 'Doctrina.xAPI.Models.LanguageMap'. Path '[0].attachments[0]'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeConvertable(JsonWriter writer, JsonConverter converter, Object value, JsonContract contract, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value)
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 136
+2018-08-13T17:07:28.0393644+02:00 0HLG15PTGVDQ9:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 84.3559ms. (50a9e262)
+2018-08-13T17:07:28.0583002+02:00 0HLG15PTGVDQ9:00000001 [INF] Executing ObjectResult, writing value of type '"Newtonsoft.Json.JsonSerializationException"'. (8a1b66c8)
+2018-08-13T17:07:28.0918757+02:00 0HLG15PTGVDQ9:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 802.4643ms (afa2e885)
+2018-08-13T17:07:28.1047680+02:00 0HLG15PTGVDQ9:00000001 [INF] Request finished in 1529.1662ms 400 application/json; charset=utf-8 (791a596a)
+2018-08-13T17:10:09.4502496+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:6106"' instead. (a6cd99e2)
+2018-08-13T17:10:09.9108840+02:00 0HLG15RE6ANT1:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T17:10:10.2102932+02:00 0HLG15RE6ANT1:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T17:10:10.7260319+02:00 0HLG15RE6ANT1:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T17:10:10.8140169+02:00 0HLG15RE6ANT1:00000001 [ERR] PostStatements (f178514f)
+Newtonsoft.Json.JsonSerializationException: Self referencing loop detected with type 'Doctrina.xAPI.Models.LanguageMap'. Path '[0].attachments[0]'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeConvertable(JsonWriter writer, JsonConverter converter, Object value, JsonContract contract, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value)
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 136
+2018-08-13T17:10:10.8247829+02:00 0HLG15RE6ANT1:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 88.5504ms. (50a9e262)
+2018-08-13T17:10:10.8449741+02:00 0HLG15RE6ANT1:00000001 [INF] Executing ObjectResult, writing value of type '"Newtonsoft.Json.JsonSerializationException"'. (8a1b66c8)
+2018-08-13T17:10:10.8809508+02:00 0HLG15RE6ANT1:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 664.8435ms (afa2e885)
+2018-08-13T17:10:10.8928869+02:00 0HLG15RE6ANT1:00000001 [INF] Request finished in 984.852ms 400 application/json; charset=utf-8 (791a596a)
+2018-08-13T17:11:09.4057623+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:14566"' instead. (a6cd99e2)
+2018-08-13T17:11:10.7365818+02:00 0HLG15S04LKDO:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:44338/xapi/about   (ca22a1cb)
+2018-08-13T17:11:10.7288798+02:00 0HLG15S04LKDQ:00000001 [INF] Request starting HTTP/1.1 DEBUG http://localhost:5000/  0 (ca22a1cb)
+2018-08-13T17:11:10.7353040+02:00 0HLG15S04LKDP:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T17:11:10.9094963+02:00 0HLG15S04LKDQ:00000001 [INF] Request finished in 187.0481ms 200  (791a596a)
+2018-08-13T17:11:12.3775669+02:00 0HLG15S04LKDP:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T17:11:12.3780350+02:00 0HLG15S04LKDO:00000001 [INF] Route matched with "{area = \"xapi\", action = \"About\", controller = \"About\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" (a44c0341)
+2018-08-13T17:11:12.4336754+02:00 0HLG15S04LKDO:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" - Validation state: Valid (dad538d7)
+2018-08-13T17:11:12.4634009+02:00 0HLG15S04LKDO:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.JsonResult" in 13.5135ms. (50a9e262)
+2018-08-13T17:11:12.5027788+02:00 0HLG15S04LKDO:00000001 [INF] Executing JsonResult, writing value of type '"Doctrina.xAPI.Models.About"'. (2f513669)
+2018-08-13T17:11:12.6702070+02:00 0HLG15S04LKDO:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" in 239.777ms (afa2e885)
+2018-08-13T17:11:12.6867835+02:00 0HLG15S04LKDO:00000001 [INF] Request finished in 1973.826ms 200 application/json; charset=utf-8 (791a596a)
+2018-08-13T17:11:13.7637864+02:00 0HLG15S04LKDQ:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:44338/favicon.ico   (ca22a1cb)
+2018-08-13T17:11:13.7965288+02:00 0HLG15S04LKDQ:00000002 [INF] The file "/favicon.ico" was not modified (f1f8d725)
+2018-08-13T17:11:13.8002756+02:00 0HLG15S04LKDQ:00000002 [INF] Request finished in 36.5138ms 304 image/x-icon (791a596a)
+2018-08-13T17:11:14.2193118+02:00 0HLG15S04LKDP:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T17:11:21.7251974+02:00 0HLG15S04LKDP:00000001 [ERR] PostStatements (f178514f)
+Newtonsoft.Json.JsonSerializationException: Self referencing loop detected with type 'Doctrina.xAPI.Models.LanguageMap'. Path '[0].attachments[0]'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeConvertable(JsonWriter writer, JsonConverter converter, Object value, JsonContract contract, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value)
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 136
+2018-08-13T17:11:21.7319733+02:00 0HLG15S04LKDP:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 7512.2824ms. (50a9e262)
+2018-08-13T17:11:21.7491930+02:00 0HLG15S04LKDP:00000001 [INF] Executing ObjectResult, writing value of type '"Newtonsoft.Json.JsonSerializationException"'. (8a1b66c8)
+2018-08-13T17:11:21.7756395+02:00 0HLG15S04LKDP:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 9396.2365ms (afa2e885)
+2018-08-13T17:11:21.7760609+02:00 0HLG15S04LKDP:00000001 [INF] Request finished in 11063.5719ms 400 application/json; charset=utf-8 (791a596a)
+2018-08-13T17:13:24.1840652+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:20159"' instead. (a6cd99e2)
+2018-08-13T17:13:24.8539358+02:00 0HLG15T87RPFO:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T17:13:25.9523485+02:00 0HLG15T87RPFO:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T17:13:27.7745197+02:00 0HLG15T87RPFO:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T17:13:28.0025777+02:00 0HLG15T87RPFO:00000001 [ERR] PostStatements (f178514f)
+Newtonsoft.Json.JsonSerializationException: Self referencing loop detected with type 'Doctrina.xAPI.Models.LanguageMap'. Path '[0].attachments[0]'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeConvertable(JsonWriter writer, JsonConverter converter, Object value, JsonContract contract, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value)
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 136
+2018-08-13T17:13:28.0149269+02:00 0HLG15T87RPFO:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 228.4352ms. (50a9e262)
+2018-08-13T17:13:28.0494486+02:00 0HLG15T87RPFO:00000001 [INF] Executing ObjectResult, writing value of type '"Newtonsoft.Json.JsonSerializationException"'. (8a1b66c8)
+2018-08-13T17:13:28.1459776+02:00 0HLG15T87RPFO:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 2168.3477ms (afa2e885)
+2018-08-13T17:13:28.1770113+02:00 0HLG15T87RPFO:00000001 [INF] Request finished in 3329.8716ms 400 application/json; charset=utf-8 (791a596a)
+2018-08-13T17:18:03.2063836+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:12160"' instead. (a6cd99e2)
+2018-08-13T17:18:03.5473555+02:00 0HLG15VRBQE9T:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T17:18:03.8968204+02:00 0HLG15VRBQE9T:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T17:18:04.4714904+02:00 0HLG15VRBQE9T:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T17:18:04.5741148+02:00 0HLG15VRBQE9T:00000001 [ERR] PostStatements (f178514f)
+Newtonsoft.Json.JsonSerializationException: Self referencing loop detected for property 'Comparer' with type 'System.Collections.Generic.GenericEqualityComparer`1[System.String]'. Path '[0].attachments[0].display'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CalculatePropertyValues(JsonWriter writer, Object value, JsonContainerContract contract, JsonProperty member, JsonProperty property, JsonContract& memberContract, Object& memberValue)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value)
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 136
+2018-08-13T17:18:04.5836947+02:00 0HLG15VRBQE9T:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 103.0296ms. (50a9e262)
+2018-08-13T17:18:04.6050841+02:00 0HLG15VRBQE9T:00000001 [INF] Executing ObjectResult, writing value of type '"Newtonsoft.Json.JsonSerializationException"'. (8a1b66c8)
+2018-08-13T17:18:04.6456797+02:00 0HLG15VRBQE9T:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 740.9239ms (afa2e885)
+2018-08-13T17:18:04.6559307+02:00 0HLG15VRBQE9T:00000001 [INF] Request finished in 1111.5935ms 400 application/json; charset=utf-8 (791a596a)
+2018-08-13T17:24:17.5796455+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:17858"' instead. (a6cd99e2)
+2018-08-13T17:24:17.9294271+02:00 0HLG163ATK9JJ:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T17:24:18.5396384+02:00 0HLG163ATK9JJ:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T17:24:19.3025560+02:00 0HLG163ATK9JJ:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T17:24:19.4185770+02:00 0HLG163ATK9JJ:00000001 [ERR] PostStatements (f178514f)
+Newtonsoft.Json.JsonSerializationException: Self referencing loop detected for property 'Comparer' with type 'System.Collections.Generic.GenericEqualityComparer`1[System.String]'. Path '[0].attachments[0].display'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CalculatePropertyValues(JsonWriter writer, Object value, JsonContainerContract contract, JsonProperty member, JsonProperty property, JsonContract& memberContract, Object& memberValue)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value)
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 136
+2018-08-13T17:24:19.4297873+02:00 0HLG163ATK9JJ:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 116.7505ms. (50a9e262)
+2018-08-13T17:24:19.4524240+02:00 0HLG163ATK9JJ:00000001 [INF] Executing ObjectResult, writing value of type '"Newtonsoft.Json.JsonSerializationException"'. (8a1b66c8)
+2018-08-13T17:24:19.4978029+02:00 0HLG163ATK9JJ:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 948.7171ms (afa2e885)
+2018-08-13T17:24:19.5124411+02:00 0HLG163ATK9JJ:00000001 [INF] Request finished in 1587.8389ms 400 application/json; charset=utf-8 (791a596a)
+2018-08-13T17:24:37.4428332+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:13702"' instead. (a6cd99e2)
+2018-08-13T17:24:38.1402077+02:00 0HLG163GU1R1H:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T17:24:38.7119170+02:00 0HLG163GU1R1H:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T17:24:40.1258921+02:00 0HLG163GU1R1H:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T17:24:40.5488435+02:00 0HLG163GU1R1H:00000001 [ERR] PostStatements (f178514f)
+Newtonsoft.Json.JsonSerializationException: Self referencing loop detected for property 'Comparer' with type 'System.Collections.Generic.GenericEqualityComparer`1[System.String]'. Path '[0].attachments[0].display'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CalculatePropertyValues(JsonWriter writer, Object value, JsonContainerContract contract, JsonProperty member, JsonProperty property, JsonContract& memberContract, Object& memberValue)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+   at Newtonsoft.Json.JsonConvert.SerializeObjectInternal(Object value, Type type, JsonSerializer jsonSerializer)
+   at Newtonsoft.Json.JsonConvert.SerializeObject(Object value)
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 136
+2018-08-13T17:24:40.5924282+02:00 0HLG163GU1R1H:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 422.6131ms. (50a9e262)
+2018-08-13T17:24:40.6475710+02:00 0HLG163GU1R1H:00000001 [INF] Executing ObjectResult, writing value of type '"Newtonsoft.Json.JsonSerializationException"'. (8a1b66c8)
+2018-08-13T17:24:40.7546937+02:00 0HLG163GU1R1H:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 2029.2423ms (afa2e885)
+2018-08-13T17:24:40.7682312+02:00 0HLG163GU1R1H:00000001 [INF] Request finished in 2635.6969ms 400 application/json; charset=utf-8 (791a596a)
+2018-08-13T18:49:52.8931620+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:15769"' instead. (a6cd99e2)
+2018-08-13T18:49:53.2168954+02:00 0HLG17J5CFVH6:00000001 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T18:49:53.4722777+02:00 0HLG17J5CFVH6:00000001 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T18:49:53.8798343+02:00 0HLG17J5CFVH6:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T18:49:53.9060376+02:00 0HLG17J5CFVH6:00000001 [INF] Entity Framework Core "2.1.1-rtm-30846" initialized '"DoctrinaContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2018-08-13T18:49:53.9712650+02:00 0HLG17J5CFVH6:00000001 [INF] Executed DbCommand ("9"ms) [Parameters=["@__verbId_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[CanonicalData], [x].[Id]
+FROM [Verbs] AS [x]
+WHERE [x].[Id] = @__verbId_0" (0723d8ff)
+2018-08-13T18:49:54.0604890+02:00 0HLG17J5CFVH6:00000001 [INF] Executed DbCommand ("5"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[Account_HomePage], [x].[Account_Name], [x].[Mbox], [x].[Mbox_SHA1SUM], [x].[Name], [x].[OauthIdentifier], [x].[ObjectType], [x].[OpenId]
+FROM [Agents] AS [x]
+WHERE [x].[Mbox_SHA1SUM] IS NULL" (0723d8ff)
+2018-08-13T18:49:54.1700364+02:00 0HLG17J5CFVH6:00000001 [INF] Executed DbCommand ("3"ms) [Parameters=["@__activityId_0='?' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[ActivityId], [x].[AuthorityId], [x].[CanonicalData]
+FROM [Activities] AS [x]
+WHERE [x].[ActivityId] = @__activityId_0" (0723d8ff)
+2018-08-13T18:49:54.2073087+02:00 0HLG17J5CFVH6:00000001 [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[Account_HomePage], [x].[Account_Name], [x].[Mbox], [x].[Mbox_SHA1SUM], [x].[Name], [x].[OauthIdentifier], [x].[ObjectType], [x].[OpenId]
+FROM [Agents] AS [x]
+WHERE [x].[Mbox] IS NULL" (0723d8ff)
+2018-08-13T18:49:54.2584366+02:00 0HLG17J5CFVH6:00000001 [WRN] The LINQ expression '"where (([stmt.Verb].Id == \"http://adlnet.gov/expapi/verbs/voided\") AndAlso (Convert([stmt].ObjectType, Int32) == 4))"' could not be translated and will be evaluated locally. (011792c6)
+2018-08-13T18:49:54.2654205+02:00 0HLG17J5CFVH6:00000001 [WRN] The LINQ expression '"FirstOrDefault()"' could not be translated and will be evaluated locally. (011792c6)
+2018-08-13T18:49:54.2863804+02:00 0HLG17J5CFVH6:00000001 [INF] Executed DbCommand ("5"ms) [Parameters=["@__voidedStatementId_0='?' (DbType = Guid)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [stmt].[StatementId] AS [Id0], [stmt].[ActorKey], [stmt].[AuthorityId], [stmt].[ContextId], [stmt].[FullStatement], [stmt].[ObjectActivityKey], [stmt].[ObjectAgentKey], [stmt].[ObjectStatementRefId], [stmt].[ObjectSubStatementId], [stmt].[ResultId], [stmt].[Stored], [stmt].[Timestamp], [stmt].[User], [stmt].[VerbKey], [stmt].[Version], [stmt].[Voided], [stmt.Verb].[Id]
+FROM [Statements] AS [stmt]
+INNER JOIN [Verbs] AS [stmt.Verb] ON [stmt].[VerbKey] = [stmt.Verb].[Key]
+WHERE [stmt].[ObjectSubStatementId] = @__voidedStatementId_0" (0723d8ff)
+2018-08-13T18:49:54.4472213+02:00 0HLG17J5CFVH6:00000001 [INF] Executed DbCommand ("12"ms) [Parameters=["@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?' (DbType = Guid), @p3='?' (DbType = Guid), @p4='?' (Size = 4000), @p5='?' (DbType = Guid), @p6='?' (DbType = Guid), @p7='?' (DbType = Guid), @p8='?' (DbType = Guid), @p9='?' (DbType = Guid), @p10='?' (DbType = DateTime2), @p11='?' (DbType = DateTime2), @p12='?' (DbType = Guid), @p13='?' (DbType = Guid), @p14='?' (Size = 7), @p15='?' (DbType = Boolean)"], CommandType='Text', CommandTimeout='30']"
+""SET NOCOUNT ON;
+INSERT INTO [Statements] ([StatementId], [ActorKey], [AuthorityId], [ContextId], [FullStatement], [ObjectActivityKey], [ObjectAgentKey], [ObjectStatementRefId], [ObjectSubStatementId], [ResultId], [Stored], [Timestamp], [User], [VerbKey], [Version], [Voided])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15);" (0723d8ff)
+2018-08-13T18:49:54.4519929+02:00 0HLG17J5CFVH6:00000001 [INF] Executed DbCommand ("4"ms) [Parameters=["@p16='?' (DbType = Guid), @p17='?' (Size = 4000), @p18='?' (Size = 8000) (DbType = Binary), @p19='?' (Size = 255), @p20='?' (Size = 150), @p21='?' (DbType = Guid)"], CommandType='Text', CommandTimeout='30']"
+""SET NOCOUNT ON;
+INSERT INTO [AttachmentEntity] ([Id], [CanonicalData], [Content], [ContentType], [Payload], [StatementId])
+VALUES (@p16, @p17, @p18, @p19, @p20, @p21);" (0723d8ff)
+2018-08-13T18:49:54.4586085+02:00 0HLG17J5CFVH6:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.OkObjectResult" in 575.6079ms. (50a9e262)
+2018-08-13T18:49:54.4666785+02:00 0HLG17J5CFVH6:00000001 [INF] Executing ObjectResult, writing value of type '"System.Guid[]"'. (8a1b66c8)
+2018-08-13T18:49:54.4867544+02:00 0HLG17J5CFVH6:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 1009.2393ms (afa2e885)
+2018-08-13T18:49:54.4936568+02:00 0HLG17J5CFVH6:00000001 [INF] Request finished in 1280.3974ms 200 application/json; charset=utf-8 (791a596a)
+2018-08-13T18:50:30.3023943+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:10073"' instead. (a6cd99e2)
+2018-08-13T18:50:30.6349560+02:00 0HLG17JGGTV2E:00000001 [INF] Request starting HTTP/1.1 DEBUG http://localhost:5000/  0 (ca22a1cb)
+2018-08-13T18:50:30.6345566+02:00 0HLG17JGGTV2F:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:44338/xapi/about   (ca22a1cb)
+2018-08-13T18:50:30.6955242+02:00 0HLG17JGGTV2E:00000001 [INF] Request finished in 60.85ms 200  (791a596a)
+2018-08-13T18:50:31.1006424+02:00 0HLG17JGGTV2F:00000001 [INF] Route matched with "{area = \"xapi\", action = \"About\", controller = \"About\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" (a44c0341)
+2018-08-13T18:50:31.1235076+02:00 0HLG17JGGTV2F:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" - Validation state: Valid (dad538d7)
+2018-08-13T18:50:31.1341475+02:00 0HLG17JGGTV2F:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.JsonResult" in 4.3183ms. (50a9e262)
+2018-08-13T18:50:31.1477247+02:00 0HLG17JGGTV2F:00000001 [INF] Executing JsonResult, writing value of type '"Doctrina.xAPI.Models.About"'. (2f513669)
+2018-08-13T18:50:31.1973330+02:00 0HLG17JGGTV2F:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" in 89.8969ms (afa2e885)
+2018-08-13T18:50:31.2185429+02:00 0HLG17JGGTV2F:00000001 [INF] Request finished in 587.41ms 200 application/json; charset=utf-8 (791a596a)
+2018-08-13T18:50:50.3137412+02:00 0HLG17JGGTV2E:00000002 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T18:50:50.3558919+02:00 0HLG17JGGTV2E:00000002 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T18:50:51.0305805+02:00 0HLG17JGGTV2E:00000002 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T18:50:55.1132890+02:00 0HLG17JGGTV2E:00000002 [INF] Entity Framework Core "2.1.1-rtm-30846" initialized '"DoctrinaContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2018-08-13T18:50:55.3294447+02:00 0HLG17JGGTV2E:00000002 [INF] Executed DbCommand ("51"ms) [Parameters=["@__verbId_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[CanonicalData], [x].[Id]
+FROM [Verbs] AS [x]
+WHERE [x].[Id] = @__verbId_0" (0723d8ff)
+2018-08-13T18:54:55.0329492+02:00  [INF] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:9043"' instead. (a6cd99e2)
+2018-08-13T18:54:55.6305232+02:00 0HLG17LVEFKQ4:00000001 [INF] Request starting HTTP/1.1 DEBUG http://localhost:5000/  0 (ca22a1cb)
+2018-08-13T18:54:55.6300519+02:00 0HLG17LVEFKQ3:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:44338/xapi/about   (ca22a1cb)
+2018-08-13T18:54:55.7378156+02:00 0HLG17LVEFKQ4:00000001 [INF] Request finished in 101.0451ms 200  (791a596a)
+2018-08-13T18:54:56.4069577+02:00 0HLG17LVEFKQ3:00000001 [INF] Route matched with "{area = \"xapi\", action = \"About\", controller = \"About\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" (a44c0341)
+2018-08-13T18:54:56.4326789+02:00 0HLG17LVEFKQ3:00000001 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" - Validation state: Valid (dad538d7)
+2018-08-13T18:54:56.4484533+02:00 0HLG17LVEFKQ3:00000001 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.JsonResult" in 6.6753ms. (50a9e262)
+2018-08-13T18:54:56.4619330+02:00 0HLG17LVEFKQ3:00000001 [INF] Executing JsonResult, writing value of type '"Doctrina.xAPI.Models.About"'. (2f513669)
+2018-08-13T18:54:56.5843737+02:00 0HLG17LVEFKQ3:00000001 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" in 115.8592ms (afa2e885)
+2018-08-13T18:54:56.6048900+02:00 0HLG17LVEFKQ3:00000001 [INF] Request finished in 979.6369ms 200 application/json; charset=utf-8 (791a596a)
+2018-08-13T18:55:00.9775466+02:00 0HLG17LVEFKQ4:00000002 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T18:55:01.0168606+02:00 0HLG17LVEFKQ4:00000002 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T18:55:01.7481039+02:00 0HLG17LVEFKQ4:00000002 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T18:55:07.3981912+02:00 0HLG17LVEFKQ4:00000002 [INF] Entity Framework Core "2.1.1-rtm-30846" initialized '"DoctrinaContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2018-08-13T18:55:07.5988788+02:00 0HLG17LVEFKQ4:00000002 [INF] Executed DbCommand ("47"ms) [Parameters=["@__verbId_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[CanonicalData], [x].[Id]
+FROM [Verbs] AS [x]
+WHERE [x].[Id] = @__verbId_0" (0723d8ff)
+2018-08-13T18:55:11.0035094+02:00 0HLG17LVEFKQ4:00000002 [INF] Executed DbCommand ("8"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[Account_HomePage], [x].[Account_Name], [x].[Mbox], [x].[Mbox_SHA1SUM], [x].[Name], [x].[OauthIdentifier], [x].[ObjectType], [x].[OpenId]
+FROM [Agents] AS [x]
+WHERE [x].[Mbox_SHA1SUM] IS NULL" (0723d8ff)
+2018-08-13T18:55:11.3097851+02:00 0HLG17LVEFKQ4:00000002 [INF] Executed DbCommand ("29"ms) [Parameters=["@__activityId_0='?' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[ActivityId], [x].[AuthorityId], [x].[CanonicalData]
+FROM [Activities] AS [x]
+WHERE [x].[ActivityId] = @__activityId_0" (0723d8ff)
+2018-08-13T18:55:11.3697135+02:00 0HLG17LVEFKQ4:00000002 [INF] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[Account_HomePage], [x].[Account_Name], [x].[Mbox], [x].[Mbox_SHA1SUM], [x].[Name], [x].[OauthIdentifier], [x].[ObjectType], [x].[OpenId]
+FROM [Agents] AS [x]
+WHERE [x].[Mbox] IS NULL" (0723d8ff)
+2018-08-13T18:56:38.8275798+02:00 0HLG17LVEFKQ4:00000002 [WRN] The LINQ expression '"where (([stmt.Verb].Id == \"http://adlnet.gov/expapi/verbs/voided\") AndAlso (Convert([stmt].ObjectType, Int32) == 4))"' could not be translated and will be evaluated locally. (011792c6)
+2018-08-13T18:56:38.8522268+02:00 0HLG17LVEFKQ4:00000002 [WRN] The LINQ expression '"FirstOrDefault()"' could not be translated and will be evaluated locally. (011792c6)
+2018-08-13T18:56:38.9131143+02:00 0HLG17LVEFKQ4:00000002 [INF] Executed DbCommand ("13"ms) [Parameters=["@__voidedStatementId_0='?' (DbType = Guid)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [stmt].[StatementId] AS [Id0], [stmt].[ActorKey], [stmt].[AuthorityId], [stmt].[ContextId], [stmt].[FullStatement], [stmt].[ObjectActivityKey], [stmt].[ObjectAgentKey], [stmt].[ObjectStatementRefId], [stmt].[ObjectSubStatementId], [stmt].[ResultId], [stmt].[Stored], [stmt].[Timestamp], [stmt].[User], [stmt].[VerbKey], [stmt].[Version], [stmt].[Voided], [stmt.Verb].[Id]
+FROM [Statements] AS [stmt]
+INNER JOIN [Verbs] AS [stmt.Verb] ON [stmt].[VerbKey] = [stmt.Verb].[Key]
+WHERE [stmt].[ObjectSubStatementId] = @__voidedStatementId_0" (0723d8ff)
+2018-08-13T18:56:39.2698153+02:00 0HLG17LVEFKQ4:00000002 [INF] Executed DbCommand ("16"ms) [Parameters=["@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?' (DbType = Guid), @p3='?' (DbType = Guid), @p4='?' (Size = 4000), @p5='?' (DbType = Guid), @p6='?' (DbType = Guid), @p7='?' (DbType = Guid), @p8='?' (DbType = Guid), @p9='?' (DbType = Guid), @p10='?' (DbType = DateTime2), @p11='?' (DbType = DateTime2), @p12='?' (DbType = Guid), @p13='?' (DbType = Guid), @p14='?' (Size = 7), @p15='?' (DbType = Boolean)"], CommandType='Text', CommandTimeout='30']"
+""SET NOCOUNT ON;
+INSERT INTO [Statements] ([StatementId], [ActorKey], [AuthorityId], [ContextId], [FullStatement], [ObjectActivityKey], [ObjectAgentKey], [ObjectStatementRefId], [ObjectSubStatementId], [ResultId], [Stored], [Timestamp], [User], [VerbKey], [Version], [Voided])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15);" (0723d8ff)
+2018-08-13T18:56:39.2761583+02:00 0HLG17LVEFKQ4:00000002 [INF] Executed DbCommand ("4"ms) [Parameters=["@p16='?' (DbType = Guid), @p17='?' (Size = 4000), @p18='?' (Size = 8000) (DbType = Binary), @p19='?' (Size = 255), @p20='?' (Size = 150), @p21='?' (DbType = Guid)"], CommandType='Text', CommandTimeout='30']"
+""SET NOCOUNT ON;
+INSERT INTO [AttachmentEntity] ([Id], [CanonicalData], [Content], [ContentType], [Payload], [StatementId])
+VALUES (@p16, @p17, @p18, @p19, @p20, @p21);" (0723d8ff)
+2018-08-13T18:56:42.8625210+02:00 0HLG17LVEFKQ4:00000002 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.OkObjectResult" in 101114.1138ms. (50a9e262)
+2018-08-13T18:56:42.8944357+02:00 0HLG17LVEFKQ4:00000002 [INF] Executing ObjectResult, writing value of type '"System.Guid[]"'. (8a1b66c8)
+2018-08-13T18:56:42.9094792+02:00 0HLG17LVEFKQ4:00000002 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 101892.3928ms (afa2e885)
+2018-08-13T18:56:42.9100068+02:00 0HLG17LVEFKQ4:00000002 [INF] Request finished in 101932.7917ms 200 application/json; charset=utf-8 (791a596a)
+2018-08-13T18:57:04.0318276+02:00 0HLG17LVEFKQ4:00000003 [INF] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 655 (ca22a1cb)
+2018-08-13T18:57:04.0328847+02:00 0HLG17LVEFKQ4:00000003 [INF] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" (a44c0341)
+2018-08-13T18:57:16.0323810+02:00 0HLG17LVEFKQ4:00000003 [INF] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid (4e3479ed)
+2018-08-13T18:57:18.4440294+02:00 0HLG17LVEFKQ4:00000003 [INF] Entity Framework Core "2.1.1-rtm-30846" initialized '"DoctrinaContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2018-08-13T18:57:18.4523884+02:00 0HLG17LVEFKQ4:00000003 [INF] Executed DbCommand ("6"ms) [Parameters=["@__verbId_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[CanonicalData], [x].[Id]
+FROM [Verbs] AS [x]
+WHERE [x].[Id] = @__verbId_0" (0723d8ff)
+2018-08-13T18:57:23.2436088+02:00 0HLG17LVEFKQ4:00000003 [INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[Account_HomePage], [x].[Account_Name], [x].[Mbox], [x].[Mbox_SHA1SUM], [x].[Name], [x].[OauthIdentifier], [x].[ObjectType], [x].[OpenId]
+FROM [Agents] AS [x]
+WHERE [x].[Mbox_SHA1SUM] IS NULL" (0723d8ff)
+2018-08-13T18:57:23.2534985+02:00 0HLG17LVEFKQ4:00000003 [INF] Executed DbCommand ("3"ms) [Parameters=["@__activityId_0='?' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[ActivityId], [x].[AuthorityId], [x].[CanonicalData]
+FROM [Activities] AS [x]
+WHERE [x].[ActivityId] = @__activityId_0" (0723d8ff)
+2018-08-13T18:57:23.2593608+02:00 0HLG17LVEFKQ4:00000003 [INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[Account_HomePage], [x].[Account_Name], [x].[Mbox], [x].[Mbox_SHA1SUM], [x].[Name], [x].[OauthIdentifier], [x].[ObjectType], [x].[OpenId]
+FROM [Agents] AS [x]
+WHERE [x].[Mbox] IS NULL" (0723d8ff)
+2018-08-13T18:57:25.3468819+02:00 0HLG17LVEFKQ4:00000003 [INF] Executed DbCommand ("11"ms) [Parameters=["@__voidedStatementId_0='?' (DbType = Guid)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [stmt].[StatementId] AS [Id0], [stmt].[ActorKey], [stmt].[AuthorityId], [stmt].[ContextId], [stmt].[FullStatement], [stmt].[ObjectActivityKey], [stmt].[ObjectAgentKey], [stmt].[ObjectStatementRefId], [stmt].[ObjectSubStatementId], [stmt].[ResultId], [stmt].[Stored], [stmt].[Timestamp], [stmt].[User], [stmt].[VerbKey], [stmt].[Version], [stmt].[Voided], [stmt.Verb].[Id]
+FROM [Statements] AS [stmt]
+INNER JOIN [Verbs] AS [stmt.Verb] ON [stmt].[VerbKey] = [stmt.Verb].[Key]
+WHERE [stmt].[ObjectSubStatementId] = @__voidedStatementId_0" (0723d8ff)
+2018-08-13T18:57:25.3765912+02:00 0HLG17LVEFKQ4:00000003 [INF] Executed DbCommand ("10"ms) [Parameters=["@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?' (DbType = Guid), @p3='?' (DbType = Guid), @p4='?' (Size = 4000), @p5='?' (DbType = Guid), @p6='?' (DbType = Guid), @p7='?' (DbType = Guid), @p8='?' (DbType = Guid), @p9='?' (DbType = Guid), @p10='?' (DbType = DateTime2), @p11='?' (DbType = DateTime2), @p12='?' (DbType = Guid), @p13='?' (DbType = Guid), @p14='?' (Size = 7), @p15='?' (DbType = Boolean)"], CommandType='Text', CommandTimeout='30']"
+""SET NOCOUNT ON;
+INSERT INTO [Statements] ([StatementId], [ActorKey], [AuthorityId], [ContextId], [FullStatement], [ObjectActivityKey], [ObjectAgentKey], [ObjectStatementRefId], [ObjectSubStatementId], [ResultId], [Stored], [Timestamp], [User], [VerbKey], [Version], [Voided])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15);" (0723d8ff)
+2018-08-13T18:57:25.3965241+02:00 0HLG17LVEFKQ4:00000003 [INF] Executed DbCommand ("19"ms) [Parameters=["@p16='?' (DbType = Guid), @p17='?' (Size = 4000), @p18='?' (Size = 8000) (DbType = Binary), @p19='?' (Size = 255), @p20='?' (Size = 150), @p21='?' (DbType = Guid)"], CommandType='Text', CommandTimeout='30']"
+""SET NOCOUNT ON;
+INSERT INTO [AttachmentEntity] ([Id], [CanonicalData], [Content], [ContentType], [Payload], [StatementId])
+VALUES (@p16, @p17, @p18, @p19, @p20, @p21);" (0723d8ff)
+2018-08-13T18:57:27.7327394+02:00 0HLG17LVEFKQ4:00000003 [INF] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.OkObjectResult" in 11699.5233ms. (50a9e262)
+2018-08-13T18:57:27.7335839+02:00 0HLG17LVEFKQ4:00000003 [INF] Executing ObjectResult, writing value of type '"System.Guid[]"'. (8a1b66c8)
+2018-08-13T18:57:27.7341621+02:00 0HLG17LVEFKQ4:00000003 [INF] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 23701.1258ms (afa2e885)
+2018-08-13T18:57:27.7343645+02:00 0HLG17LVEFKQ4:00000003 [INF] Request finished in 23702.6077ms 200 application/json; charset=utf-8 (791a596a)

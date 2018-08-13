@@ -73,7 +73,7 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
             if (request.Query.ContainsKey("activityId"))
             {
                 string strActivityId = request.Query["activityId"];
-                if (Uri.TryCreate(strActivityId, UriKind.Absolute, out Uri activityId))
+                if (Iri.TryParse(strActivityId, out Iri activityId))
                 {
                     model.ActivityId = activityId;
                 }

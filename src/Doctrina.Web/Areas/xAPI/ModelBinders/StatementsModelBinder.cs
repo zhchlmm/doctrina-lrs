@@ -94,6 +94,7 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 
             JsonSerializer serializer = new JsonSerializer();
             serializer.CheckAdditionalContent = true;
+            //serializer.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
             //serializer.Converters.Add(new AgentConverter());
             //serializer.Converters.Add(new StatementTargetConverter());
             serializer.Error += delegate (object sender, ErrorEventArgs args)

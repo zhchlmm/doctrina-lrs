@@ -18,7 +18,7 @@ namespace Doctrina.Core.Repositories
             this.dbcontext = context;
         }
 
-        public ActivityStateEntity GetState(string stateId, Uri activityId, AgentEntity agent, Guid? registration)
+        public ActivityStateEntity GetState(string stateId, Iri activityId, AgentEntity agent, Guid? registration)
         {
             string strActivityId = activityId.ToString();
 
@@ -39,7 +39,7 @@ namespace Doctrina.Core.Repositories
             return query.SingleOrDefault();
         }
 
-        public IEnumerable<ActivityStateEntity> GetStates(Uri activityId, AgentEntity agent, Guid? registration, DateTime? since)
+        public IEnumerable<ActivityStateEntity> GetStates(Iri activityId, AgentEntity agent, Guid? registration, DateTime? since)
         {
             string strActivityId = activityId.ToString();
 
@@ -69,7 +69,7 @@ namespace Doctrina.Core.Repositories
         /// <param name="agent"></param>
         /// <param name="stateId"></param>
         /// <param name="registration"></param>
-        public void Delete(string stateId, Uri activityId, AgentEntity agent, Guid? registration)
+        public void Delete(string stateId, Iri activityId, AgentEntity agent, Guid? registration)
         {
             string strActivityId = activityId.ToString();
 
@@ -105,7 +105,7 @@ namespace Doctrina.Core.Repositories
         /// <param name="activityId"></param>
         /// <param name="agent"></param>
         /// <param name="registration"></param>
-        public void Delete(Uri activityId, AgentEntity agent, Guid? registration)
+        public void Delete(Iri activityId, AgentEntity agent, Guid? registration)
         {
             string strActivityId = activityId.ToString();
 
@@ -122,7 +122,7 @@ namespace Doctrina.Core.Repositories
             this.dbcontext.SaveChanges();
         }
 
-        public ActivityStateEntity GetState(string stateId, Uri activityId, Agent agent, Guid? registration)
+        public ActivityStateEntity GetState(string stateId, Iri activityId, Agent agent, Guid? registration)
         {
             throw new NotImplementedException();
         }
@@ -142,7 +142,7 @@ namespace Doctrina.Core.Repositories
             return activityState;
         }
 
-        public IEnumerable<DocumentEntity> GetStateDocuments(Uri activityId, AgentEntity agent, Guid? registration, DateTime? since)
+        public IEnumerable<DocumentEntity> GetStateDocuments(Iri activityId, AgentEntity agent, Guid? registration, DateTime? since)
         {
             string strActivityId = activityId.ToString();
 

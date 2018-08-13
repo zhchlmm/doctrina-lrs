@@ -4,26 +4,20 @@ using System.Collections.Generic;
 
 namespace Doctrina.xAPI.Models
 {
-    [JsonConverter(typeof(LanguageMapConverter))]
+    [JsonDictionary()]
+    [JsonConverter(typeof(LanguageMapJsonConverter))]
     public class LanguageMap : Dictionary<string, string>, ILanguageMap
     {
-        //private Dictionary<string, string> _maps;
+        public string ToJson(bool pretty = false) => JsonConvert.SerializeObject(this);
 
-        //public string this[string languageCode]
+        //public override bool Equals(object obj)
         //{
-        //    get
-        //    {
-        //        return _maps[languageCode];
-        //    }
-        //    set
-        //    {
-        //        _maps[languageCode] = value;
-        //    }
+        //    return false;
         //}
 
-        public string ToJson(bool pretty = false)
-        {
-            return JsonConvert.SerializeObject(this);
-        }
+        //public override int GetHashCode()
+        //{
+        //    return -1;
+        //}
     }
 }

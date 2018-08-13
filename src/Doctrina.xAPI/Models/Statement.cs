@@ -3,6 +3,7 @@ using Doctrina.xAPI.Json.Schema.Providers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema.Generation;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Doctrina.xAPI.Models
@@ -39,7 +40,7 @@ namespace Doctrina.xAPI.Models
         /// TODO: Verified by the LRS based on authentication. 
         /// TODO: Set by LRS if not provided or if a strong trust relationship between the Learning Record Provider and LRS has not been established.
         /// </summary>
-        [JsonProperty("authority", 
+        [JsonProperty("authority",
             Order = 11,
             Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
@@ -58,7 +59,37 @@ namespace Doctrina.xAPI.Models
         public void Stamp()
         {
             Id = Id.HasValue ? Id : Guid.NewGuid();
-            Timestamp = Timestamp.HasValue ? Timestamp : DateTime.UtcNow; 
+            Timestamp = Timestamp.HasValue ? Timestamp : DateTime.UtcNow;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var statement = obj as Statement;
+            return statement != null &&
+                   base.Equals(obj);
+                   //&&
+                   //EqualityComparer<Guid?>.Default.Equals(Id, statement.Id) &&
+                   //EqualityComparer<Agent>.Default.Equals(Authority, statement.Authority) &&
+                   //EqualityComparer<XAPIVersion>.Default.Equals(Version, statement.Version);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -864523893;
+            //hashCode = hashCode * -1521134295 + EqualityComparer<Guid?>.Default.GetHashCode(Id);
+            //hashCode = hashCode * -1521134295 + EqualityComparer<Agent>.Default.GetHashCode(Authority);
+            //hashCode = hashCode * -1521134295 + EqualityComparer<XAPIVersion>.Default.GetHashCode(Version);
+            return hashCode;
+        }
+
+        public static bool operator ==(Statement statement1, Statement statement2)
+        {
+            return EqualityComparer<Statement>.Default.Equals(statement1, statement2);
+        }
+
+        public static bool operator !=(Statement statement1, Statement statement2)
+        {
+            return !(statement1 == statement2);
         }
     }
 }

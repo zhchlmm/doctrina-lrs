@@ -1,6 +1,7 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace Doctrina.xAPI.Models
 {
@@ -78,5 +79,40 @@ namespace Doctrina.xAPI.Models
             Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
         public Attachment[] Attachments { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var statement = obj as SubStatement;
+            return statement != null &&
+                   base.Equals(obj) &&
+                   EqualityComparer<Agent>.Default.Equals(Actor, statement.Actor) &&
+                   EqualityComparer<Verb>.Default.Equals(Verb, statement.Verb) &&
+                   EqualityComparer<StatementTargetBase>.Default.Equals(Target, statement.Target) &&
+                   EqualityComparer<Result>.Default.Equals(Result, statement.Result) &&
+                   EqualityComparer<Context>.Default.Equals(Context, statement.Context) &&
+                   EqualityComparer<Attachment[]>.Default.Equals(Attachments, statement.Attachments);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 766597555;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Agent>.Default.GetHashCode(Actor);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Verb>.Default.GetHashCode(Verb);
+            hashCode = hashCode * -1521134295 + EqualityComparer<StatementTargetBase>.Default.GetHashCode(Target);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Result>.Default.GetHashCode(Result);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Context>.Default.GetHashCode(Context);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Attachment[]>.Default.GetHashCode(Attachments);
+            return hashCode;
+        }
+
+        public static bool operator ==(SubStatement statement1, SubStatement statement2)
+        {
+            return EqualityComparer<SubStatement>.Default.Equals(statement1, statement2);
+        }
+
+        public static bool operator !=(SubStatement statement1, SubStatement statement2)
+        {
+            return !(statement1 == statement2);
+        }
     }
 }

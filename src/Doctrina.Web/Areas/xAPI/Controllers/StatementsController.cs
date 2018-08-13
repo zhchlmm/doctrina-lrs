@@ -1,4 +1,5 @@
 ﻿using Doctrina.Core.Data;
+using Doctrina.Core.Models;
 using Doctrina.Core.Services;
 using Doctrina.Web.Areas.xAPI.Models;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
@@ -38,12 +39,11 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
         [HttpGet]
         [Produces("application/json", "multipart/mixed")]
-        public IActionResult GetStatements([FromQuery]StatementsQuery parameters)
+        public IActionResult GetStatements([FromQuery]PagedStatementsQuery parameters, 
+            [FromHeader(Name = Constants.Headers.XExperienceApiVersion)]string version)
         {
-            //LogHelper.Debug<StatementsController>("GetStatements \r\n{0}", () => Request.RequestUri.ToString());
-
             if (parameters == null)
-                parameters = new StatementsQuery();
+                parameters = new PagedStatementsQuery();
 
             if (parameters.StatementId.HasValue || parameters.VoidedStatementId.HasValue)
                 return GetStatement(parameters.StatementId, parameters.VoidedStatementId);
@@ -51,23 +51,19 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             try
             {
                 StatementsResult result = new StatementsResult();
-                var statements = this._statementService.GetStatements(parameters);
+                int totalCount = 0;
+                result.Statements = this._statementService.GetStatements(parameters, out totalCount);
                 var attachments = new List<AttachmentEntity>();
-                bool more = true;
-                // Generate continueToken
-                if (more)
+
+                // Generate more url
+                if (result.Statements != null && parameters.Limit.HasValue)
                 {
-                    parameters.Since = statements.Last().Stored;
-                    // TODO: Implement continue token
-                    //string path = Request.Path;
-
-                    //var continueToken = new ContinueToken();
-
-                    //string token = continueToken.ToString();
-                    //result.More = new Uri($"{path}?con{query}", UriKind.Relative);
-                    //Url.Action("GetMoreStatement", new { cursor= ]})
-
-                    result.More = new Uri(Url.Action("GetStatements", parameters));
+                    parameters.Skip = (parameters.Skip.Value + parameters.Limit.Value);
+                    if(parameters.Skip.Value < totalCount)
+                    {
+                        string parameterMap = parameters.ToParameterMap(version).ToString();
+                        result.More = new Uri(Url.Action("GetStatements") + "?" + parameterMap, UriKind.Relative);
+                    }
                 }
 
                 Response.Headers.Add(Constants.Headers.ConsistentThrough, DateTime.UtcNow.ToString("o"));
@@ -101,8 +97,18 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             }
         }
 
+        //public IActionResult GetMoreStatents([FromQuery]string more)
+        //{
+        //    byte[] decodedArray = Convert.FromBase64String(more);
+        //    string decodedString = Encoding.UTF8.GetString(decodedArray);
+        //    var parameters = JsonConvert.DeserializeObject<StatementsQuery>(decodedString);
+        //    return GetStatements(parameters);
+        //}
+
         private IActionResult GetStatement([FromQuery]Guid? statementId, [FromQuery]Guid? voidedStatementId)
         {
+            Response.Headers.Add(Constants.Headers.ConsistentThrough, DateTime.UtcNow.ToString("o"));
+
             if (statementId.HasValue && voidedStatementId.HasValue)
                 return BadRequest();
 
@@ -112,7 +118,6 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             if (statement == null)
                 return NotFound();
 
-            Response.Headers.Add(Constants.Headers.ConsistentThrough, DateTime.UtcNow.ToString("o"));
             return Ok(statement);
         }
 
@@ -129,14 +134,14 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                     return BadRequest(ModelState);
                 }
                 _logger.LogDebug("Saving statements \n\r {0}", JsonConvert.SerializeObject(model.Statements));
-                var ids = this._statementService.SaveStatements(CurrentAuthority, model.Statements);
+                var ids = _statementService.SaveStatements(CurrentAuthority, model.Statements);
 
                 Response.Headers.Add(Constants.Headers.ConsistentThrough, DateTime.UtcNow.ToString(Constants.Formats.DateTimeFormat));
                 return Ok(ids);
             }
             catch (Exception ex)
             {
-                _logger.LogDebug(ex, "Failed to save statements \n\r {0}", JsonConvert.SerializeObject(model.Statements));
+                _logger.LogError(ex, "PostStatements");
                 return BadRequest(ex);
             }
         }
@@ -152,17 +157,22 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         {
             try
             {
-                //string body = await Request.Content.ReadAsStringAsync();
-                //var statement = JsonConvert.DeserializeObject<Statement>(body);
-
-                if (this._statementService.Exist(statementId))
-                    return Conflict(ModelState);
+                statement.Id = statementId;
+                statement.Authority = CurrentAuthority;
+                var saved = this._statementService.GetStatement(statementId);
+                if (saved != null)
+                {
+                    if (saved.Equals(statement))
+                    {
+                        return NoContent();
+                    }
+                    return Conflict();
+                }
 
                 if (statement == null)
                     throw new ArgumentNullException("statement");
 
-                statement.Authority = CurrentAuthority;
-                _statementService.SaveStatement(statement);
+                _statementService.SaveStatements(CurrentAuthority, statement);
 
                 return NoContent();
             }

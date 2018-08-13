@@ -2,6 +2,7 @@
 using Doctrina.xAPI.Schema.Providers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema.Generation;
+using System.Collections.Generic;
 
 namespace Doctrina.xAPI.Models
 {
@@ -49,5 +50,35 @@ namespace Doctrina.xAPI.Models
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
         public Activity[] Other { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var activities = obj as ContextActivities;
+            return activities != null &&
+                   EqualityComparer<Activity[]>.Default.Equals(Parent, activities.Parent) &&
+                   EqualityComparer<Activity[]>.Default.Equals(Category, activities.Category) &&
+                   EqualityComparer<Activity[]>.Default.Equals(Grouping, activities.Grouping) &&
+                   EqualityComparer<Activity[]>.Default.Equals(Other, activities.Other);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -682935721;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Activity[]>.Default.GetHashCode(Parent);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Activity[]>.Default.GetHashCode(Category);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Activity[]>.Default.GetHashCode(Grouping);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Activity[]>.Default.GetHashCode(Other);
+            return hashCode;
+        }
+
+        public static bool operator ==(ContextActivities activities1, ContextActivities activities2)
+        {
+            return EqualityComparer<ContextActivities>.Default.Equals(activities1, activities2);
+        }
+
+        public static bool operator !=(ContextActivities activities1, ContextActivities activities2)
+        {
+            return !(activities1 == activities2);
+        }
     }
 }

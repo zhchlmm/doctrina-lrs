@@ -39,9 +39,9 @@ namespace Doctrina.xAPI
 
         public StatementsQuery() { }
 
-        public NameValueCollection ToParameterMap(XAPIVersion version)
+        public virtual NameValueCollection ToParameterMap(XAPIVersion version)
         {
-            var result = HttpUtility.ParseQueryString(String.Empty);
+            var result = HttpUtility.ParseQueryString(string.Empty);
 
             if (Agent != null)
             {

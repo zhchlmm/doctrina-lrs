@@ -1,5 +1,6 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.Core.Data.Documents;
+using Doctrina.xAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Doctrina.Core.Repositories
             this._context = context;
         }
 
-        public ActivityProfileEntity GetProfile(Uri activityId, string profileId, Guid? registragion = null)
+        public ActivityProfileEntity GetProfile(Iri activityId, string profileId, Guid? registragion = null)
         {
 
             string strActivityId = activityId.ToString();
@@ -23,7 +24,7 @@ namespace Doctrina.Core.Repositories
             return _context.ActivityProfiles.FirstOrDefault(x => x.Activity.ActivityId == strActivityId && x.ProfileId == profileId && x.RegistrationId == registragion);
         }
 
-        public ActivityProfileEntity GetProfile(Uri activityId, string profileId)
+        public ActivityProfileEntity GetProfile(Iri activityId, string profileId)
         {
 
             string strActivityId = activityId.ToString();
@@ -32,7 +33,7 @@ namespace Doctrina.Core.Repositories
         }
 
 
-        public IEnumerable<IDocumentEntity> GetProfilesDocuments(Uri activityId, DateTimeOffset? since = null)
+        public IEnumerable<IDocumentEntity> GetProfilesDocuments(Iri activityId, DateTimeOffset? since = null)
         {
             string strActivityId = activityId.ToString();
 

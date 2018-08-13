@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Doctrina.xAPI.Models
@@ -27,6 +28,32 @@ namespace Doctrina.xAPI.Models
         public bool HasMember()
         {
             return Member != null && Member.Count() > 0;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var group = obj as Group;
+            return group != null &&
+                   base.Equals(obj) &&
+                   EqualityComparer<Agent[]>.Default.Equals(Member, group.Member);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 606588793;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<Agent[]>.Default.GetHashCode(Member);
+            return hashCode;
+        }
+
+        public static bool operator ==(Group group1, Group group2)
+        {
+            return EqualityComparer<Group>.Default.Equals(group1, group2);
+        }
+
+        public static bool operator !=(Group group1, Group group2)
+        {
+            return !(group1 == group2);
         }
     }
 

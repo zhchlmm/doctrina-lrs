@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema.Generation;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
@@ -106,29 +107,39 @@ namespace Doctrina.xAPI.Models
             return !IsAnonymous();
         }
 
-        public PropertyInfo GetIdentifier()
+        public override bool Equals(object obj)
         {
-            if(Mbox != null)
-            {
-                return this.GetType().GetProperty(nameof(Mbox));
-            }
+            var agent = obj as Agent;
+            return agent != null &&
+                   base.Equals(obj) &&
+                   ObjectType == agent.ObjectType &&
+                   Name == agent.Name &&
+                   EqualityComparer<Mbox>.Default.Equals(Mbox, agent.Mbox) &&
+                   MboxSHA1SUM == agent.MboxSHA1SUM &&
+                   EqualityComparer<Iri>.Default.Equals(OpenId, agent.OpenId) &&
+                   EqualityComparer<Account>.Default.Equals(Account, agent.Account);
+        }
 
-            if (!string.IsNullOrWhiteSpace(MboxSHA1SUM))
-            {
-                return this.GetType().GetProperty(nameof(MboxSHA1SUM));
-            }
+        public override int GetHashCode()
+        {
+            var hashCode = -790879124;
+            hashCode = hashCode * -1521134295 + ObjectType.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Mbox>.Default.GetHashCode(Mbox);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(MboxSHA1SUM);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Iri>.Default.GetHashCode(OpenId);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Account>.Default.GetHashCode(Account);
+            return hashCode;
+        }
 
-            if(Account != null)
-            {
-                return this.GetType().GetProperty(nameof(Account));
-            }
+        public static bool operator ==(Agent agent1, Agent agent2)
+        {
+            return EqualityComparer<Agent>.Default.Equals(agent1, agent2);
+        }
 
-            if(OpenId != null)
-            {
-                return this.GetType().GetProperty(nameof(OpenId));
-            }
-
-            return null;
+        public static bool operator !=(Agent agent1, Agent agent2)
+        {
+            return !(agent1 == agent2);
         }
     }
 }

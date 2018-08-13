@@ -1,6 +1,7 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace Doctrina.xAPI.Models
 {
@@ -65,5 +66,38 @@ namespace Doctrina.xAPI.Models
             Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
         public Attachment[] Attachments { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var @base = obj as StatementBase;
+            return @base != null &&
+                   base.Equals(obj) &&
+                   EqualityComparer<Agent>.Default.Equals(Actor, @base.Actor) &&
+                   EqualityComparer<Verb>.Default.Equals(Verb, @base.Verb) &&
+                   EqualityComparer<StatementTargetBase>.Default.Equals(Object, @base.Object) &&
+                   EqualityComparer<Result>.Default.Equals(Result, @base.Result) &&
+                   EqualityComparer<Context>.Default.Equals(Context, @base.Context);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -1199450156;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Agent>.Default.GetHashCode(Actor);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Verb>.Default.GetHashCode(Verb);
+            hashCode = hashCode * -1521134295 + EqualityComparer<StatementTargetBase>.Default.GetHashCode(Object);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Result>.Default.GetHashCode(Result);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Context>.Default.GetHashCode(Context);
+            return hashCode;
+        }
+
+        public static bool operator ==(StatementBase base1, StatementBase base2)
+        {
+            return EqualityComparer<StatementBase>.Default.Equals(base1, base2);
+        }
+
+        public static bool operator !=(StatementBase base1, StatementBase base2)
+        {
+            return !(base1 == base2);
+        }
     }
 }

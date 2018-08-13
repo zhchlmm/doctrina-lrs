@@ -19,7 +19,7 @@ namespace Doctrina.Core.Services
             this.activities = activityRepository;
         }
 
-        public ActivityEntity MergeActivity(Uri activityId)
+        public ActivityEntity MergeActivity(Iri activityId)
         {
             return MergeActivity(new Activity() { Id = activityId });
         }
@@ -50,7 +50,7 @@ namespace Doctrina.Core.Services
             return entity;
         }
 
-        public Activity GetActivity(Uri activityId)
+        public Activity GetActivity(Iri activityId)
         {
             var entity = this.activities.GetByActivityId(activityId);
             if (entity == null)
@@ -68,7 +68,7 @@ namespace Doctrina.Core.Services
         {
             var activity = new Activity()
             {
-                Id = new Uri(entity.ActivityId)
+                Id = new Iri(entity.ActivityId)
             };
 
             if (!string.IsNullOrEmpty(entity.CanonicalData))

@@ -3,6 +3,7 @@ using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
 using Doctrina.Core.Services;
 using Doctrina.Web.Areas.xAPI.Mvc.Formatters;
+using Doctrina.xAPI.Json.Converters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Schema;
 
 namespace Doctrina.Web
 {
@@ -46,12 +48,19 @@ namespace Doctrina.Web
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-2.1#annotate-class-with-apicontrollerattribute
-            services.AddMvc(opt => {
+            services.AddMvc(opt =>
+            {
                 // Add input formatter. This should be inserted at position 0 or else the normal json input
                 // formatter will take precedence.
                 opt.InputFormatters.Insert(0, new StatementsInputFormatter());
             })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            .AddJsonOptions(opt =>
+            {
+                opt.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
+                opt.SerializerSettings.Converters.Insert(0, new UriJsonConverter());
+                opt.SerializerSettings.Converters.Add(new LanguageMapJsonConverter());
+            });
 
             services.AddCors();
 
@@ -115,6 +124,8 @@ namespace Doctrina.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            License.RegisterLicense("3649-sZ/v2JAi0b1NeuXTAzlwEZDpBfPynHQ1+xaoVJNqk7jB+WSJvnHGbt8eioWr83LS6CT10w4lsQsQ5F7j7j4NUWGdKyc84xS8zrhsuHGI7Q5J55qwV9aSdJ/oGaBwBVVfZJQcFT33l0+oRTMCC2RBeipRQAFv36wejqM8OeUwj8V7IklkIjozNjQ5LCJFeHBpcnlEYXRlIjoiMjAxOS0wNC0yOVQxNTo1NjozNi44OTcyOTE3WiIsIlR5cGUiOiJKc29uU2NoZW1hSW5kaWUifQ==");
         }
     }
 }

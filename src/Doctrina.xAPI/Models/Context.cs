@@ -3,6 +3,7 @@ using Doctrina.xAPI.Json.Schema.Providers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema.Generation;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace Doctrina.xAPI.Models
@@ -91,5 +92,45 @@ namespace Doctrina.xAPI.Models
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.Default)]
         public Extensions Extensions { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var context = obj as Context;
+            return context != null &&
+                   EqualityComparer<Guid?>.Default.Equals(Registration, context.Registration) &&
+                   EqualityComparer<Agent>.Default.Equals(Instructor, context.Instructor) &&
+                   EqualityComparer<Group>.Default.Equals(Team, context.Team) &&
+                   EqualityComparer<ContextActivities>.Default.Equals(ContextActivities, context.ContextActivities) &&
+                   Revision == context.Revision &&
+                   Platform == context.Platform &&
+                   Language == context.Language &&
+                   EqualityComparer<StatementRef>.Default.Equals(Statement, context.Statement) &&
+                   EqualityComparer<Extensions>.Default.Equals(Extensions, context.Extensions);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 2045218665;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Guid?>.Default.GetHashCode(Registration);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Agent>.Default.GetHashCode(Instructor);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Group>.Default.GetHashCode(Team);
+            hashCode = hashCode * -1521134295 + EqualityComparer<ContextActivities>.Default.GetHashCode(ContextActivities);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Revision);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Platform);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Language);
+            hashCode = hashCode * -1521134295 + EqualityComparer<StatementRef>.Default.GetHashCode(Statement);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Extensions>.Default.GetHashCode(Extensions);
+            return hashCode;
+        }
+
+        public static bool operator ==(Context context1, Context context2)
+        {
+            return EqualityComparer<Context>.Default.Equals(context1, context2);
+        }
+
+        public static bool operator !=(Context context1, Context context2)
+        {
+            return !(context1 == context2);
+        }
     }
 }

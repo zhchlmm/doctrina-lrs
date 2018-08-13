@@ -1,4 +1,5 @@
 ﻿using Doctrina.Core.Data;
+using Doctrina.xAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Doctrina.Core.Repositories
             this.context = context;
         }
 
-        public ActivityEntity GetByActivityId(Uri activityId)
+        public ActivityEntity GetByActivityId(Iri activityId)
         {
             return GetByActivityId(activityId.ToString());
         }

@@ -18,20 +18,22 @@ namespace Doctrina.xAPI.Models
         /// </summary>
         [JsonProperty("usageType",
             Required = Required.Always)]
-        public Uri UsageType { get; set; }
+        public Iri UsageType { get; set; }
 
         /// <summary>
         /// Display name (title) of this Attachment.
         /// </summary>
         [JsonProperty("display",
-            Required = Required.DisallowNull)]
+            Required = Required.DisallowNull, 
+            ReferenceLoopHandling = ReferenceLoopHandling.Serialize)]
         public LanguageMap Display { get; set; }
 
         /// <summary>
         /// A description of the Attachment
         /// </summary>
         [JsonProperty("description",
-            Required = Required.DisallowNull)]
+            Required = Required.DisallowNull,
+            ReferenceLoopHandling = ReferenceLoopHandling.Serialize)]
         public LanguageMap Description { get; set; }
 
         /// <summary>

@@ -26,7 +26,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                 return new Agent()
                 {
                     Name = User.Identity.Name,
-                    OpenId = new Iri(uriBuilder.ToString())
+                    OpenId = new Iri($"{Request.Scheme}://{Request.Host.Value}")
                 };
             }
         }
@@ -35,7 +35,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         {
             get
             {
-                return Request.Headers[Constants.Headers.APIVersion].ToString();
+                return Request.Headers[Constants.Headers.XExperienceApiVersion].ToString();
             }
         }
     }

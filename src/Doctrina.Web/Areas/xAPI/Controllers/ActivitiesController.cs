@@ -19,7 +19,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetActivityDocument(Uri activityId)
+        public ActionResult GetActivityDocument(Iri activityId)
         {
             Activity activity = activityService.GetActivity(activityId);
             if (activity == null)

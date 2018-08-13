@@ -26,8 +26,14 @@ namespace Doctrina.xAPI.Json.Converters
             if (jobj["objectType"] != null)
             {
                 string strObjectType = jobj["objectType"].Value<string>();
+                
+
                 if (!Enum.TryParse(strObjectType, out objType))
                     throw new JsonSerializationException($"'{strObjectType}' is not valid. Path: '{reader.Path}'");
+            }else if (jobj["id"] != null)
+            {
+                // If objectType is not defined, but id is, it's an activity
+                objType = ObjectType.Activity;
             }
 
             // If Statement's SubStatement object
@@ -41,14 +47,14 @@ namespace Doctrina.xAPI.Json.Converters
             // If Statement Object
             switch (objType)
             {
+                case ObjectType.Activity:
+                    target = new Activity();
+                    break;
                 case ObjectType.Agent:
                     target = new Agent();
                     break;
                 case ObjectType.Group:
                     target = new Group();
-                    break;
-                case ObjectType.Activity:
-                    target = new Activity();
                     break;
                 case ObjectType.SubStatement:
                     target = new SubStatement();
@@ -61,9 +67,6 @@ namespace Doctrina.xAPI.Json.Converters
             }
 
             return serializer.Deserialize(jobj.CreateReader(), target.GetType());
-            //serializer.Populate(jobj.CreateReader(), target);
-
-            //return target;
         }
 
         private object ReadSubStatementObject(Newtonsoft.Json.JsonSerializer serializer, JObject jobj, ObjectType objType)
@@ -73,14 +76,14 @@ namespace Doctrina.xAPI.Json.Converters
             // If Statement Object
             switch (objType)
             {
+                case ObjectType.Activity:
+                    target = new Activity();
+                    break;
                 case ObjectType.Agent:
                     target = new Agent();
                     break;
                 case ObjectType.Group:
                     target = new Group();
-                    break;
-                case ObjectType.Activity:
-                    target = new Activity();
                     break;
                 case ObjectType.StatementRef:
                     target = new StatementRef();

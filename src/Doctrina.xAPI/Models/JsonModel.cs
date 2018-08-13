@@ -27,14 +27,20 @@ namespace Doctrina.xAPI.Models
             return JObject.Parse(this.ToJson());
         }
 
-        public override string ToString()
+        // Causes loop reference
+        //public override string ToString()
+        //{
+        //    return ToJson();
+        //}
+
+        public override bool Equals(object obj)
         {
-            return ToJson();
+            return true;
         }
 
-        public T Parse<T>(string jsonString)
+        public override int GetHashCode()
         {
-            return JsonConvert.DeserializeObject<T>(jsonString);
+            return base.GetHashCode();
         }
 
         //public bool IsValid(out IList<ValidationError> messages)

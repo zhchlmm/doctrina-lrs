@@ -4,6 +4,7 @@ using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -149,6 +150,23 @@ namespace Doctrina.Core.Services
 
             if (result.Score != null)
             {
+                var score = result.Score;
+
+                if (score.Raw < score.Min)
+                {
+                    throw new InvalidOperationException($"Result 'Raw' cannot be less than 'Min'.");
+                }
+
+                if (score.Raw > score.Max)
+                {
+                    throw new InvalidOperationException($"Result 'Raw' cannot be greather than 'Max'.");
+                }
+
+                if (score.Min > score.Max)
+                {
+                    throw new InvalidOperationException($"Result 'Min' cannot be greather than 'Max'.");
+                }
+
                 stmt.Result.ScoreMax = result.Score.Max;
                 stmt.Result.ScoreMin = result.Score.Min;
                 stmt.Result.ScoreRaw = result.Score.Raw;
@@ -210,7 +228,9 @@ namespace Doctrina.Core.Services
                 throw new Exception("Any Statement that voids another must have the verb: \"" + Verbs.Voided + "\"");
 
             var statementRefId = voidingStatement.ObjectStatementRefId.Value;
-            var voidedStatement = this._dbContext.Statements.Find(statementRefId);
+            var voidedStatement = this._dbContext.Statements
+                .Include(x=> x.Verb)
+                .FirstOrDefault(x=> x.StatementId == statementRefId);
 
             // Upon receiving a Statement that voids another, the LRS SHOULD NOT* reject the request on the grounds of the Object of that voiding Statement not being present.
             if (voidedStatement == null)
@@ -235,10 +255,12 @@ namespace Doctrina.Core.Services
             if (attachments == null || attachments.Length <= 0)
                 return;
 
+            entity.Attachments = new List<AttachmentEntity>();
+
             foreach(var attachment in attachments)
             {
-                var current = attachment.ToJObject();
-                var canonicalData = new Newtonsoft.Json.Linq.JObject();
+                var current = JObject.FromObject(attachment);
+                var canonicalData = new JObject();
                 if(current["display"] != null)
                 {
                     canonicalData["display"] = current["display"];

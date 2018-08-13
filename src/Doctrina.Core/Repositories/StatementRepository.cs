@@ -25,7 +25,9 @@ namespace Doctrina.Core.Repositories
         {
             if (includeAttachments)
             {
-                return this.dbContext.Statements.Include(x => x.Attachments).Where(x => x.Voided == voided);
+                return this.dbContext.Statements
+                    .Include(x => x.Attachments)
+                    .Where(x => x.Voided == voided);
             }
 
             return this.dbContext.Statements.Where(x => x.Voided == voided);
@@ -40,7 +42,7 @@ namespace Doctrina.Core.Repositories
             return sql.Count() == 1;
         }
 
-        public void Save(StatementEntity entity)
+        public void SaveChanges(StatementEntity entity)
         {
             this.dbContext.Statements.Add(entity);
             this.dbContext.Entry(entity).State = EntityState.Added;

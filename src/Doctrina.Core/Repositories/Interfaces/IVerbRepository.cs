@@ -1,5 +1,6 @@
 ﻿using System;
 using Doctrina.Core.Data;
+using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Repositories
 {
@@ -8,6 +9,6 @@ namespace Doctrina.Core.Repositories
         void CreateVerb(VerbEntity verb);
         bool Exist(string verbId);
         VerbEntity GetByVerbId(string verbId);
-        VerbEntity GetByVerbId(Uri verbId);
+        VerbEntity GetByVerbId(Iri verbId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Doctrina.Core;
 using Doctrina.Core.Data;
+using Doctrina.xAPI.Models;
 using System;
 using System.Linq;
 
@@ -19,7 +20,7 @@ namespace Doctrina.Core.Repositories
             context.Verbs.Add(verb);
         }
 
-        public VerbEntity GetByVerbId(Uri verbId)
+        public VerbEntity GetByVerbId(Iri verbId)
         {
             return GetByVerbId(verbId.ToString());
         }

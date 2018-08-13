@@ -11,7 +11,7 @@ namespace Doctrina.xAPI.Models.InteractionTypes
 {
     public abstract class InteractionTypeBase : ActivityDefinition
     {
-        public override Uri Type { get => new Uri("http://adlnet.gov/expapi/activities/cmi.interaction"); set => base.Type = value; }
+        public override Iri Type { get => new Iri("http://adlnet.gov/expapi/activities/cmi.interaction"); set => base.Type = value; }
 
         protected abstract InteractionType INTERACTION_TYPE { get; }
 
