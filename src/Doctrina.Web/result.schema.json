@@ -750,6 +750,12 @@
         }
       }
     },
+    "statement_array": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/statement"
+      }
+    },
     "statement": {
       "type": "object",
       "allOf": [
@@ -1019,27 +1025,15 @@
     }
   },
   "id": "https://doctrina.com/schemas/statement.schema",
-  "type": "object",
-  "allOf": [
+  "anyOf": [
     {
-      "$ref": "#/definitions/statement_base"
-    }
-  ],
-  "properties": {
-    "objectType": {
-      "type": "null"
+      "$ref": "#/definitions/statement"
     },
-    "id": {},
-    "actor": {},
-    "verb": {},
-    "object": {},
-    "result": {},
-    "context": {},
-    "timestamp": {},
-    "stored": {},
-    "authority": {},
-    "version": {},
-    "attachments": {}
-  },
-  "additionalProperties": false
+    {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/statement"
+      }
+    }
+  ]
 }

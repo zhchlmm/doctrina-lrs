@@ -80,7 +80,6 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
             else if (request.ContentType.IndexOf(MIMETypes.Multipart.Mixed) > 0)
             {
                 var attachments = GetAttachments(request).Result;
-
             }
 
             JsonTextReader jsonReader = new JsonTextReader(new System.IO.StringReader(json));
@@ -94,9 +93,6 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 
             JsonSerializer serializer = new JsonSerializer();
             serializer.CheckAdditionalContent = true;
-            //serializer.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
-            //serializer.Converters.Add(new AgentConverter());
-            //serializer.Converters.Add(new StatementTargetConverter());
             serializer.Error += delegate (object sender, ErrorEventArgs args)
             {
                 bindingContext.ModelState.AddModelError(args.ErrorContext.Path, args.ErrorContext.Error.Message);
@@ -105,12 +101,13 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 
             if (json.StartsWith("["))
             {
+                var statements = serializer.Deserialize<Statement[]>(validatingReader);
                 var model = new StatementsPostContent()
                 {
-                    Statements = serializer.Deserialize<Statement[]>(validatingReader)
+                    Statements = statements
                 };
 
-                bindingContext.Model = ModelBindingResult.Success(model);
+                bindingContext.Result = ModelBindingResult.Success(model);
             }
             else
             {
