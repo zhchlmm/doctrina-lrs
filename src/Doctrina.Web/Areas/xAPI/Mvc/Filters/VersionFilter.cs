@@ -15,23 +15,20 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.Filters
         {
             var supported = XAPIVersion.GetSupported();
             if (!context.HttpContext.Request.Headers.ContainsKey(Constants.Headers.XExperienceApiVersion))
-                throw new Exception("Missing 'X-Experience-API-Version' header or it's null or empty");
+                throw new Exception("Missing 'X-Experience-API-Version' header.");
 
             string requestVersion = context.HttpContext.Request.Headers[Constants.Headers.XExperienceApiVersion];
             if (string.IsNullOrEmpty(requestVersion))
-                throw new Exception("Missing 'X-Experience-API-Version' header or it's null or empty");
-
-            if (!XAPIVersion.GetSupported().ContainsKey(requestVersion))
-                throw new Exception($"'X-Experience-API-Version' header is '{requestVersion}' which is not supported.");
+                throw new Exception("'X-Experience-API-Version' header or it's null or empty");
 
             try
             {
                 XAPIVersion version = (XAPIVersion)requestVersion;
                 await next();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                context.Result = new BadRequestResult();
+                throw new Exception($"'X-Experience-API-Version' header is '{requestVersion}' which is not supported.");
             }
         }
     }
