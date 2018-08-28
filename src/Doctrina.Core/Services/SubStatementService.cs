@@ -22,7 +22,7 @@ namespace Doctrina.Core.Services
         public SubStatementEntity CreateSubStatement(SubStatement model)
         {
             var verb = this._verbService.MergeVerb(model.Verb);
-            var actor = this._agentService.MergeAgent(model.Actor);
+            var actor = this._agentService.MergeActor(model.Actor);
 
             var entity = new SubStatementEntity()
             {

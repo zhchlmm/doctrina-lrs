@@ -1,0 +1,142 @@
+2018-08-26 07:04:14.592 +02:00 [Information] Configuring DB
+2018-08-26 07:04:16.895 +02:00 [Information] Entity Framework Core "2.1.1-rtm-30846" initialized '"DoctrinaContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None"
+2018-08-26 07:04:20.120 +02:00 [Information] Executed DbCommand ("143"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0"
+2018-08-26 07:04:20.353 +02:00 [Information] Executed DbCommand ("10"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u])
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END"
+2018-08-26 07:04:20.476 +02:00 [Information] User profile is available. Using '"C:\Users\rasmu\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+2018-08-26 07:04:21.140 +02:00 [Information] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:6124"' instead.
+2018-08-26 07:04:21.448 +02:00 [Information] Request starting HTTP/1.1 GET http://localhost:44338/xapi/about  
+2018-08-26 07:04:21.990 +02:00 [Information] Route matched with "{area = \"xapi\", action = \"About\", controller = \"About\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)"
+2018-08-26 07:04:22.013 +02:00 [Information] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" - Validation state: Valid
+2018-08-26 07:04:22.027 +02:00 [Information] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.JsonResult" in 2.9393ms.
+2018-08-26 07:04:22.039 +02:00 [Information] Executing JsonResult, writing value of type '"Doctrina.xAPI.Models.About"'.
+2018-08-26 07:04:22.105 +02:00 [Information] Executed action "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" in 107.639ms
+2018-08-26 07:04:22.129 +02:00 [Information] Request finished in 682.0242ms 200 application/json; charset=utf-8
+2018-08-26 07:04:22.752 +02:00 [Information] Request starting HTTP/1.1 GET http://localhost:44338/favicon.ico  
+2018-08-26 07:04:22.762 +02:00 [Information] The file "/favicon.ico" was not modified
+2018-08-26 07:04:22.767 +02:00 [Information] Request finished in 14.5059ms 304 image/x-icon
+2018-08-26 07:05:18.052 +02:00 [Information] Request starting HTTP/1.1 POST http://localhost:5000/xapi/statements application/json 324
+2018-08-26 07:05:18.080 +02:00 [Information] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)"
+2018-08-26 07:05:18.425 +02:00 [Information] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid
+2018-08-26 07:05:18.439 +02:00 [Error] PostStatements
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Doctrina.Core.Services.StatementService.SaveStatements(Agent authority, Statement[] statements) in C:\Repos\Doctrina\src\Doctrina.Core\Services\StatementService.cs:line 55
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 127
+2018-08-26 07:05:18.556 +02:00 [Information] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 129.343ms.
+2018-08-26 07:05:18.564 +02:00 [Information] Executing ObjectResult, writing value of type '"System.NullReferenceException"'.
+2018-08-26 07:05:18.583 +02:00 [Information] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 502.5493ms
+2018-08-26 07:05:18.584 +02:00 [Information] Request finished in 532.2407ms 400 application/json; charset=utf-8
+2018-08-26 07:08:53.690 +02:00 [Information] Request starting HTTP/1.1 GET http://localhost:5000/  
+2018-08-26 07:08:53.693 +02:00 [Information] Request finished in 2.3827ms 404 
+2018-08-26 07:08:53.728 +02:00 [Information] Request starting HTTP/1.1 GET http://localhost:5000/  
+2018-08-26 07:08:53.729 +02:00 [Information] Request finished in 0.7929ms 404 
+2018-08-26 07:09:38.297 +02:00 [Information] Request starting HTTP/1.1 POST http://localhost:5000/xapi/statements application/json 324
+2018-08-26 07:09:38.299 +02:00 [Information] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)"
+2018-08-26 07:09:38.303 +02:00 [Information] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid
+2018-08-26 07:09:38.304 +02:00 [Error] PostStatements
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Doctrina.Core.Services.StatementService.SaveStatements(Agent authority, Statement[] statements) in C:\Repos\Doctrina\src\Doctrina.Core\Services\StatementService.cs:line 55
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 127
+2018-08-26 07:09:38.304 +02:00 [Information] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 1.0521ms.
+2018-08-26 07:09:38.305 +02:00 [Information] Executing ObjectResult, writing value of type '"System.NullReferenceException"'.
+2018-08-26 07:09:38.306 +02:00 [Information] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 6.5098ms
+2018-08-26 07:09:38.306 +02:00 [Information] Request finished in 8.9767ms 400 application/json; charset=utf-8
+2018-08-26 20:16:25.751 +02:00 [Information] Configuring DB
+2018-08-26 20:16:26.903 +02:00 [Information] Entity Framework Core "2.1.1-rtm-30846" initialized '"DoctrinaContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None"
+2018-08-26 20:16:28.851 +02:00 [Information] Executed DbCommand ("140"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0"
+2018-08-26 20:16:29.027 +02:00 [Information] Executed DbCommand ("7"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u])
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END"
+2018-08-26 20:16:29.116 +02:00 [Information] User profile is available. Using '"C:\Users\rasmu\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+2018-08-26 20:16:29.528 +02:00 [Information] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:23672"' instead.
+2018-08-26 20:16:29.760 +02:00 [Information] Request starting HTTP/1.1 GET http://localhost:44338/xapi/about  
+2018-08-26 20:16:29.981 +02:00 [Information] Route matched with "{area = \"xapi\", action = \"About\", controller = \"About\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)"
+2018-08-26 20:16:29.991 +02:00 [Information] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" - Validation state: Valid
+2018-08-26 20:16:29.997 +02:00 [Information] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.JsonResult" in 2.0128ms.
+2018-08-26 20:16:30.003 +02:00 [Information] Executing JsonResult, writing value of type '"Doctrina.xAPI.Models.About"'.
+2018-08-26 20:16:30.036 +02:00 [Information] Executed action "Doctrina.Web.Areas.xAPI.Controllers.AboutController.About (Doctrina.Web)" in 50.5385ms
+2018-08-26 20:16:30.042 +02:00 [Information] Request finished in 283.0349ms 200 application/json; charset=utf-8
+2018-08-26 20:16:36.096 +02:00 [Information] Request starting HTTP/1.1 GET http://localhost:44338/favicon.ico  
+2018-08-26 20:16:36.997 +02:00 [Information] Sending file. Request path: '"/favicon.ico"'. Physical path: '"C:\Repos\Doctrina\src\Doctrina.Web\wwwroot\favicon.ico"'
+2018-08-26 20:16:37.006 +02:00 [Information] Request finished in 910.0954ms 200 image/x-icon
+2018-08-26 20:22:43.563 +02:00 [Information] Request starting HTTP/1.1 POST http://localhost:5000/xapi/statements application/json 324
+2018-08-26 20:22:43.604 +02:00 [Information] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)"
+2018-08-26 20:22:43.824 +02:00 [Information] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid
+2018-08-26 20:22:43.851 +02:00 [Error] PostStatements
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Doctrina.Core.Services.StatementService.SaveStatements(Agent authority, Statement[] statements) in C:\Repos\Doctrina\src\Doctrina.Core\Services\StatementService.cs:line 55
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 127
+2018-08-26 20:22:43.959 +02:00 [Information] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 133.4072ms.
+2018-08-26 20:22:43.964 +02:00 [Information] Executing ObjectResult, writing value of type '"System.NullReferenceException"'.
+2018-08-26 20:22:43.978 +02:00 [Information] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 373.7823ms
+2018-08-26 20:22:43.978 +02:00 [Information] Request finished in 415.032ms 400 application/json; charset=utf-8
+2018-08-26 20:22:54.215 +02:00 [Information] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 296
+2018-08-26 20:22:54.216 +02:00 [Information] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)"
+2018-08-26 20:22:54.218 +02:00 [Information] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid
+2018-08-26 20:22:54.218 +02:00 [Error] PostStatements
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Doctrina.Core.Services.StatementService.SaveStatements(Agent authority, Statement[] statements) in C:\Repos\Doctrina\src\Doctrina.Core\Services\StatementService.cs:line 55
+   at Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements(StatementsPostContent model) in C:\Repos\Doctrina\src\Doctrina.Web\Areas\xAPI\Controllers\StatementsController.cs:line 127
+2018-08-26 20:22:54.218 +02:00 [Information] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.BadRequestObjectResult" in 0.7511ms.
+2018-08-26 20:22:54.220 +02:00 [Information] Executing ObjectResult, writing value of type '"System.NullReferenceException"'.
+2018-08-26 20:22:54.221 +02:00 [Information] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 4.3952ms
+2018-08-26 20:22:54.221 +02:00 [Information] Request finished in 5.3297ms 400 application/json; charset=utf-8
+2018-08-26 20:27:53.067 +02:00 [Information] Configuring DB
+2018-08-26 20:27:53.625 +02:00 [Information] Entity Framework Core "2.1.1-rtm-30846" initialized '"DoctrinaContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None"
+2018-08-26 20:27:54.649 +02:00 [Information] Executed DbCommand ("43"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0"
+2018-08-26 20:27:54.754 +02:00 [Information] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u])
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END"
+2018-08-26 20:27:54.809 +02:00 [Information] User profile is available. Using '"C:\Users\rasmu\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+2018-08-26 20:27:55.035 +02:00 [Information] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:11081"' instead.
+2018-08-26 20:27:55.417 +02:00 [Information] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 296
+2018-08-26 20:27:55.600 +02:00 [Information] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)"
+2018-08-26 20:27:55.927 +02:00 [Information] Executing action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" with arguments (["Doctrina.Web.Areas.xAPI.Models.StatementsPostContent"]) - Validation state: Valid
+2018-08-26 20:27:55.937 +02:00 [Information] Entity Framework Core "2.1.1-rtm-30846" initialized '"DoctrinaContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None"
+2018-08-26 20:27:55.992 +02:00 [Information] Executed DbCommand ("6"ms) [Parameters=["@__verbId_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[CanonicalData], [x].[Id]
+FROM [Verbs] AS [x]
+WHERE [x].[Id] = @__verbId_0"
+2018-08-26 20:27:56.085 +02:00 [Information] Executed DbCommand ("5"ms) [Parameters=["@__agent_ObjectType_0='?' (Size = 6) (DbType = Int32)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[Account_HomePage], [x].[Account_Name], [x].[Mbox], [x].[Mbox_SHA1SUM], [x].[Name], [x].[OauthIdentifier], [x].[ObjectType], [x].[OpenId]
+FROM [Agents] AS [x]
+WHERE ([x].[ObjectType] = @__agent_ObjectType_0) AND [x].[Mbox_SHA1SUM] IS NULL"
+2018-08-26 20:27:56.146 +02:00 [Information] Executed DbCommand ("2"ms) [Parameters=["@__activityId_0='?' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[ActivityId], [x].[AuthorityId], [x].[CanonicalData]
+FROM [Activities] AS [x]
+WHERE [x].[ActivityId] = @__activityId_0"
+2018-08-26 20:27:56.175 +02:00 [Information] Executed DbCommand ("2"ms) [Parameters=["@__agent_ObjectType_0='?' (Size = 6) (DbType = Int32)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[Key], [x].[Account_HomePage], [x].[Account_Name], [x].[Mbox], [x].[Mbox_SHA1SUM], [x].[Name], [x].[OauthIdentifier], [x].[ObjectType], [x].[OpenId]
+FROM [Agents] AS [x]
+WHERE ([x].[ObjectType] = @__agent_ObjectType_0) AND [x].[Mbox] IS NULL"
+2018-08-26 20:27:56.211 +02:00 [Warning] The LINQ expression '"where (([stmt.Verb].Id == \"http://adlnet.gov/expapi/verbs/voided\") AndAlso (Convert([stmt].ObjectType, Int32) == 4))"' could not be translated and will be evaluated locally.
+2018-08-26 20:27:56.217 +02:00 [Warning] The LINQ expression '"FirstOrDefault()"' could not be translated and will be evaluated locally.
+2018-08-26 20:27:56.236 +02:00 [Information] Executed DbCommand ("5"ms) [Parameters=["@__voidedStatementId_0='?' (DbType = Guid)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [stmt].[StatementId] AS [Id0], [stmt].[ActorKey], [stmt].[AuthorityId], [stmt].[ContextId], [stmt].[FullStatement], [stmt].[ObjectActivityKey], [stmt].[ObjectAgentKey], [stmt].[ObjectStatementRefId], [stmt].[ObjectSubStatementId], [stmt].[ResultId], [stmt].[Stored], [stmt].[Timestamp], [stmt].[User], [stmt].[VerbKey], [stmt].[Version], [stmt].[Voided], [stmt.Verb].[Id]
+FROM [Statements] AS [stmt]
+INNER JOIN [Verbs] AS [stmt.Verb] ON [stmt].[VerbKey] = [stmt.Verb].[Key]
+WHERE [stmt].[ObjectSubStatementId] = @__voidedStatementId_0"
+2018-08-26 20:27:56.387 +02:00 [Information] Executed DbCommand ("12"ms) [Parameters=["@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?' (DbType = Guid), @p3='?' (DbType = Guid), @p4='?' (Size = 4000), @p5='?' (DbType = Guid), @p6='?' (DbType = Guid), @p7='?' (DbType = Guid), @p8='?' (DbType = Guid), @p9='?' (DbType = Guid), @p10='?' (DbType = DateTime2), @p11='?' (DbType = DateTime2), @p12='?' (DbType = Guid), @p13='?' (DbType = Guid), @p14='?' (Size = 7), @p15='?' (DbType = Boolean)"], CommandType='Text', CommandTimeout='30']"
+""SET NOCOUNT ON;
+INSERT INTO [Statements] ([StatementId], [ActorKey], [AuthorityId], [ContextId], [FullStatement], [ObjectActivityKey], [ObjectAgentKey], [ObjectStatementRefId], [ObjectSubStatementId], [ResultId], [Stored], [Timestamp], [User], [VerbKey], [Version], [Voided])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15);"
+2018-08-26 20:27:56.393 +02:00 [Information] Executed action method "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)", returned result "Microsoft.AspNetCore.Mvc.OkObjectResult" in 462.6314ms.
+2018-08-26 20:27:56.400 +02:00 [Information] Executing ObjectResult, writing value of type '"System.Guid[]"'.
+2018-08-26 20:27:56.416 +02:00 [Information] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 811.9415ms
+2018-08-26 20:27:56.423 +02:00 [Information] Request finished in 1007.2988ms 200 application/json; charset=utf-8

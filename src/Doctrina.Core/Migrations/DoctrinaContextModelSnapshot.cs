@@ -115,7 +115,7 @@ namespace Doctrina.Core.Migrations
 
                     b.HasIndex("StatementId");
 
-                    b.ToTable("AttachmentEntity");
+                    b.ToTable("Attachments");
                 });
 
             modelBuilder.Entity("Doctrina.Core.Data.ContextActivitiesCategory", b =>
@@ -415,7 +415,7 @@ namespace Doctrina.Core.Migrations
 
                     b.Property<bool?>("Completion");
 
-                    b.Property<TimeSpan?>("Duration");
+                    b.Property<long?>("Duration");
 
                     b.Property<string>("Extensions")
                         .HasColumnType("ntext");
@@ -434,7 +434,7 @@ namespace Doctrina.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ResultEntity");
+                    b.ToTable("Results");
                 });
 
             modelBuilder.Entity("Doctrina.Core.Data.StatementEntity", b =>

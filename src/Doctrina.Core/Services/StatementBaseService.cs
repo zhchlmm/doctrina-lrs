@@ -54,7 +54,7 @@ namespace Doctrina.Core.Services
 
             if (context.Instructor != null)
             {
-                var instructor = this._agentService.MergeAgent(context.Instructor);
+                var instructor = this._agentService.MergeActor(context.Instructor);
                 stmt.Context.InstructorId = instructor.Key;
             }
 
@@ -78,7 +78,7 @@ namespace Doctrina.Core.Services
 
             if (context.Team != null)
             {
-                var agent = this._agentService.MergeAgent(context.Team);
+                var agent = this._agentService.MergeActor(context.Team);
                 stmt.Context.TeamId = agent.Key;
             }
 
@@ -141,9 +141,13 @@ namespace Doctrina.Core.Services
             stmt.Result = new ResultEntity
             {
                 Completion = result.Completion,
-                Success = result.Success,
-                Duration = result.Duration
+                Success = result.Success
             };
+
+            if(result.Duration != null)
+            {
+                stmt.Result.Duration = result.Duration.Ticks;
+            }
 
             if (!string.IsNullOrEmpty(result.Response))
                 stmt.Result.Response = result.Response;
@@ -183,7 +187,7 @@ namespace Doctrina.Core.Services
             {
                 case ObjectType.Group:
                 case ObjectType.Agent:
-                    var agent = this._agentService.MergeAgent((Agent)target);
+                    var agent = this._agentService.MergeActor((Agent)target);
                     stmt.ObjectAgentKey = agent.Key;
                     break;
 

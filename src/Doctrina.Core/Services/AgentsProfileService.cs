@@ -45,7 +45,7 @@ namespace Doctrina.Core.Services
 
         private IDocumentEntity CreateNewAgentProfile(Agent agent, string profileId, byte[] content, string contentType)
         {
-            var agentEntity = this.agentService.MergeAgent(agent);
+            var agentEntity = this.agentService.MergeActor(agent);
 
             var profile = new AgentProfileEntity()
             {

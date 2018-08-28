@@ -58,7 +58,7 @@ namespace Doctrina.Core.Services
         /// <returns></returns>
         private IDocumentEntity CreateStateDocument(Iri activityId, Agent agent, string stateId, Guid? registration, string contentType, byte[] content)
         {
-            var agentEntity = this._agentService.MergeAgent(agent);
+            var agentEntity = this._agentService.MergeActor(agent);
             var activity = new Activity()
             {
                 Id = activityId

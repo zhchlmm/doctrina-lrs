@@ -87,7 +87,7 @@ namespace Doctrina.Core.Services
             }
 
             var verb = this._verbService.MergeVerb(model.Verb);
-            var actor = this._agentService.MergeAgent(model.Actor);
+            var actor = this._agentService.MergeActor(model.Actor);
 
             model.Stamp();
 
@@ -263,8 +263,35 @@ namespace Doctrina.Core.Services
             if (authority == null)
                 throw new NullReferenceException("authority");
 
-            var agent = this._agentService.MergeAgent(authority);
-            statement.AuthorityId = agent.Key;
+            ObjectType objType = authority.ObjectType;
+
+            if (authority.ObjectType == ObjectType.Agent)
+            {
+                var agent = this._agentService.MergeActor(authority);
+                statement.AuthorityId = agent.Key;
+            }
+            else if(authority.ObjectType == ObjectType.Group)
+            {
+                var group = authority as Group;
+                // The two Agents represent an application and user together.
+                if (group.Member.Count() != 2)
+                    throw new JsonSerializationException("Group must contains exactly two Agents.");
+
+                if (group.IsIdentified())
+                    throw new JsonSerializationException("Identified group is not allowed");
+
+                if (group.IsAnonymous())
+                {
+
+                }
+
+                var agent = this._agentService.MergeActor(group);
+                statement.AuthorityId = agent.Key;
+                statement.Authority = agent;
+            } else
+            {
+                throw new JsonSerializationException($"'{objType}' is not allowed as authority.");
+            }
         }
 
         private Statement ConvertFrom(StatementEntity entity)

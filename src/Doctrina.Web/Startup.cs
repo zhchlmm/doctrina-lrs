@@ -57,7 +57,6 @@ namespace Doctrina.Web
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
             .AddJsonOptions(opt =>
             {
-                opt.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
                 opt.SerializerSettings.Converters.Insert(0, new UriJsonConverter());
                 opt.SerializerSettings.Converters.Add(new LanguageMapJsonConverter());
             });
@@ -94,7 +93,7 @@ namespace Doctrina.Web
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
 
-            loggerFactory.AddFile("Logs/doctrina-{Date}.txt");
+            //loggerFactory.AddFile("Logs/doctrina-{Date}.txt");
 
             if (env.IsDevelopment())
             {
@@ -105,10 +104,10 @@ namespace Doctrina.Web
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+                //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             }
 
-            loggerFactory.AddDebug();
+            //loggerFactory.AddDebug();
 
             //app.UseHttpsRedirection();
 

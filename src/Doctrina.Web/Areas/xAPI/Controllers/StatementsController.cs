@@ -6,13 +6,10 @@ using Doctrina.Web.Areas.xAPI.Mvc.Filters;
 using Doctrina.Web.Mvc.ModelBinders;
 using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 
@@ -73,37 +70,33 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                 {
                     // TODO: If the "attachment" property of a GET Statement is used and is set to true, the LRS MUST use the multipart response format and include all Attachments as described in Part Two.
                     // Include attachment data, and return mutlipart/form-data
-                    Response.ContentType = MIMETypes.Multipart.Mixed;
-                    var data = new MultipartContent();
-                    data.Add(new StringContent(result.ToJson(), Encoding.UTF8, "application/json"));
+                    Response.ContentType = MediaTypes.Multipart.Mixed;
+
+                    var mixed = new MultipartContent("mixed"); // TODO: missing boundary?
+                    mixed.Add(new StringContent(result.ToJson(), Encoding.UTF8, MediaTypes.Application.Json));
+
                     foreach(var attachment in attachments)
                     {
                         var attachmentContent = new ByteArrayContent(attachment.Content);
                         attachmentContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(attachment.ContentType);
-                        data.Add(attachmentContent);
+                        attachmentContent.Headers.Add(Constants.Headers.ContentTransferEncoding, "binary");
+                        attachmentContent.Headers.Add(Constants.Headers.XExperienceApiHash, attachment.SHA);
+                        mixed.Add(attachmentContent);
                     }
-                    return Ok(data);
+
+                    return Ok(mixed);
                 }
 
                 //var response = Request.CreateResponse(HttpStatusCode.OK);
                 //response.Content = new StringContent(result.ToJson(), Encoding.UTF8, MIMETypes.Application.Json);
                 return Ok(result);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                //LogHelper.Error<StatementsController>("GetStatements", e);
-                //return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
-                return BadRequest(e);
+                _logger.LogError(ex, "GetStatements");
+                return BadRequest(ex);
             }
         }
-
-        //public IActionResult GetMoreStatents([FromQuery]string more)
-        //{
-        //    byte[] decodedArray = Convert.FromBase64String(more);
-        //    string decodedString = Encoding.UTF8.GetString(decodedArray);
-        //    var parameters = JsonConvert.DeserializeObject<StatementsQuery>(decodedString);
-        //    return GetStatements(parameters);
-        //}
 
         private IActionResult GetStatement([FromQuery]Guid? statementId, [FromQuery]Guid? voidedStatementId)
         {
@@ -127,13 +120,10 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         {
             try
             {
-                //Validate(statements);
-
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
-                _logger.LogDebug("Saving statements \n\r {0}", JsonConvert.SerializeObject(model.Statements));
                 var ids = _statementService.SaveStatements(CurrentAuthority, model.Statements);
 
                 Response.Headers.Add(Constants.Headers.ConsistentThrough, DateTime.UtcNow.ToString(Constants.Formats.DateTimeFormat));
@@ -178,6 +168,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "PutStatement: {0}", statementId);
                 return BadRequest(ex);
             }
         }

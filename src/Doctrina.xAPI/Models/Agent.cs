@@ -107,6 +107,28 @@ namespace Doctrina.xAPI.Models
             return !IsAnonymous();
         }
 
+        public List<string> GetIdentifiers()
+        {
+            var ids = new List<string>();
+            if(Mbox != null)
+            {
+                ids.Add(nameof(Mbox).ToLower());
+            }
+
+            if (!string.IsNullOrEmpty(MboxSHA1SUM)){
+                ids.Add(nameof(MboxSHA1SUM));
+            }
+            if(Account != null)
+            {
+                ids.Add(nameof(Account));
+            }
+            if(OpenId != null)
+            {
+                ids.Add(nameof(OpenId));
+            }
+            return ids;
+        }
+
         public override bool Equals(object obj)
         {
             var agent = obj as Agent;

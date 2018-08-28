@@ -56,7 +56,7 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
                     model.Content = binaryDocument;
                 }
 
-                if(contentType.IndexOf(MIMETypes.Application.Json) > 0)
+                if(contentType.IndexOf(MediaTypes.Application.Json) > 0)
                 {
                     string jsonString = System.Text.Encoding.UTF8.GetString(model.Content);
                     ValidateJson(jsonString, bindingContext.ModelState);

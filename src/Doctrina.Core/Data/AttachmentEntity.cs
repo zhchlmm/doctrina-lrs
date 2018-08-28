@@ -23,6 +23,7 @@ namespace Doctrina.Core.Data
 
         public Guid StatementId { get; set; }
 
+        public string SHA { get; set; }
 
         [ForeignKey(nameof(StatementId))]
         public virtual StatementEntity Statement { get; set; }

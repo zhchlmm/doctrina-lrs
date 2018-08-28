@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Doctrina.xAPI.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,7 +17,10 @@ namespace Doctrina.Core.Data
 
         public string Response {get;set; }
 
-        public TimeSpan? Duration {get;set; }
+        /// <summary>
+        /// Duration ticks
+        /// </summary>
+        public long? Duration {get;set; }
 
         public double? ScoreScaled {get;set; }
 

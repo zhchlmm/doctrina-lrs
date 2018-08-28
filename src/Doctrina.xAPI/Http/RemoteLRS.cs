@@ -48,7 +48,6 @@ namespace Doctrina.xAPI.Http
             var relativeUri = new Uri("/statements?" + parameters.ToString());
             var requestUri = new Uri(Endpoint, relativeUri);
             var response = await client.GetAsync(requestUri);
-
             return response;
 
             //IEnumerable<string> contentTypeHeaderValue = null;
@@ -90,7 +89,7 @@ namespace Doctrina.xAPI.Http
         public Task<HttpResponseMessage> SaveStatement(Statement statement)
         {
             var requestUri = new Uri(Endpoint, "/statemnts");
-            var stringContent = new StringContent(statement.ToJson(), Encoding.UTF8, MIMETypes.Application.Json);
+            var stringContent = new StringContent(statement.ToJson(), Encoding.UTF8, MediaTypes.Application.Json);
             return client.PostAsync(requestUri, stringContent);
         }
 
@@ -98,7 +97,7 @@ namespace Doctrina.xAPI.Http
         {
             var requestUri = new Uri(Endpoint, "/statemnts");
             var serializedObject = JsonConvert.SerializeObject(statements);
-            var stringContent = new StringContent(serializedObject, Encoding.UTF8, MIMETypes.Application.Json);
+            var stringContent = new StringContent(serializedObject, Encoding.UTF8, MediaTypes.Application.Json);
             return client.PostAsync(requestUri, stringContent);
         }
 
@@ -223,7 +222,7 @@ namespace Doctrina.xAPI.Http
         #endregion
     }
 
-    public class AttachmentsCollection : Dictionary<string, HttpAttachment>
+    public class AttachmentsCollection : Dictionary<string, AttachmentBatch>
     {
 
     }

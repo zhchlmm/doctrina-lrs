@@ -15,9 +15,12 @@ namespace Doctrina.xAPI
 
         public static class Headers
         {
+            public const string ContentTransferEncoding = "Content-Transfer-Encoding";
             public const string ConsistentThrough = "X-Experience-API-Consistent-Through";
             public const string XExperienceApiVersion = "X-Experience-API-Version";
-            public const string XExperienceAPIHash = "X-Experience-API-Hash";
+            public const string XExperienceApiHash = "X-Experience-API-Hash";
         }
     }
+
+    
 }

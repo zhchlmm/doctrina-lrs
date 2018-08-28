@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Doctrina.xAPI.Models
 {
     [JsonObject]
-    [JsonConverter(typeof(ScoreConverter))]
+    [JsonConverter(typeof(ScoreJsonConverter))]
     public class Score : JsonModel
     {
         /// <summary>

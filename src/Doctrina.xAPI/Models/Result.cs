@@ -50,8 +50,7 @@ namespace Doctrina.xAPI.Models
         [JsonProperty("duration",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
-        [JsonConverter(typeof(TimeSpanConverter))]
-        public TimeSpan? Duration { get; set; }
+        public Duration Duration { get; set; }
 
         /// <summary>
         /// A map of other properties as needed. See: <seealso cref="Models.Extensions"/>
@@ -70,7 +69,7 @@ namespace Doctrina.xAPI.Models
                    EqualityComparer<bool?>.Default.Equals(Success, result.Success) &&
                    EqualityComparer<bool?>.Default.Equals(Completion, result.Completion) &&
                    Response == result.Response &&
-                   EqualityComparer<TimeSpan?>.Default.Equals(Duration, result.Duration) &&
+                   EqualityComparer<Duration>.Default.Equals(Duration, result.Duration) &&
                    EqualityComparer<Extensions>.Default.Equals(Extentions, result.Extentions);
         }
 
@@ -81,7 +80,7 @@ namespace Doctrina.xAPI.Models
             hashCode = hashCode * -1521134295 + EqualityComparer<bool?>.Default.GetHashCode(Success);
             hashCode = hashCode * -1521134295 + EqualityComparer<bool?>.Default.GetHashCode(Completion);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Response);
-            hashCode = hashCode * -1521134295 + EqualityComparer<TimeSpan?>.Default.GetHashCode(Duration);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Duration>.Default.GetHashCode(Duration);
             hashCode = hashCode * -1521134295 + EqualityComparer<Extensions>.Default.GetHashCode(Extentions);
             return hashCode;
         }

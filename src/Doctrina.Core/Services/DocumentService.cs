@@ -41,8 +41,8 @@ namespace Doctrina.Core.Services
         public IDocumentEntity UpdateDocument(IDocumentEntity entity, string contentType, byte[] content)
         {
             if ((entity.Content != null
-                && entity.ContentType.StartsWith(MIMETypes.Application.Json))
-                && contentType.StartsWith(MIMETypes.Application.Json) && content != null)
+                && entity.ContentType.StartsWith(MediaTypes.Application.Json))
+                && contentType.StartsWith(MediaTypes.Application.Json) && content != null)
             {
                 // Do a merge
                 string newJson = Encoding.UTF8.GetString(content);

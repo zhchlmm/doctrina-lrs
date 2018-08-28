@@ -20,7 +20,7 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            string uriString = reader.ReadAsString();
+            string uriString = reader.Value as string;
             if(Uri.IsWellFormedUriString(uriString, UriKind.RelativeOrAbsolute))
             {
                 return new Uri(uriString);

@@ -1,4 +1,5 @@
-﻿using Doctrina.xAPI.Models;
+﻿using Doctrina.xAPI;
+using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
@@ -6,6 +7,7 @@ using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace Doctrina.Web.Mvc.ModelBinders
 {
@@ -52,24 +54,50 @@ namespace Doctrina.Web.Mvc.ModelBinders
 
             if (bindingContext.ModelType != typeof(Statement))
                 return Task.CompletedTask;
-            var request = bindingContext.ActionContext.HttpContext.Request;
 
+            var request = bindingContext.ActionContext.HttpContext.Request;
             string json = null;
-            using(var streamReader = new System.Net.Http.StreamContent(request.Body))
+            using (var streamReader = new System.Net.Http.StreamContent(request.Body))
             {
                 json = streamReader.ReadAsStringAsync().Result;
             }
 
+            Statement statement = DeserializeStatement(bindingContext, json);
+
+            if (statement != null)
+            {
+                bindingContext.Result = ModelBindingResult.Success(statement);
+            }
+            else
+            {
+                bindingContext.Result = ModelBindingResult.Failed();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private Statement DeserializeStatement(ModelBindingContext bindingContext, string json)
+        {
+            var request = bindingContext.ActionContext.HttpContext.Request;
+
             JsonTextReader jsonReader = new JsonTextReader(new System.IO.StringReader(json));
 
-            JSchemaValidatingReader validatingReader = new JSchemaValidatingReader(jsonReader);
-            validatingReader.Schema = Schema;
-            validatingReader.ValidationEventHandler += delegate (object sender, SchemaValidationEventArgs args) {
+            JSchemaValidatingReader validatingReader = new JSchemaValidatingReader(jsonReader)
+            {
+                Schema = Schema
+            };
+            validatingReader.ValidationEventHandler += delegate (object sender, SchemaValidationEventArgs args)
+            {
                 bindingContext.ModelState.AddModelError(args.Path, args.Message);
             };
 
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.CheckAdditionalContent = true;
+            string strVersion = request.Headers[Constants.Headers.XExperienceApiVersion];
+            if (string.IsNullOrWhiteSpace(strVersion))
+            {
+                throw new Exception($"'{Constants.Headers.XExperienceApiVersion}' is missing.");
+            }
+
+            XAPISerializer serializer = new XAPISerializer(strVersion);
             serializer.Error += delegate (object sender, ErrorEventArgs args)
             {
                 bindingContext.ModelState.AddModelError(args.ErrorContext.Path, args.ErrorContext.Error.Message);
@@ -77,9 +105,8 @@ namespace Doctrina.Web.Mvc.ModelBinders
             };
 
             var statement = serializer.Deserialize<Statement>(validatingReader);
-            bindingContext.Result = ModelBindingResult.Success(statement);
-
-            return Task.CompletedTask;
+            return statement;
         }
+
     }
 }

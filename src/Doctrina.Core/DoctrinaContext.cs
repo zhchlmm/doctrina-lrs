@@ -19,6 +19,8 @@ namespace Doctrina.Core
         public DbSet<ActivityProfileEntity> ActivityProfiles { get; set; }
         public DbSet<ActivityStateEntity> ActivityStates { get; set; }
         public DbSet<DocumentEntity> Documents { get; set; }
+        public DbSet<ResultEntity> Results { get; set; }
+        public DbSet<AttachmentEntity> Attachments { get; set; }
 
         //public DbSet<ActivityProfile> ActivityProfiles { get; set; }
 
@@ -31,22 +33,22 @@ namespace Doctrina.Core
 
             #region Agent Indexes
             modelBuilder.Entity<AgentEntity>()
-                .HasIndex(x => x.Mbox)
+                .HasIndex(x => new { x.ObjectType, x.Mbox })
                 .HasFilter("[Mbox] IS NOT NULL")
                 .IsUnique();
 
             modelBuilder.Entity<AgentEntity>()
-                .HasIndex(x => x.Mbox_SHA1SUM)
+                .HasIndex(x => new { x.ObjectType, x.Mbox_SHA1SUM })
                 .HasFilter("[Mbox_SHA1SUM] IS NOT NULL")
                 .IsUnique();
 
             modelBuilder.Entity<AgentEntity>()
-                .HasIndex(x => x.OpenId)
+                .HasIndex(x => new { x.ObjectType, x.OpenId })
                 .HasFilter("[OpenId] IS NOT NULL")
                 .IsUnique();
 
             modelBuilder.Entity<AgentEntity>()
-                .HasIndex(agent => new { agent.Account_HomePage, agent.Account_Name })
+                .HasIndex(agent => new { agent.ObjectType, agent.Account_HomePage, agent.Account_Name })
                 .HasFilter("[Account_HomePage] IS NOT NULL AND [Account_Name] IS NOT NULL")
                 .IsUnique();
 

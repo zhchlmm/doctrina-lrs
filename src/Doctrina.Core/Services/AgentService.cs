@@ -4,13 +4,13 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
 using Doctrina.xAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Doctrina.Core.Services
 {
     public class AgentService : IAgentService
     {
         private readonly DoctrinaContext dbContext;
-        private readonly AgentGroupMemberRepository groupMembers;
         private readonly IAgentRepository agents;
 
         public AgentService(DoctrinaContext dbContext, IAgentRepository agentRepository)
@@ -25,51 +25,83 @@ namespace Doctrina.Core.Services
             throw new NotImplementedException();
         }
 
-        public AgentEntity MergeAgent(Agent actor)
+        public AgentEntity MergeActor(Agent actor)
         {
             if (actor == null)
                 throw new NullReferenceException("actor");
 
-            bool isGroup = actor.ObjectType == ObjectType.Group;
-            bool isAnonymous = actor.IsAnonymous();
-
-            var entity = GetAgent(actor);
-
-            if (!isAnonymous)
+            if(!actor.IsAnonymous() && actor.GetIdentifiers().Count > 1)
             {
-                if (entity == null)
-                {
-                    entity = CreateAgent(actor);
-                }
+                throw new Exception($"An Identified Group/Agent does not allow for multiple identifiers.");
+            }
 
-                if (isGroup && ((Group)actor).HasMember())
-                {
-                    CreateGroupMembers((Group)actor, entity);
-                }
+            if (actor.ObjectType == ObjectType.Agent)
+            {
+                return HandleAgent(actor);
+            }else if(actor.ObjectType == ObjectType.Group)
+            {
+                return HandleGroup(actor as Group);
+            }
 
-                this.dbContext.SaveChanges();
+            throw new Exception($"Cannot create Agent/Group with objectType '{actor.ObjectType}'");
+        }
+
+        private AgentEntity HandleGroup(Group group)
+        {
+            AgentEntity entity = null;
+
+            if(!TryGetEntity(group, out entity))
+            {
+                entity = CreateAgent(group);
+            }
+
+            if (!group.IsAnonymous())
+            {
+
+                if (group.HasMember())
+                {
+                    CreateGroupMembers(group, entity);
+                }
 
                 return entity;
             }
             else
             {
-                return RetreiveOrCreateAnonymousGroup((Group)actor);
+                return HandleAnonymousGroup(group);
             }
-            // Only way it doesn't have IFI is if its an anonymous group
-            throw new NotSupportedException();
         }
 
-        
-
-        private AgentEntity GetAgent(Agent actor)
+        private AgentEntity HandleAgent(Agent agent)
         {
-            AgentEntity entity = ConvertFrom(actor);
-            var match = this.agents.GetAgent(entity);
+            if (agent.IsAnonymous())
+            {
+                throw new Exception($"An Agent MUST be identified by one (1) of the four types of Inverse Functional Identifiers.");
+            }
+            if(agent.GetIdentifiers().Count > 1)
+            {
+                throw new Exception($"An Agent MUST NOT include more than one (1) Inverse Functional Identifier.");
+            }
+
+            if (TryGetEntity(agent, out AgentEntity entity))
+            {
+                return entity;
+            }
+
+            return CreateAgent(agent);
+        }
+
+        private bool TryGetEntity(Agent actor, out AgentEntity entity)
+        {
+            entity = null;
+            var match = this.agents.GetAgentOrGroup(ConvertFrom(actor));
 
             if (match != null)
-                return match;
+            {
+                entity = match;
+                return true;
+            }
 
-            return null;
+            return false;
         }
 
 
@@ -80,7 +112,8 @@ namespace Doctrina.Core.Services
 
             foreach (var member in group.Member)
             {
-                var grpAgent = MergeAgent(member);
+                // Ensure Agent exist
+                var grpAgent = MergeActor(member);
 
                 // Check if the relation exist
                 CreateGroupMemberRelation(entity, grpAgent);
@@ -121,7 +154,7 @@ namespace Doctrina.Core.Services
             return related;
         }
 
-        private AgentEntity RetreiveOrCreateAnonymousGroup(Group group)
+        private AgentEntity HandleAnonymousGroup(Group group)
         {
             bool hasMember = group.HasMember();
 
@@ -145,7 +178,7 @@ namespace Doctrina.Core.Services
         }
 
         /// <summary>
-        /// Creates agent if it does not exist.
+        /// Creates new agent without saving
         /// </summary>
         /// <param name="agent"></param>
         /// <returns></returns>
@@ -154,8 +187,24 @@ namespace Doctrina.Core.Services
             AgentEntity entity = ConvertFrom(agent);
 
             this.agents.Insert(entity);
+            this.dbContext.Entry(entity).State = EntityState.Added;
+            //this.dbContext.SaveChanges();
 
-            this.dbContext.SaveChanges();
+            return entity;
+        }
+
+        /// <summary>
+        /// Creates new group, without saving
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <returns></returns>
+        private AgentEntity CreateGroup(Group group)
+        {
+            AgentEntity entity = ConvertFrom(group);
+
+            this.agents.Insert(entity);
+            this.dbContext.Entry(entity).State = EntityState.Added;
+            //this.dbContext.SaveChanges();
 
             return entity;
         }

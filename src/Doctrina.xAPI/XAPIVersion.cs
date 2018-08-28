@@ -63,7 +63,6 @@ namespace Doctrina.xAPI
             return SupportedVersions;
         }
 
-
         public XAPIVersion(string version)
         {
             _version = version;
@@ -74,7 +73,7 @@ namespace Doctrina.xAPI
             var s = GetKnownVersions();
 
             /// https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#lrs-requirements-2
-            if (version.StartsWith("1.0."))
+            if (version.StartsWith("1.0.") || version.Equals("1.0"))
             {
                 return new XAPIVersion(version);
             }

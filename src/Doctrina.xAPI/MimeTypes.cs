@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI
 {
-    public static class MIMETypes
+    public static class MediaTypes
     {
         public static class Application
         {

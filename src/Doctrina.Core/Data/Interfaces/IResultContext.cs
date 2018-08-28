@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Doctrina.xAPI.Models;
+using System;
 
 namespace Doctrina.Core.Data
 {
@@ -10,7 +11,7 @@ namespace Doctrina.Core.Data
 
         string Response { get; set; }
 
-        TimeSpan? Duration { get; set; }
+        long? Duration { get; set; }
 
         double? ScoreScaled { get; set; }
 
