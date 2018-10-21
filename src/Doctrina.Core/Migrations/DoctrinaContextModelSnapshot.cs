@@ -15,7 +15,7 @@ namespace Doctrina.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -74,19 +74,19 @@ namespace Doctrina.Core.Migrations
 
                     b.HasKey("Key");
 
-                    b.HasIndex("Mbox")
+                    b.HasIndex("ObjectType", "Mbox")
                         .IsUnique()
                         .HasFilter("[Mbox] IS NOT NULL");
 
-                    b.HasIndex("Mbox_SHA1SUM")
+                    b.HasIndex("ObjectType", "Mbox_SHA1SUM")
                         .IsUnique()
                         .HasFilter("[Mbox_SHA1SUM] IS NOT NULL");
 
-                    b.HasIndex("OpenId")
+                    b.HasIndex("ObjectType", "OpenId")
                         .IsUnique()
                         .HasFilter("[OpenId] IS NOT NULL");
 
-                    b.HasIndex("Account_HomePage", "Account_Name")
+                    b.HasIndex("ObjectType", "Account_HomePage", "Account_Name")
                         .IsUnique()
                         .HasFilter("[Account_HomePage] IS NOT NULL AND [Account_Name] IS NOT NULL");
 
@@ -108,6 +108,8 @@ namespace Doctrina.Core.Migrations
 
                     b.Property<string>("Payload")
                         .HasMaxLength(150);
+
+                    b.Property<string>("SHA");
 
                     b.Property<Guid>("StatementId");
 

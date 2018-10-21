@@ -1,23 +1,13 @@
-﻿using Doctrina.Web.Models;
+﻿using Doctrina.Web.Areas.xAPI.Models;
+using Doctrina.xAPI;
+using Doctrina.xAPI.Http;
 using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Serialization;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Doctrina.xAPI;
-using Doctrina.Web.Areas.xAPI.Models;
-using System.Text;
 using System;
-using Microsoft.AspNetCore.Http;
-using Doctrina.xAPI.Json.Converters;
-using Microsoft.Extensions.Primitives;
-using Doctrina.xAPI.Http;
-using System.IO;
+using System.Threading.Tasks;
 
 namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 {
@@ -36,10 +26,15 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 
                 var request = bindingContext.ActionContext.HttpContext.Request;
                 var version = request.Headers[Constants.Headers.XExperienceApiVersion];
-                var content = new StatementsContent(request.ContentType, request.Body);
-                var jsonString = await content.ReadAsStatementsString();
+                var content = new StatementsHttpContent(request.ContentType, request.Body);
+                var jsonString = await content.ReadStatementsString();
 
                 var serializer = new XAPISerializer((string)version);
+                serializer.Error += delegate (object sender, ErrorEventArgs args)
+                {
+                    bindingContext.ModelState.AddModelError(args.ErrorContext.Path, args.ErrorContext.Error.Message);
+                    args.ErrorContext.Handled = true;
+                };
                 var validationReader = CreateValidationReader(jsonString);
 
                 validationReader.ValidationEventHandler += delegate (object sender, SchemaValidationEventArgs args)
@@ -49,7 +44,9 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 
                 if(content.Attachments != null)
                 {
-                    model.Attachments = content.Attachments;
+                    // TODO: Attachments
+                    //model.Attachments = content.Attachments;
+                    throw new NotImplementedException();
                 }
 
                 if (jsonString.StartsWith("{"))
@@ -74,7 +71,7 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
             }
             catch (Exception ex)
             {
-                bindingContext.ModelState.AddModelError("", ex, null);
+                bindingContext.ModelState.AddModelError("", ex, bindingContext.ModelMetadata);
                 bindingContext.Result = ModelBindingResult.Failed();
             }
         }

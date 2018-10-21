@@ -1,6 +1,7 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
 using Doctrina.xAPI;
+using Doctrina.xAPI.Http;
 using Doctrina.xAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -252,37 +253,6 @@ namespace Doctrina.Core.Services
 
             this._dbContext.Statements.Update(voidedStatement);
             this._dbContext.Entry(voidedStatement).State = EntityState.Modified;
-        }
-
-        public void AddAttachments(StatementEntity entity, Attachment[] attachments)
-        {
-            if (attachments == null || attachments.Length <= 0)
-                return;
-
-            entity.Attachments = new List<AttachmentEntity>();
-
-            foreach(var attachment in attachments)
-            {
-                var current = JObject.FromObject(attachment);
-                var canonicalData = new JObject();
-                if(current["display"] != null)
-                {
-                    canonicalData["display"] = current["display"];
-                }
-                if(current["description"] != null)
-                {
-                    canonicalData["description"] = current["description"];
-                }
-                var attachmentEntity = new AttachmentEntity()
-                {
-                    Payload = attachment.SHA2,
-                    ContentType = attachment.ContentType,
-                    StatementId = entity.StatementId,
-                    CanonicalData = canonicalData.ToString()
-                };
-
-                entity.Attachments.Add(attachmentEntity);
-            }
         }
     }
 }

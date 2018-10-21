@@ -103,7 +103,7 @@ namespace Doctrina.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/home/error");
                 //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             }
 
@@ -121,7 +121,7 @@ namespace Doctrina.Web
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=home}/{action=index}/{id?}");
             });
 
             License.RegisterLicense("3649-sZ/v2JAi0b1NeuXTAzlwEZDpBfPynHQ1+xaoVJNqk7jB+WSJvnHGbt8eioWr83LS6CT10w4lsQsQ5F7j7j4NUWGdKyc84xS8zrhsuHGI7Q5J55qwV9aSdJ/oGaBwBVVfZJQcFT33l0+oRTMCC2RBeipRQAFv36wejqM8OeUwj8V7IklkIjozNjQ5LCJFeHBpcnlEYXRlIjoiMjAxOS0wNC0yOVQxNTo1NjozNi44OTcyOTE3WiIsIlR5cGUiOiJKc29uU2NoZW1hSW5kaWUifQ==");

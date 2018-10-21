@@ -1,0 +1,18 @@
+2018-10-20 09:34:34.170 +02:00 [Information] Configuring DB
+2018-10-20 09:34:39.653 +02:00 [Information] Entity Framework Core "2.1.4-rtm-31024" initialized '"DoctrinaContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None"
+2018-10-20 09:34:43.554 +02:00 [Information] Executed DbCommand ("364"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0"
+2018-10-20 09:34:44.071 +02:00 [Information] Executed DbCommand ("207"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u])
+    THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT)
+END"
+2018-10-20 09:34:44.816 +02:00 [Information] User profile is available. Using '"C:\Users\rasmu\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+2018-10-20 09:34:45.990 +02:00 [Information] Overriding endpoints defined in UseKestrel() because "PreferHostingUrls" is set to true. Binding to address(es) '"http://127.0.0.1:22548"' instead.
+2018-10-20 09:34:46.390 +02:00 [Information] Request starting HTTP/1.1 POST http://localhost:5000/xAPI/statements application/json 348
+2018-10-20 09:34:47.662 +02:00 [Information] Route matched with "{action = \"PostStatements\", controller = \"Statements\", area = \"\", page = \"\"}". Executing action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)"
+2018-10-20 09:34:47.921 +02:00 [Information] Executing ObjectResult, writing value of type '"Microsoft.AspNetCore.Mvc.SerializableError"'.
+2018-10-20 09:34:47.986 +02:00 [Information] Executed action "Doctrina.Web.Areas.xAPI.Controllers.StatementsController.PostStatements (Doctrina.Web)" in 316.6819ms
+2018-10-20 09:34:48.009 +02:00 [Information] Request finished in 1620.445ms 400 application/json; charset=utf-8

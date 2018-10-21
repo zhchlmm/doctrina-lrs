@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Doctrina.Core.Migrations
 {
-    public partial class Install : Migration
+    public partial class CreateTables : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -511,7 +511,8 @@ namespace Doctrina.Core.Migrations
                     ContentType = table.Column<string>(maxLength: 255, nullable: true),
                     Content = table.Column<byte[]>(nullable: true),
                     Payload = table.Column<string>(maxLength: 150, nullable: true),
-                    StatementId = table.Column<Guid>(nullable: false)
+                    StatementId = table.Column<Guid>(nullable: false),
+                    SHA = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -577,30 +578,30 @@ namespace Doctrina.Core.Migrations
                 column: "DocumentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Agents_Mbox",
+                name: "IX_Agents_ObjectType_Mbox",
                 table: "Agents",
-                column: "Mbox",
+                columns: new[] { "ObjectType", "Mbox" },
                 unique: true,
                 filter: "[Mbox] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Agents_Mbox_SHA1SUM",
+                name: "IX_Agents_ObjectType_Mbox_SHA1SUM",
                 table: "Agents",
-                column: "Mbox_SHA1SUM",
+                columns: new[] { "ObjectType", "Mbox_SHA1SUM" },
                 unique: true,
                 filter: "[Mbox_SHA1SUM] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Agents_OpenId",
+                name: "IX_Agents_ObjectType_OpenId",
                 table: "Agents",
-                column: "OpenId",
+                columns: new[] { "ObjectType", "OpenId" },
                 unique: true,
                 filter: "[OpenId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Agents_Account_HomePage_Account_Name",
+                name: "IX_Agents_ObjectType_Account_HomePage_Account_Name",
                 table: "Agents",
-                columns: new[] { "Account_HomePage", "Account_Name" },
+                columns: new[] { "ObjectType", "Account_HomePage", "Account_Name" },
                 unique: true,
                 filter: "[Account_HomePage] IS NOT NULL AND [Account_Name] IS NOT NULL");
 

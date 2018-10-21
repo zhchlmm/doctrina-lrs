@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Http
 {
-    public class StatementsContent : HttpContent
+    public class StatementsHttpContent : HttpContent
     {
         private Stream _stream;
         private int multipartIndex = 0;
@@ -56,23 +56,27 @@ namespace Doctrina.xAPI.Http
         public List<AttachmentBatch> Attachments { get; set; }
         #endregion
 
-        public StatementsContent(string contentType, Stream stream) : base()
+        public StatementsHttpContent(string contentType, Stream stream) : base()
         {
             Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
             _stream = stream;
         }
 
-        public async Task<string> ReadAsStatementsString()
+        /// <summary>
+        /// Read the first part of the multipart/mixed content, which must be json
+        /// </summary>
+        /// <returns>JSON string</returns>
+        public async Task<string> ReadStatementsString()
         {
             string jsonString = null;
-            if (Headers.ContentType.MediaType == MediaTypes.Application.Json)
+            if (Headers.ContentType.MediaType.StartsWith(MediaTypes.Application.Json))
             {
                 using (var streamReader = new System.Net.Http.StreamContent(Stream))
                 {
                     jsonString = await streamReader.ReadAsStringAsync();
                 }
             }
-            else if (Headers.ContentType.MediaType == MediaTypes.Multipart.Mixed)
+            else if (Headers.ContentType.MediaType.StartsWith(MediaTypes.Multipart.Mixed))
             {
                 var firstPart = await ReadNextAttachmentAsync();
                 jsonString = Encoding.UTF8.GetString(firstPart.Content);
@@ -80,6 +84,7 @@ namespace Doctrina.xAPI.Http
                 var section = await ReadNextAttachmentAsync();
                 if (section != null)
                     Attachments = new List<AttachmentBatch>();
+
                 while(section != null)
                 {
                     Attachments.Add(section);
@@ -182,7 +187,8 @@ namespace Doctrina.xAPI.Http
 
         protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
         {
-            string jsonString = JsonConvert.SerializeObject(await ReadAsStatementsString());
+            // TODO: This read all content as string?
+            string jsonString = JsonConvert.SerializeObject(await ReadStatementsString());
             var jsonContent = new StringContent(jsonString, Encoding.UTF8, MediaTypes.Application.Json);
 
             if(Headers.ContentType.MediaType == MediaTypes.Multipart.Mixed)
@@ -227,7 +233,16 @@ namespace Doctrina.xAPI.Http
 
         protected override bool TryComputeLength(out long length)
         {
-            throw new NotImplementedException();
+            if (!_stream.CanSeek)
+            {
+                length = 0;
+                return false;
+            }
+            else
+            {
+                length = _stream.Length;
+                return true;
+            }
         }
     }
 
@@ -237,10 +252,5 @@ namespace Doctrina.xAPI.Http
         public MediaTypeHeaderValue ContentType { get; set; }
         public MediaTypeHeaderValue ContentTransferEncoding { get; set; }
         public byte[] Content { get; set; }
-    }
-
-    public class AttachmentCollection
-    {
-
     }
 }

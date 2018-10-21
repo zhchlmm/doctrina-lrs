@@ -83,6 +83,10 @@ namespace Doctrina.xAPI.Models
         {
             return new Iri(d.ToString());
         }
+
+        public static explicit operator Iri(string strIri){
+            return new Iri(strIri);
+        }
     }
 
     internal class IRITypeConverter: TypeConverter
