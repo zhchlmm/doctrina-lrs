@@ -8,6 +8,6 @@ namespace Doctrina.Core.Data
         byte[] Content { get; set; }
         string ContentType { get; set; }
         string ETag { get; set; }
-        DateTime Timestamp { get; set; }
+        DateTimeOffset LastModified { get; set; }
     }
 }

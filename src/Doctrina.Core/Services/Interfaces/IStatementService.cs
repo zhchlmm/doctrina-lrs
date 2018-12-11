@@ -11,8 +11,8 @@ namespace Doctrina.Core.Services
     {
         Guid[] CreateStatements(Agent authority, params Statement[] statements);
         //Guid SaveStatement(Statement statement);
-        Statement GetStatement(Guid statementId, bool voided = false, bool inludeAttachments = false);
-        IEnumerable<Statement> GetStatements(PagedStatementsQuery parameters, out int totalCount);
+        StatementEntity GetStatement(Guid statementId, bool voided = false, bool inludeAttachments = false);
+        IEnumerable<StatementEntity> GetStatements(PagedStatementsQuery parameters, out int totalCount);
         //IEnumerable<StatementEntity> GetStatements();
         bool Exist(Guid statementId, bool voided = false);
     }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Doctrina.Web.Models;
 using Doctrina.Web.Areas.xAPI.Models;
 using Doctrina.xAPI;
+using System.Net.Http.Headers;
 
 namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 {
@@ -43,11 +44,11 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
             var actionContext = bindingContext.ActionContext;
             var httpContext = actionContext.HttpContext;
             var request = httpContext.Request;
-            if (httpContext.Request.Method == HttpMethod.Post.Method || httpContext.Request.Method == HttpMethod.Put.Method)
+            if (request.Method == HttpMethod.Post.Method || request.Method == HttpMethod.Put.Method)
             {
                 // Parse contentType
-                string contentType = actionContext.HttpContext.Request.ContentType;
-                model.ContentType = contentType;
+                var contentType = MediaTypeHeaderValue.Parse(request.ContentType);
+                model.ContentType = contentType.MediaType;
                 // Validate content as valid json if application/json
 
                 using(var reader = new StreamContent(request.Body))
@@ -56,7 +57,7 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
                     model.Content = binaryDocument;
                 }
 
-                if(contentType.IndexOf(MediaTypes.Application.Json) > 0)
+                if(contentType.MediaType == MediaTypes.Application.Json)
                 {
                     string jsonString = System.Text.Encoding.UTF8.GetString(model.Content);
                     ValidateJson(jsonString, bindingContext.ModelState);

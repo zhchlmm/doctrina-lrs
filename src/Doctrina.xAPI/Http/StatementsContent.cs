@@ -56,6 +56,11 @@ namespace Doctrina.xAPI.Http
         public List<AttachmentBatch> Attachments { get; set; }
         #endregion
 
+        public StatementsHttpContent() : base()
+        {
+            Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypes.Application.Json);
+        }
+
         public StatementsHttpContent(string contentType, Stream stream) : base()
         {
             Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);

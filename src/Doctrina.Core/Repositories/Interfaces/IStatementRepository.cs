@@ -10,12 +10,11 @@ namespace Doctrina.Core.Repositories
     public interface IStatementRepository
     {
         void AddStatement(StatementEntity entity);
-        StatementEntity GetById(Guid statementRefId);
+        StatementEntity GetById(Guid statementRefId, bool voided, bool includeAttachments);
         void Update(StatementEntity voidedStatement);
         IQueryable<StatementEntity> GetAll(bool voided, bool includeAttachments);
         bool Exist(Guid statementId, bool voided = false);
         bool HasVoidingStatement(Guid id);
-        void Add(StatementEntity entity);
         //void VoidStatement(Guid statementId);
         //void VoidStatement(StatementEntity voidedStatement);
     }

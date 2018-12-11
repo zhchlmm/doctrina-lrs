@@ -7,9 +7,11 @@ using System;
 
 namespace Doctrina.Core.Services
 {
-    public class AttachmentService : IAttachmentService
+    public sealed class AttachmentService : IAttachmentService
     {
-        private void AddAttachment(StatementEntity entity, Attachment attachment, byte[] payload = null)
+        private readonly DoctrinaContext dbContext;
+
+        public void AddAttachment(StatementEntity statement, Attachment attachment, byte[] payload = null)
         {
 
             // Signature Requirements
@@ -37,7 +39,7 @@ namespace Doctrina.Core.Services
             {
                 SHA2 = attachment.SHA2,
                 ContentType = attachment.ContentType,
-                StatementId = entity.StatementId,
+                StatementId = statement.StatementId,
                 CanonicalData = canonicalData.ToString(Newtonsoft.Json.Formatting.None),
             };
 
@@ -52,7 +54,7 @@ namespace Doctrina.Core.Services
                 attachmentEntity.Content = payload;
             }
 
-            entity.Attachments.Add(attachmentEntity);
+            statement.Attachments.Add(attachmentEntity);
         }
     }
 }

@@ -76,7 +76,7 @@ namespace Doctrina.Core.Services
 
             // Update etag as the last thing
             entity.ContentType = contentType;
-            entity.Timestamp = DateTime.UtcNow;
+            entity.LastModified = DateTime.UtcNow;
             entity.ETag = ComputeHash(content);
 
             this.dbContext.Documents.Update((DocumentEntity)entity);

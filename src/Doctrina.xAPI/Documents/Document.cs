@@ -1,27 +1,22 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http.Headers;
 
 namespace Doctrina.xAPI.Documents
 {
     public abstract class Document
     {
-        [JsonProperty("id")]
         public string Id { get; set; }
 
-        [JsonProperty("etag")]
-        public string ETag { get; set; }
+        public EntityTagHeaderValue ETag { get; set; }
 
-        [JsonProperty("timestamp")]
-        public DateTime Timestamp { get; set; }
+        /// <summary>
+        /// Last Modified
+        /// </summary>
+        public DateTimeOffset? LastModified { get; set; }
 
-        [JsonProperty("contentType")]
-        public string ContentType { get; set; }
+        public MediaTypeHeaderValue ContentType { get; set; }
 
-        [JsonProperty("content")]
         public byte[] Content { get; set; }
     }
 }

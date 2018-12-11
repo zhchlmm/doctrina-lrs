@@ -31,9 +31,9 @@ namespace Doctrina.Core.Services
             _subStatementService = subStatementService;
         }
 
-        public Statement GetStatement(Guid statementId, bool voided = false, bool includeAttachments = false)
+        public StatementEntity GetStatement(Guid statementId, bool voided = false, bool includeAttachments = false)
         {
-            var stmt = this._statements.GetById(statementId);
+            var stmt = this._statements.GetById(statementId, voided, includeAttachments);
             if (stmt == null)
                 return null;
 
@@ -41,7 +41,7 @@ namespace Doctrina.Core.Services
             if (stmt.Voided != voided)
                 return null;
 
-            return ConvertFrom(stmt);
+            return stmt;
         }
 
         /// <summary>
@@ -130,12 +130,12 @@ namespace Doctrina.Core.Services
                 VoidStatement(entity);
             }
 
-            this._statements.Add(entity);
+            this._statements.AddStatement(entity);
 
             return model.Id.Value;
         }
 
-        public IEnumerable<Statement> GetStatements(PagedStatementsQuery parameters, out int totalCount)
+        public IEnumerable<StatementEntity> GetStatements(PagedStatementsQuery parameters, out int totalCount)
         {
             totalCount = 0;
             bool includeAttachements = parameters.Attachments.GetValueOrDefault();
@@ -209,13 +209,13 @@ namespace Doctrina.Core.Services
             skip = Math.Max(skip, 0);
             parameters.Skip = skip; // Return skips
 
-            var result = new List<Statement>();
+            var result = new List<StatementEntity>();
 
             var pageQuery = query.Select(x => new
             {
                 TotalCount = query.Count(),
-                x.StatementId,
-                x.FullStatement
+                Statement = x,
+                Attachments = includeAttachements ? x.Attachments : new List<AttachmentEntity>()
             });
 
             if (limit > 0)
@@ -224,20 +224,26 @@ namespace Doctrina.Core.Services
                 .Take(limit);
             }
 
-            var page = pageQuery.ToList();
+            // Execute query
+            var pagedResult = pageQuery.ToList();
 
-            // Push out total rows count
-            totalCount = page.First().TotalCount;
-
-
-            if (!page.Any())
+            if (!pagedResult.Any())
             {
-                return new List<Statement>();
+                totalCount = 0;
+                return new List<StatementEntity>();
             }
 
-            // Parse page rows
-            result = page.Select(x => JsonConvert.DeserializeObject<Statement>(x.FullStatement))
-                .ToList();
+            // Push out total rows count
+            totalCount = pagedResult.First().TotalCount;
+
+            // Parse page result back to statements
+            foreach(var item in pagedResult)
+            {
+                var stmt = item.Statement;
+                if (includeAttachements)
+                    stmt.Attachments = item.Attachments;
+                result.Add(stmt);
+            }
 
             return result;
         }
@@ -284,7 +290,7 @@ namespace Doctrina.Core.Services
             }
         }
 
-        private Statement ConvertFrom(StatementEntity entity)
+        public Statement ConvertFrom(StatementEntity entity)
         {
             return JsonConvert.DeserializeObject<Statement>(entity.FullStatement);
         }

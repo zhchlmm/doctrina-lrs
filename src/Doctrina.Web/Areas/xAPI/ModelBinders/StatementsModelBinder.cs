@@ -25,6 +25,7 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
                 var model = new StatementsPostContent();
 
                 var request = bindingContext.ActionContext.HttpContext.Request;
+
                 var version = request.Headers[Constants.Headers.XExperienceApiVersion];
                 var content = new StatementsHttpContent(request.ContentType, request.Body);
                 var jsonString = await content.ReadStatementsString();

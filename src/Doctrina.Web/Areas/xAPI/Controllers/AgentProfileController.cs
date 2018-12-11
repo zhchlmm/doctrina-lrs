@@ -83,7 +83,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
                 
                 Response.Headers.Add("ETag", $"\"{document.ETag}\"");
-                Response.Headers.Add("LastModified", document.Timestamp.ToString("o"));
+                Response.Headers.Add("LastModified", document.LastModified.ToString("o"));
                 return Ok();
             }
             catch (Exception ex)

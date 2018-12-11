@@ -18,7 +18,6 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
     //[ApiVersion]
     [VersionHeader]
     [Route("xapi/activities/state")]
-    [Produces("application/json")]
     public class ActivityStatesController : ApiControllerBase
     {
         private readonly IActivityStateService activityStateService;
@@ -42,10 +41,10 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                     return new NotFoundResult();
 
                 var contentType = new MediaTypeHeaderValue(stateDocument.ContentType);
-                var result = new FileContentResult(stateDocument.Content, contentType);
+                var content = new FileContentResult(stateDocument.Content, contentType);
+                content.LastModified = stateDocument.LastModified;
                 Response.Headers.Add("ETag", "\"" + stateDocument.ETag + "\"");
-                Response.Headers.Add("LastModified", stateDocument.Timestamp.ToString(Constants.Formats.DateTimeFormat));
-                return result;
+                return content;
             }
             catch (Exception ex)
             {
@@ -63,7 +62,8 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             try
             {
                 var state = activityStateService.MergeStateDocument(model.StateId, model.ActivityId, model.Agent, model.Registration, model.ContentType, model.Content);
-                Response.Headers.Add("ETag", $"\"{state.ETag}\"");
+                var etag = EntityTagHeaderValue.Parse(state.ETag);
+                Response.Headers.Add("ETag", etag.ToString());
                 return NoContent();
             }
             catch (Exception ex)
@@ -107,20 +107,19 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
             try
             {
-                Agent parsedAgent = Agent.Parse(strAgent);
+                Agent agent = Agent.Parse(strAgent);
 
-                var states = activityStateService.GetStates(activityId, parsedAgent, registration, since);
+                var states = activityStateService.GetStates(activityId, agent, registration, since);
 
                 IEnumerable<Guid> ids = states.Select(x => x.Id);
-                string lastModified = states.OrderByDescending(x => x.Timestamp).FirstOrDefault().Timestamp.ToString(Constants.Formats.DateTimeFormat);
-
-                Response.Headers["LastModified"] = lastModified;
+                string lastModified = states.OrderByDescending(x => x.LastModified).FirstOrDefault().LastModified.ToString(Constants.Formats.DateTimeFormat);
+                Response.Headers.Add("LastModified", lastModified);
 
                 return Ok(ids);
             }
             catch (Exception ex)
             {
-                throw ex;
+                return BadRequest(ex);
             }
         }
     }

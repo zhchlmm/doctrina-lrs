@@ -14,7 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Schema;
+using JsonSchema = Newtonsoft.Json.Schema;
 
 namespace Doctrina.Web
 {
@@ -77,6 +77,7 @@ namespace Doctrina.Web
             services.AddScoped<IVerbRepository, VerbRepository>();
 
             // Add application services.
+            services.AddScoped<IAttachmentService, AttachmentService>();
             services.AddScoped<ISubStatementService, SubStatementService>();
             services.AddScoped<IActivityService, ActivityService>();
             services.AddScoped<IStatementService, StatementService>();
@@ -103,7 +104,7 @@ namespace Doctrina.Web
             }
             else
             {
-                app.UseExceptionHandler("/home/error");
+                app.UseExceptionHandler("/error");
                 //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             }
 
@@ -124,7 +125,7 @@ namespace Doctrina.Web
                     template: "{controller=home}/{action=index}/{id?}");
             });
 
-            License.RegisterLicense("3649-sZ/v2JAi0b1NeuXTAzlwEZDpBfPynHQ1+xaoVJNqk7jB+WSJvnHGbt8eioWr83LS6CT10w4lsQsQ5F7j7j4NUWGdKyc84xS8zrhsuHGI7Q5J55qwV9aSdJ/oGaBwBVVfZJQcFT33l0+oRTMCC2RBeipRQAFv36wejqM8OeUwj8V7IklkIjozNjQ5LCJFeHBpcnlEYXRlIjoiMjAxOS0wNC0yOVQxNTo1NjozNi44OTcyOTE3WiIsIlR5cGUiOiJKc29uU2NoZW1hSW5kaWUifQ==");
+            JsonSchema.License.RegisterLicense("3649-sZ/v2JAi0b1NeuXTAzlwEZDpBfPynHQ1+xaoVJNqk7jB+WSJvnHGbt8eioWr83LS6CT10w4lsQsQ5F7j7j4NUWGdKyc84xS8zrhsuHGI7Q5J55qwV9aSdJ/oGaBwBVVfZJQcFT33l0+oRTMCC2RBeipRQAFv36wejqM8OeUwj8V7IklkIjozNjQ5LCJFeHBpcnlEYXRlIjoiMjAxOS0wNC0yOVQxNTo1NjozNi44OTcyOTE3WiIsIlR5cGUiOiJKc29uU2NoZW1hSW5kaWUifQ==");
         }
     }
 }

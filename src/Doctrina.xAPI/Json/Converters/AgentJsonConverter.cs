@@ -50,9 +50,13 @@ namespace Doctrina.xAPI.Json.Converters
             return null;
         }
 
-        public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var xapiSerializer = (XAPISerializer)serializer;
+            var format = xapiSerializer.ResultFormat;
+            writer.WriteStartObject();
+            // TODO: Write Agent result based on result format.
+            writer.WriteEndObject();
         }
 
         public override bool CanWrite => false;

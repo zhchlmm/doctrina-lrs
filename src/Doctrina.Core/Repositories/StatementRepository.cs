@@ -16,9 +16,17 @@ namespace Doctrina.Core.Repositories
             this.dbContext = context;
         }
 
-        public StatementEntity GetById(Guid statementId)
+        public StatementEntity GetById(Guid statementId, bool voided, bool includeAttachments)
         {
-            return this.dbContext.Statements.Find(statementId);
+            if (includeAttachments)
+            {
+                return this.dbContext.Statements
+                    .Include(x=> x.Attachments)
+                    .FirstOrDefault(x => x.StatementId == statementId && x.Voided == voided);
+            }
+
+            return this.dbContext.Statements
+                    .FirstOrDefault(x => x.StatementId == statementId && x.Voided == voided);
         }
 
         public IQueryable<StatementEntity> GetAll(bool voided, bool includeAttachments)

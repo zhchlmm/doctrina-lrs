@@ -70,7 +70,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                     return Ok(new Guid[] { });
 
                 IEnumerable<Guid> ids = documents.Select(x => x.Id);
-                string lastModified = documents.OrderByDescending(x => x.Timestamp).FirstOrDefault().Timestamp.ToString(Constants.Formats.DateTimeFormat);
+                string lastModified = documents.OrderByDescending(x => x.LastModified).FirstOrDefault().LastModified.ToString(Constants.Formats.DateTimeFormat);
 
                 Response.Headers.Add("LastModified", lastModified);
                 return Ok(ids);

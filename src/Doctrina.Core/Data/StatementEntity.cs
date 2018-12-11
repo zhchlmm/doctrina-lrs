@@ -84,7 +84,7 @@ namespace Doctrina.Core.Data
         [ForeignKey(nameof(AuthorityId))]
         public virtual AgentEntity Authority { get; set; }
 
-        public List<AttachmentEntity> Attachments { get; set; }
+        public virtual List<AttachmentEntity> Attachments { get; set; }
         #endregion
 
         /// <summary>

@@ -19,12 +19,19 @@ namespace Doctrina.xAPI
         public const string Completed = "http://activitystrea.ms/schema/1.0/complete";
 
         /// <summary>
-        /// Used to leave an activity attempt with no intention of returning with the learner progress intact. The expectation is learner progress will be cleared. Should appear immediately before a statement with terminated. A statement with EITHER exited OR suspended should be used before one with terminated. Lack of the two implies the same as exited.
+        /// Used to leave an activity attempt with no intention of returning with the learner progress intact. 
+        /// The expectation is learner progress will be cleared. 
+        /// Should appear immediately before a statement with terminated. 
+        /// A statement with EITHER exited OR suspended should be used before one with terminated. 
+        /// Lack of the two implies the same as exited.
         /// </summary>
         public const string Exited = "http://adlnet.gov/expapi/verbs/exited";
 
         /// <summary>
-        /// Used to suspend an activity with the intention of returning to it later, but not losing progress. Should appear immediately before a statement with terminated. A statement with EITHER exited OR suspended should be used before one with terminated. Lack of the two implies the same as exited. Beginning the suspended activity will always result in a resumed activity.
+        /// Used to suspend an activity with the intention of returning to it later, but not losing progress. 
+        /// Should appear immediately before a statement with terminated. 
+        /// A statement with EITHER exited OR suspended should be used before one with terminated. 
+        /// Lack of the two implies the same as exited. Beginning the suspended activity will always result in a resumed activity.
         /// </summary>
         public const string Suspended = "http://adlnet.gov/expapi/verbs/suspended";
 

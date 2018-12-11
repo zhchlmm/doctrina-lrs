@@ -1,11 +1,7 @@
 ﻿using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace Doctrina.xAPI
@@ -39,28 +35,15 @@ namespace Doctrina.xAPI
         /// <summary>
         /// Filter, only return Statements for which the Object of the Statement is an Activity with the specified id.	
         /// </summary>
-        private string _activityId;
         [FromQuery(Name ="activityId")]
-        public string ActivityId
-        {
-            get { return _activityId; }
-            set
-            {
-                if (Uri.IsWellFormedUriString(value, UriKind.RelativeOrAbsolute))
-                {
-                    _activityId = value;
-                }
-
-                throw new UriFormatException("Parameter 'activityId' is not URI valid format.");
-            }
-        }
+        public Iri ActivityId { get; set; }
 
         /// <summary>
         /// Filter, only return Statements matching the specified registration id. Note that although frequently a unique registration will be used for one Actor assigned to one Activity, this cannot be assumed. If only Statements for a certain Actor or Activity are required, those parameters also need to be specified.
         /// </summary>
         [FromQuery(Name = "registration")]
         public Guid? Registration { get; set; }
-         
+
         [FromQuery(Name = "related_activities")]
         public bool? RelatedActivities { get; set; }
 
@@ -77,16 +60,10 @@ namespace Doctrina.xAPI
         public int? Limit { get; set; }
 
         [FromQuery(Name = "format")]
-        public StatementsQueryResultFormat Format { get; set; }
+        public ResultFormats? Format { get; set; }
 
         [FromQuery(Name = "ascending")]
         public bool? Ascending { get; set; }
-
-        /// <summary>
-        /// From header 'Accept-Language' includes a list of languages that are defined in the browser’s language settings. 
-        /// </summary>
-        [FromHeader(Name = "Accept-Language")]
-        public string Language { get; set; }
 
         /// <summary>
         /// If true, the LRS uses the multipart response format and includes all attachments as described previously. If false, the LRS sends the prescribed response with Content-Type application/json and does not send attachment data.	
@@ -110,7 +87,7 @@ namespace Doctrina.xAPI
             }
             if (ActivityId != null)
             {
-                result.Add("activity", ActivityId);
+                result.Add("activity", ActivityId.ToString());
             }
             if (Registration != null)
             {
@@ -136,9 +113,9 @@ namespace Doctrina.xAPI
             {
                 result.Add("limit", Limit.ToString());
             }
-            if (Format != null)
+            if (Format.HasValue)
             {
-                result.Add("format", Format.ToString());
+                result.Add("format", Enum.GetName(typeof(ResultFormats), Format.Value));
             }
             if (Attachments != null)
             {
