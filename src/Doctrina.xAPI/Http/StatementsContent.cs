@@ -63,6 +63,12 @@ namespace Doctrina.xAPI.Http
 
         public StatementsHttpContent(string contentType, Stream stream) : base()
         {
+            if(!(contentType == MediaTypes.Application.Json
+                || contentType == MediaTypes.Multipart.Mixed))
+            {
+                throw new Exception($"Excepted Content-Type of '{MediaTypes.Application.Json}' or '{MediaTypes.Multipart.Mixed}'");
+            }
+
             Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
             _stream = stream;
         }

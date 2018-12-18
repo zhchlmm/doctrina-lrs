@@ -7,11 +7,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.Models
+namespace Doctrina.xAPI
 {
     /// <summary>
     /// Internationalized Resource Identifiers
     /// </summary>
+    [Obsolete("Use URIs instead.")]
     [TypeConverter(typeof(IrlTypeConverter))]
     public class Irl
     {

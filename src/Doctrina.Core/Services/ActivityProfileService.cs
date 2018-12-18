@@ -1,7 +1,7 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.Core.Data.Documents;
 using Doctrina.Core.Repositories;
-using Doctrina.xAPI.Models;
+using Doctrina.xAPI;
 using System;
 using System.Collections.Generic;
 
@@ -84,13 +84,13 @@ namespace Doctrina.Core.Services
             if (activityId == null)
                 throw new ArgumentNullException("activityId");
 
-            var profiles = this.activityProfileRepository.GetProfilesDocuments(activityId, since);
+            var documents = this.activityProfileRepository.GetProfilesDocuments(activityId, since);
 
-            if (profiles == null)
+            if (documents == null)
                 return null;
 
 
-            return profiles;
+            return documents;
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 
 namespace Doctrina.xAPI.Documents
 {
-    public abstract class Document
+    public abstract class Document : IDocument
     {
         public string Id { get; set; }
 

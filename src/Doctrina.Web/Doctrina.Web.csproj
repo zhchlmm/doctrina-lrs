@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\xAPI\Mvc\Bindings\" />
     <Folder Include="Controllers\" />
     <Folder Include="Logs\" />
     <Folder Include="Mvc\" />

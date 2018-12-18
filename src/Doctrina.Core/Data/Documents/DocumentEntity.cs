@@ -17,9 +17,9 @@ namespace Doctrina.Core.Data.Documents
 
         [Required]
         [StringLength(50)]
-        public string ETag { get; set; }
+        public string Tag { get; set; }
 
         [Required]
-        public DateTime Timestamp { get; set; }
+        public DateTimeOffset LastModified { get; set; }
     }
 }

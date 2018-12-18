@@ -17,7 +17,7 @@ namespace Doctrina.xAPI.Http
         private readonly HttpClient client = new HttpClient();
         private readonly string _auth;
 
-        public Uri Endpoint { get; }
+        public Uri BaseAddress { get; }
         public XAPIVersion Version { get; }
 
         public RemoteLRS(string endpoint, string username, string password)
@@ -27,12 +27,12 @@ namespace Doctrina.xAPI.Http
 
         public RemoteLRS(string endpoint, string username, string password, XAPIVersion version)
         {
-            Endpoint = new Uri(endpoint.TrimEnd('/'));
+            BaseAddress = new Uri(endpoint.TrimEnd('/'));
 
             var bytes = Encoding.UTF8.GetBytes($"{username}:{password}");
             _auth = Convert.ToBase64String(bytes);
 
-            client.BaseAddress = Endpoint;
+            client.BaseAddress = BaseAddress;
             client.DefaultRequestHeaders.Add(Constants.Headers.XExperienceApiVersion, version.ToString());
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _auth);
         }
@@ -40,7 +40,7 @@ namespace Doctrina.xAPI.Http
         public async Task<About> GetAbout()
         {
             var relativeUri = new Uri("/about");
-            var requestUri = new Uri(Endpoint, relativeUri);
+            var requestUri = new Uri(BaseAddress, relativeUri);
             var response = await client.GetAsync(requestUri);
 
             if (!response.IsSuccessStatusCode)
@@ -56,9 +56,11 @@ namespace Doctrina.xAPI.Http
         {
             var result = new StatementsResult();
             var parameters = query.ToParameterMap(Version);
-            var relativeUri = new Uri("/statements?" + parameters.ToString());
-            var requestUri = new Uri(Endpoint, relativeUri);
-            var response = await client.GetAsync(requestUri);
+
+            var uriBuilder = new UriBuilder(BaseAddress);
+            uriBuilder.Path += "/statements";
+            uriBuilder.Query = parameters.ToString();
+            var response = await client.GetAsync(uriBuilder.Uri);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception(response.ReasonPhrase);
@@ -91,7 +93,7 @@ namespace Doctrina.xAPI.Http
             if (result.More == null)
                 return null;
 
-            var requestUri = new Uri(Endpoint, result.More);
+            var requestUri = new Uri(BaseAddress, result.More);
             var response = await client.GetAsync(requestUri);
 
             if (!response.IsSuccessStatusCode)
@@ -115,23 +117,27 @@ namespace Doctrina.xAPI.Http
             }
         }
 
-        public async Task SaveStatement(Statement statement)
+        public async Task<Statement> SaveStatement(Statement statement)
         {
-            var requestUri = new Uri(Endpoint, "/statements");
+            var uriBuilder = new UriBuilder(BaseAddress);
+            uriBuilder.Path += "/statements";
             var stringContent = new StringContent(statement.ToJson(), Encoding.UTF8, MediaTypes.Application.Json);
 
             statement.Stamp();
 
-            var response = await client.PostAsync(requestUri, stringContent);
+            var response = await client.PostAsync(uriBuilder.Uri, stringContent);
+
+            return statement;
         }
 
-        public async Task SaveStatements(Statement[] statements)
+        public async Task<Statement[]> SaveStatements(Statement[] statements)
         {
-            var requestUri = new Uri(Endpoint, "/statements");
+            var uriBuilder = new UriBuilder(BaseAddress);
+            uriBuilder.Path += "/statements";
             var serializedObject = JsonConvert.SerializeObject(statements);
             var stringContent = new StringContent(serializedObject, Encoding.UTF8, MediaTypes.Application.Json);
 
-            var response = await client.PostAsync(requestUri, stringContent);
+            var response = await client.PostAsync(uriBuilder.Uri, stringContent);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception(response.ReasonPhrase);
@@ -144,6 +150,8 @@ namespace Doctrina.xAPI.Http
             {
                 statements[i].Id = ids[i];
             }
+
+            return statements;
         }
 
         /// <summary>
@@ -153,8 +161,11 @@ namespace Doctrina.xAPI.Http
         /// <returns></returns>
         public async Task<Statement> GetStatement(Guid id)
         {
-            var requestUri = new Uri(Endpoint, $"/statements?statementId={id}");
-            var response = await client.GetAsync(requestUri);
+            var uriBuilder = new UriBuilder(BaseAddress);
+            uriBuilder.Path += "/statements";
+            uriBuilder.Query = $"statementId={id}";
+
+            var response = await client.GetAsync(uriBuilder.Uri);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception(response.ReasonPhrase);
@@ -171,8 +182,11 @@ namespace Doctrina.xAPI.Http
         /// <returns>A voided statement</returns>
         public async Task<Statement> GetVoidedStatement(Guid id)
         {
-            var requestUri = new Uri(Endpoint, $"/statements?voidedStatementId={id}");
-            var response = await client.GetAsync(requestUri);
+            var uriBuilder = new UriBuilder(BaseAddress);
+            uriBuilder.Path += "/statements";
+            uriBuilder.Query += $"voidedStatementId={id}";
+
+            var response = await client.GetAsync(uriBuilder.Uri);
 
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException(response.ReasonPhrase);
@@ -182,7 +196,13 @@ namespace Doctrina.xAPI.Http
             return JsonConvert.DeserializeObject<Statement>(strResponse);
         }
 
-        public async Task VoidStatement(Guid id, Agent agent)
+        /// <summary>
+        /// Voids a statement
+        /// </summary>
+        /// <param name="id">Id of the statement to void.</param>
+        /// <param name="agent">Agent who voids a statement.</param>
+        /// <returns>Voiding statement</returns>
+        public async Task<Statement> VoidStatement(Guid id, Agent agent)
         {
             var voidStatement = new Statement
             {
@@ -198,15 +218,15 @@ namespace Doctrina.xAPI.Http
                 Object = new StatementRef { Id = id }
             };
 
-            await SaveStatement(voidStatement);
+            return await SaveStatement(voidStatement);
         }
         #endregion
 
         #region Activity State
         public async Task<Guid[]> GetStateIds(Iri activityId, Agent agent, Guid? registration = null)
         {
-            var builder = new UriBuilder(Endpoint);
-            builder.Path = "/activities/profile";
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/activities/state";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
             query.Add("activityId", activityId.ToString());
@@ -229,8 +249,8 @@ namespace Doctrina.xAPI.Http
 
         public async Task<StateDocument> GetState(string stateId, Iri activityId, Agent agent, Guid? registration = null)
         {
-            var builder = new UriBuilder(Endpoint);
-            builder.Path = "/activities/profile";
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/activities/state";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
             query.Add("stateId", stateId);
@@ -257,10 +277,10 @@ namespace Doctrina.xAPI.Http
             return state;
         }
 
-        public async Task SaveState(StateDocument state)
+        public async Task SaveState(StateDocument state, ETagMatch? matchType = null)
         {
-            var builder = new UriBuilder(Endpoint);
-            builder.Path = "/activities/profile";
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/activities/state";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
             query.Add("stateId", state.Id);
@@ -272,47 +292,111 @@ namespace Doctrina.xAPI.Http
 
             builder.Query = query.ToString();
 
-            var content = new ByteArrayContent(state.Content);
-            content.Headers.ContentType = state.ContentType;
-            var response = await client.PostAsync(builder.Uri, content);
+            var request = new HttpRequestMessage(HttpMethod.Delete, builder.Uri);
 
-            if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException(response.ReasonPhrase);
-        }
-
-        public async Task DeleteState(StateDocument state)
-        {
-            var builder = new UriBuilder(Endpoint);
-            builder.Path = "/activities/profile";
-
-            var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("stateId", state.Id);
-            query.Add("activityId", state.Activity.Id.ToString());
-            query.Add("agent", state.Agent.ToString());
-
-            if (state.Registration.HasValue)
-                query.Add("registration", state.Registration.Value.ToString(Constants.Formats.DateTimeFormat));
-
-            builder.Query = query.ToString();
-
-            var request = new HttpRequestMessage()
+            // TOOD: Concurrency
+            if (matchType.HasValue)
             {
-                Method = HttpMethod.Delete,
-                RequestUri = builder.Uri,
-            };
+                if (state.ETag == null)
+                    throw new NullReferenceException("ETag");
 
-            if (state.ETag != null)
-                request.Headers.IfMatch.Add(state.ETag);
-            
+                switch (matchType.Value)
+                {
+                    case ETagMatch.IfMatch:
+                        request.Headers.IfMatch.Add(state.ETag);
+                        break;
+                    case ETagMatch.IfNoneMatch:
+                        request.Headers.IfNoneMatch.Add(state.ETag);
+                        break;
+                }
+            }
+
+            request.Content = new ByteArrayContent(state.Content);
+            request.Content.Headers.ContentType = state.ContentType;
+
             var response = await client.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException(response.ReasonPhrase);
         }
 
-        public Task ClearState(Activity activity, Agent agent, Guid? registration = null)
+        public async Task DeleteState(StateDocument state, ETagMatch? matchType = null)
         {
-            throw new NotImplementedException();
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/activities/state";
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query.Add("stateId", state.Id);
+            query.Add("activityId", state.Activity.Id.ToString());
+            query.Add("agent", state.Agent.ToString());
+
+            if (state.Registration.HasValue)
+                query.Add("registration", state.Registration.Value.ToString(Constants.Formats.DateTimeFormat));
+
+            builder.Query = query.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, builder.Uri);
+
+            // TOOD: Concurrency
+            if (matchType.HasValue)
+            {
+                if (state.ETag == null)
+                    throw new NullReferenceException("ETag");
+
+                switch (matchType.Value)
+                {
+                    case ETagMatch.IfMatch:
+                        request.Headers.IfMatch.Add(state.ETag);
+                        break;
+                    case ETagMatch.IfNoneMatch:
+                        request.Headers.IfNoneMatch.Add(state.ETag);
+                        break;
+                }
+            }
+
+            var response = await client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(response.ReasonPhrase);
+        }
+
+        public async Task ClearState(Iri activityId, Agent agent, Guid? registration = null, ETagMatch? matchType = null)
+        {
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/activities/state";
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query.Add("activityId", activityId.ToString());
+            query.Add("agent", agent.ToString());
+
+            if (registration.HasValue)
+                query.Add("registration", registration.Value.ToString(Constants.Formats.DateTimeFormat));
+
+            builder.Query = query.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, builder.Uri);
+
+            // TOOD: Concurrency
+            //if (matchType.HasValue)
+            //{
+            //    if (profile.ETag == null)
+            //        throw new NullReferenceException("ETag");
+
+            //    switch (matchType.Value)
+            //    {
+            //        case ETagMatchType.IfMatch:
+            //            request.Headers.IfMatch.Add(profile.ETag);
+            //            break;
+            //        case ETagMatchType.IfNoneMatch:
+            //            request.Headers.IfNoneMatch.Add(profile.ETag);
+            //            break;
+            //    }
+            //}
+
+            var response = await client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(response.ReasonPhrase);
         }
         #endregion
 
@@ -320,8 +404,8 @@ namespace Doctrina.xAPI.Http
         public async Task<Guid[]> GetActivityProfileIds(Iri activityId, DateTimeOffset? since = null)
         {
 
-            var builder = new UriBuilder(Endpoint);
-            builder.Path = "/activities/profile";
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/activities/profile";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
             query.Add("activityId", activityId.ToString());
@@ -339,47 +423,225 @@ namespace Doctrina.xAPI.Http
             return JsonConvert.DeserializeObject<Guid[]>(strResponse);
         }
 
-        public Task<ActivityProfileDocument> GetActivityProfile(string id, Activity activity)
+        public async Task<ActivityProfileDocument> GetActivityProfile(string id, Iri activityId)
         {
-            throw new NotImplementedException();
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/activities/profile";
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query.Add("profileId", id);
+            query.Add("activityId", activityId.ToString());
+
+            builder.Query = query.ToString();
+
+            var response = await client.GetAsync(builder.Uri);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(response.ReasonPhrase);
+
+            var profile = new ActivityProfileDocument();
+            profile.Id = id;
+            profile.ActivityId = activityId;
+            profile.Content = await response.Content.ReadAsByteArrayAsync();
+            profile.ContentType = response.Content.Headers.ContentType;
+            profile.ETag = response.Headers.ETag;
+            profile.LastModified = response.Content.Headers.LastModified;
+            return profile;
         }
 
-        public Task SaveActivityProfile(ActivityProfileDocument profile)
+        public async Task SaveActivityProfile(ActivityProfileDocument profile, ETagMatch? matchType = null)
         {
-            throw new NotImplementedException();
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/activities/profile";
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query.Add("profileId", profile.Id);
+            query.Add("activityId", profile.ActivityId.ToString());
+
+            if (profile.Registration.HasValue)
+                query.Add("registration", profile.Registration.Value.ToString(Constants.Formats.DateTimeFormat));
+
+            builder.Query = query.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Post, builder.Uri);
+
+            if (matchType.HasValue)
+            {
+                if (profile.ETag == null)
+                    throw new NullReferenceException("ETag");
+
+                switch (matchType.Value)
+                {
+                    case ETagMatch.IfMatch:
+                        request.Headers.IfMatch.Add(profile.ETag);
+                        break;
+                    case ETagMatch.IfNoneMatch:
+                        request.Headers.IfNoneMatch.Add(profile.ETag);
+                        break;
+                }
+            }
+
+            request.Content = new ByteArrayContent(profile.Content);
+            request.Content.Headers.ContentType = profile.ContentType;
+
+            var response = await client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(response.ReasonPhrase);
         }
 
-        public Task DeleteActivityProfile(ActivityProfileDocument profile)
+        public async Task DeleteActivityProfile(ActivityProfileDocument profile, ETagMatch? matchType = null)
         {
-            throw new NotImplementedException();
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/activities/profile";
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query.Add("profileId", profile.Id);
+            query.Add("activityId", profile.ActivityId.ToString());
+
+            builder.Query = query.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, builder.Uri);
+
+            if (matchType.HasValue)
+            {
+                if (profile.ETag == null)
+                    throw new NullReferenceException("ETag");
+
+                switch (matchType.Value)
+                {
+                    case ETagMatch.IfMatch:
+                        request.Headers.IfMatch.Add(profile.ETag);
+                        break;
+                    case ETagMatch.IfNoneMatch:
+                        request.Headers.IfNoneMatch.Add(profile.ETag);
+                        break;
+                }
+            }
+
+            var response = await client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(response.ReasonPhrase);
         }
         #endregion
 
-        #region AgentProfile
-        public Task<Guid[]> GetAgentProfileIds(Agent agent)
+        #region Agent Profiles
+        public async Task<Guid[]> GetAgentProfileIds(Agent agent)
         {
-            throw new NotImplementedException();
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/agents/profile";
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query.Add("agent", agent.ToString());
+
+            builder.Query = query.ToString();
+
+            var response = await client.GetAsync(builder.Uri);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(response.ReasonPhrase);
+
+            string strResponse = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<Guid[]>(strResponse);
         }
 
-        public Task<AgentProfileDocument> GetAgentProfile(string id, Agent agent)
+        public async Task<AgentProfileDocument> GetAgentProfile(string id, Agent agent)
         {
-            throw new NotImplementedException();
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/agents/profile";
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query.Add("profileId", id);
+            query.Add("agent", agent.ToString());
+
+            builder.Query = query.ToString();
+
+            var response = await client.GetAsync(builder.Uri);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(response.ReasonPhrase);
+
+            var profile = new AgentProfileDocument();
+            profile.Id = id;
+            profile.Agent = agent;
+            profile.Content = await response.Content.ReadAsByteArrayAsync();
+            profile.ContentType = response.Content.Headers.ContentType;
+            profile.ETag = response.Headers.ETag;
+            profile.LastModified = response.Content.Headers.LastModified;
+            return profile;
         }
 
-        public Task SaveAgentProfile(AgentProfileDocument profile)
+        public async Task SaveAgentProfile(AgentProfileDocument profile, ETagMatch? matchType = null)
         {
-            throw new NotImplementedException();
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/agents/profile";
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query.Add("profileId", profile.Id);
+            query.Add("agent", profile.Agent.ToString());
+
+            builder.Query = query.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Post, builder.Uri);
+
+            if (matchType.HasValue)
+            {
+                if (profile.ETag == null)
+                    throw new NullReferenceException("ETag");
+
+                switch (matchType.Value)
+                {
+                    case ETagMatch.IfMatch:
+                        request.Headers.IfMatch.Add(profile.ETag);
+                        break;
+                    case ETagMatch.IfNoneMatch:
+                        request.Headers.IfNoneMatch.Add(profile.ETag);
+                        break;
+                }
+            }
+
+            var response = await client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(response.ReasonPhrase);
         }
 
-        public Task DeleteAgentProfile(AgentProfileDocument profile)
+        public async Task DeleteAgentProfile(AgentProfileDocument profile, ETagMatch? matchType = null)
         {
-            throw new NotImplementedException();
+            var builder = new UriBuilder(BaseAddress);
+            builder.Path += "/agents/profile";
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query.Add("profileId", profile.Id);
+            query.Add("agent", profile.Agent.ToString());
+
+            builder.Query = query.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, builder.Uri);
+
+            if (matchType.HasValue)
+            {
+                if (profile.ETag == null)
+                    throw new NullReferenceException("ETag");
+
+                switch (matchType.Value)
+                {
+                    case ETagMatch.IfMatch:
+                        request.Headers.IfMatch.Add(profile.ETag);
+                        break;
+                    case ETagMatch.IfNoneMatch:
+                        request.Headers.IfNoneMatch.Add(profile.ETag);
+                        break;
+                }
+            }
+
+            var response = await client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(response.ReasonPhrase);
         }
         #endregion
-    }
-
-    public class AttachmentsCollection : Dictionary<string, AttachmentBatch>
-    {
-
     }
 }

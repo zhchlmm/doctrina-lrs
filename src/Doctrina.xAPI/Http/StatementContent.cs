@@ -15,7 +15,7 @@ namespace Doctrina.xAPI.Http
     public class StatementContent : HttpContent
     {
         private Statement _statement;
-        private AttachmentsCollection _attachments;
+        //private AttachmentsCollection _attachments;
 
         public StatementContent(Statement statement)
         {

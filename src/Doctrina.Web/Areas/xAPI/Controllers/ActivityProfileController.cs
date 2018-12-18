@@ -9,6 +9,7 @@ using System.Linq;
 
 namespace Doctrina.Web.Areas.xAPI.Controllers
 {
+    [HeadWithoutBody]
     [VersionHeader]
     [Route("xapi/activities/profile")]
     [Produces("application/json")]
@@ -27,8 +28,8 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="activityId">The Activity id associated with this Profile document.</param>
         /// <param name="profileId">The profile id associated with this Profile document.</param>
         /// <returns>200 OK, the Profile document</returns>
-        [HttpGet]
-        public IActionResult GetDocument(Iri activityId, string profileId)
+        [AcceptVerbs("GET", "HEAD")]
+        public IActionResult GetProfile(Iri activityId, string profileId)
         {
             try
             {
@@ -37,7 +38,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
                 var profile = this.profileService.GetActivityProfile(profileId, activityId);
                 var document = profile.Document;
-                string lastModified = document.Timestamp.ToString(Constants.Formats.DateTimeFormat);
+                string lastModified = document.LastModified.ToString(Constants.Formats.DateTimeFormat);
                 // TODO: Implement concurrency
 
                 Response.ContentType = document.ContentType;
@@ -57,8 +58,8 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="activityId">The Activity id associated with these Profile documents.</param>
         /// <param name="since">Only ids of Profile documents stored since the specified Timestamp (exclusive) are returned.</param>
         /// <returns>200 OK, Array of Profile id(s)</returns>
-        [HttpGet]
-        public ActionResult<Guid[]> GetMultipleDocuments(Iri activityId, DateTimeOffset? since = null)
+        [AcceptVerbs("GET", "HEAD")]
+        public ActionResult<Guid[]> GetProfiles(Iri activityId, DateTimeOffset? since = null)
         {
             try
             {
@@ -70,7 +71,9 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                     return Ok(new Guid[] { });
 
                 IEnumerable<Guid> ids = documents.Select(x => x.Id);
-                string lastModified = documents.OrderByDescending(x => x.LastModified).FirstOrDefault().LastModified.ToString(Constants.Formats.DateTimeFormat);
+                string lastModified = documents.OrderByDescending(x => x.LastModified)
+                    .FirstOrDefault()
+                    .LastModified.ToString(Constants.Formats.DateTimeFormat);
 
                 Response.Headers.Add("LastModified", lastModified);
                 return Ok(ids);
@@ -89,7 +92,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="document">The document to be stored or updated.</param>
         /// <returns>204 No Content</returns>
         [AcceptVerbs("PUT", "POST")]
-        public IActionResult PostDocument(Iri activityId, string profileId, [FromBody]byte[] content, Guid? registration = null)
+        public IActionResult SaveProfile(Iri activityId, string profileId, [FromBody]byte[] content, Guid? registration = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -106,7 +109,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                     contentType
                  );
 
-                Response.Headers["ETag"] = profile.Document.ETag;
+                Response.Headers["ETag"] = profile.Document.Tag;
 
                 return NoContent();
             }
@@ -124,7 +127,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="profileId">The profile id associated with this Profile document.</param>
         /// <returns>204 No Content</returns>
         [HttpDelete]
-        public IActionResult DeleteDocument(string profileId, Iri activityId)
+        public IActionResult DeleteProfile(string profileId, Iri activityId)
         {
             try
             {

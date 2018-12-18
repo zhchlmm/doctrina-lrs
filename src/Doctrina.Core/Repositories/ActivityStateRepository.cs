@@ -1,6 +1,7 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.Core.Data.Documents;
 using Doctrina.Core.Data.Extensions;
+using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,7 +10,7 @@ using System.Linq;
 
 namespace Doctrina.Core.Repositories
 {
-    public class ActivityStateRepository : IActivityStateRepository
+    public class ActivityStateRepository : IActivitiesStateRepository
     {
         private readonly DoctrinaContext dbcontext;
 
@@ -57,7 +58,7 @@ namespace Doctrina.Core.Repositories
                 sql.Where(x => x.RegistrationId == registration);
             }
 
-            sql.OrderByDescending(x => x.Document.Timestamp);
+            sql.OrderByDescending(x => x.Document.LastModified);
 
             return sql;
         }
@@ -95,6 +96,19 @@ namespace Doctrina.Core.Repositories
 
             var entity = sql.FirstOrDefault();
 
+            this.dbcontext.ActivityStates.Remove(entity);
+            this.dbcontext.SaveChanges();
+        }
+
+        /// <summary>
+        /// Delete a single state document
+        /// </summary>
+        /// <param name="activityId"></param>
+        /// <param name="agent"></param>
+        /// <param name="stateId"></param>
+        /// <param name="registration"></param>
+        public void Delete(ActivityStateEntity entity)
+        {
             this.dbcontext.ActivityStates.Remove(entity);
             this.dbcontext.SaveChanges();
         }
@@ -162,10 +176,10 @@ namespace Doctrina.Core.Repositories
 
             if (since.HasValue)
             {
-                sql.Where(x => x.Document.Timestamp >= since.Value);
+                sql.Where(x => x.Document.LastModified >= since.Value);
             }
 
-            sql.OrderByDescending(x => x.Document.Timestamp);
+            sql.OrderByDescending(x => x.Document.LastModified);
 
             return sql.Select(x=> x.Document);
         }

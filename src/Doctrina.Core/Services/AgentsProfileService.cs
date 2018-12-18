@@ -77,7 +77,7 @@ namespace Doctrina.Core.Services
         /// <param name="agent"></param>
         /// <param name="since">This is limited to entries that have been stored or updated since the specified Timestamp</param>
         /// <returns></returns>
-        public IEnumerable<IDocumentEntity> GetProfiles(Agent agent, DateTime? since = null)
+        public IEnumerable<IDocumentEntity> GetProfiles(Agent agent, DateTimeOffset? since = null)
         {
             if (agent == null)
                 throw new ArgumentNullException("agent");

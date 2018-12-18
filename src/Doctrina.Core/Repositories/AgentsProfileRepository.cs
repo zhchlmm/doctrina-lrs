@@ -30,16 +30,15 @@ namespace Doctrina.Core.Repositories
             return sql;
         }
 
-        public IEnumerable<AgentProfileEntity> GetProfiles(AgentEntity agent, DateTime? since = null)
+        public IEnumerable<AgentProfileEntity> GetProfiles(AgentEntity agent, DateTimeOffset? since = null)
         {
             var sql = this.dbContext.AgentProfiles.WhereAgent(agent);
 
             if (since.HasValue)
             {
-                DateTime sinceDate = since.Value;
-                sql.Where(x => x.Document.Timestamp >= sinceDate);
+                sql.Where(x => x.Document.LastModified >= since.Value);
             }
-            sql.OrderByDescending(x => x.Document.Timestamp);
+            sql.OrderByDescending(x => x.Document.LastModified);
 
             return sql;
         }

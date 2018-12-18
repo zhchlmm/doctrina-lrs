@@ -12,9 +12,9 @@ using System.Net.Http.Headers;
 
 namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 {
-    public class StateDocumentModelBinder : IModelBinder
+    public class ActivityStateModelBinder : IModelBinder
     {
-        static StateDocumentModelBinder()
+        static ActivityStateModelBinder()
         {
 
         }
@@ -27,18 +27,18 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
             }
 
             // Specify a default argument name if none is set by ModelBinderAttribute
-            var modelName = bindingContext.BinderModelName;
-            if (string.IsNullOrEmpty(modelName))
-            {
-                modelName = "document";
-            }
+            //var modelName = bindingContext.BinderModelName;
+            //if (string.IsNullOrEmpty(modelName))
+            //{
+            //    modelName = "document";
+            //}
 
-            var valueProviderResult = bindingContext.ValueProvider.GetValue(modelName);
+            //var valueProviderResult = bindingContext.ValueProvider.GetValue(modelName);
 
-            if (valueProviderResult == ValueProviderResult.None)
-            {
-                return Task.CompletedTask;
-            }
+            //if (valueProviderResult == ValueProviderResult.None)
+            //{
+            //    return Task.CompletedTask;
+            //}
 
             var model = new StateDocumentModel();
             var actionContext = bindingContext.ActionContext;
@@ -96,10 +96,6 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
                 if (Guid.TryParse(strRegistration, out Guid registration))
                 {
                     model.Registration = registration;
-                }
-                else
-                {
-                    return Task.CompletedTask;
                 }
             }
 

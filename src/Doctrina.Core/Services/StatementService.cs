@@ -141,7 +141,7 @@ namespace Doctrina.Core.Services
             bool includeAttachements = parameters.Attachments.GetValueOrDefault();
 
             // Exclude voided statements
-            var query = _statements.GetAll(voided: false, includeAttachments: includeAttachements);
+            var query = _statements.AsQueryable(voided: false, includeAttachments: includeAttachements);
 
             // Limit results by stored date
             if (parameters.Since.HasValue)
@@ -170,15 +170,19 @@ namespace Doctrina.Core.Services
                 query.Where(x => x.Verb.Id == parameters.VerbId.ToString());
             }
 
-            if (!string.IsNullOrWhiteSpace(parameters.ActivityId))
+            if (parameters.ActivityId != null)
             {
+                string strActivityId = parameters.ActivityId.ToString();
+
+                query.Where(x => x.ObjectActivity.ActivityId == strActivityId);
+
                 if (parameters.RelatedActivities.GetValueOrDefault())
                 {
                     query.Where(x =>
-                        x.Context.ContextActivities.Category.Any(ca => ca.ActivityId == parameters.ActivityId)
-                    || x.Context.ContextActivities.Parent.Any(parent => parent.ActivityId == parameters.ActivityId)
-                    || x.Context.ContextActivities.Grouping.Any(grouping => grouping.ActivityId == parameters.ActivityId)
-                    || x.Context.ContextActivities.Other.Any(other => other.ActivityId == parameters.ActivityId)
+                        x.Context.ContextActivities.Category.Any(ca => ca.ActivityId == strActivityId)
+                    || x.Context.ContextActivities.Parent.Any(parent => parent.ActivityId == strActivityId)
+                    || x.Context.ContextActivities.Grouping.Any(grouping => grouping.ActivityId == strActivityId)
+                    || x.Context.ContextActivities.Other.Any(other => other.ActivityId == strActivityId)
                     );
                 }
             }

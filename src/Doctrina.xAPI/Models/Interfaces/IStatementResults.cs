@@ -6,6 +6,6 @@ namespace Doctrina.xAPI.Models
     public interface IStatementsResult
     {
         Uri More { get; set; }
-        IEnumerable<Statement> Statements { get; set; }
+        Statement[] Statements { get; set; }
     }
 }

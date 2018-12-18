@@ -18,6 +18,7 @@ namespace Doctrina.xAPI.Models
     [TypeConverter(typeof(DurationTypeConverter))]
     public struct Duration
     {
+        private static string _regexPattern = @"^P((\d+(?:\.\d+)?Y)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?D)?(T(?=\d)(\d+(?:\.\d+)?H)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?S)?)?)$|^P(\d+(?:\.\d+)?W)?$";
         private static char[] _dateDesignators = new char[] { 'P', 'Y', 'M', 'W', 'D' };
         private static char[] _timeDesignators = new char[] { 'P', 'T', 'H', 'M', 'S' };
 
@@ -34,13 +35,21 @@ namespace Doctrina.xAPI.Models
 
         public Duration(string s)
         {
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                throw new ArgumentNullException(nameof(s));
+            }
+
             string strDuration = s.Trim();
 
             if (!strDuration.StartsWith("P"))
-                throw new Exception("Duration must start with the designator 'P' (for period).");
+                throw new ArgumentException("Duration must start with the designator 'P' (for period).");
 
             if (strDuration.Length == 1)
-                throw new Exception("'P' designator is not valid for duration alone.");
+                throw new ArgumentException("'P' designator is not valid for duration alone.");
+
+            if (!Regex.IsMatch(s, _regexPattern))
+                throw new ArgumentException("Is not well formatted.");
 
             Years = null;
             Months = null;
@@ -52,7 +61,7 @@ namespace Doctrina.xAPI.Models
             Ticks = 0;
 
             List<KeyValuePair<char, double>> elements = GetElements(strDuration);
-            AddElements(ref this, elements);
+            AddDesignators(ref this, elements);
         }
 
         public Duration(long ticks)
@@ -128,15 +137,20 @@ namespace Doctrina.xAPI.Models
             return elements;
         }
 
-        private static void AddElements(ref Duration d, List<KeyValuePair<char, double>> elements)
+        private static void AddDesignators(ref Duration d, List<KeyValuePair<char, double>> designators)
         {
-            char pt = 'P';
-            foreach (var element in elements)
+            if (designators == null)
             {
-                if (element.Key == 'P')
+                throw new ArgumentNullException(nameof(designators));
+            }
+
+            char pt = 'P';
+            foreach (var designator in designators)
+            {
+                if (designator.Key == 'P')
                     continue;
 
-                if (element.Key == 'T')
+                if (designator.Key == 'T')
                 {
                     pt = 'T';
                     continue;
@@ -144,11 +158,11 @@ namespace Doctrina.xAPI.Models
 
                 if (pt == 'P')
                 {
-                    AddPeriod(ref d, element);
+                    AddPeriod(ref d, designator);
                 }
                 else if (pt == 'T')
                 {
-                    AddTime(ref d, element);
+                    AddTime(ref d, designator);
                 }
             }
         }
@@ -287,6 +301,26 @@ namespace Doctrina.xAPI.Models
             return hashCode;
         }
 
+        //public static explicit operator Duration(string s)
+        //{
+        //    return new Duration(s);
+        //}
+
+        //public static explicit operator string(Duration d)
+        //{
+        //    return d.ToString();
+        //}
+
+        //public static explicit operator Duration(long lng)
+        //{
+        //    return new Duration(lng);
+        //}
+
+        //public static explicit operator long(Duration d)
+        //{
+        //    return d.Ticks;
+        //}
+
         public static bool operator ==(Duration left, Duration right)
         {
             return left.ToString() == right.ToString();
@@ -308,7 +342,7 @@ namespace Doctrina.xAPI.Models
         }
     }
 
-    internal class DurationTypeConverter : TypeConverter
+    public class DurationTypeConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {

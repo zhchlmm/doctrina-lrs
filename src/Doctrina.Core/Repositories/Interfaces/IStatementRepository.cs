@@ -12,7 +12,7 @@ namespace Doctrina.Core.Repositories
         void AddStatement(StatementEntity entity);
         StatementEntity GetById(Guid statementRefId, bool voided, bool includeAttachments);
         void Update(StatementEntity voidedStatement);
-        IQueryable<StatementEntity> GetAll(bool voided, bool includeAttachments);
+        IQueryable<StatementEntity> AsQueryable(bool voided, bool includeAttachments);
         bool Exist(Guid statementId, bool voided = false);
         bool HasVoidingStatement(Guid id);
         //void VoidStatement(Guid statementId);

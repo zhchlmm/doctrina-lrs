@@ -29,7 +29,7 @@ namespace Doctrina.Core.Repositories
                     .FirstOrDefault(x => x.StatementId == statementId && x.Voided == voided);
         }
 
-        public IQueryable<StatementEntity> GetAll(bool voided, bool includeAttachments)
+        public IQueryable<StatementEntity> AsQueryable(bool voided, bool includeAttachments)
         {
             if (includeAttachments)
             {

@@ -16,19 +16,20 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
     /// </summary>
     //[ApiAuthortize]
     //[ApiVersion]
+    [HeadWithoutBody]
     [VersionHeader]
     [Route("xapi/activities/state")]
-    public class ActivityStatesController : ApiControllerBase
+    public class ActivitiesStateController : ApiControllerBase
     {
-        private readonly IActivityStateService activityStateService;
+        private readonly IActivitiesStateService _activityStateService;
 
-        protected ActivityStatesController(IActivityStateService activityStateService)
+        public ActivitiesStateController(IActivitiesStateService activityStateService)
         {
-            this.activityStateService = activityStateService;
+            _activityStateService = activityStateService;
         }
 
-        // GET xapi/activities/state
-        [HttpGet]
+        // GET|HEAD xapi/activities/state
+        [AcceptVerbs("GET", "HEAD")]
         public ActionResult<StateDocumentModel> GetSingleState(StateDocumentModel model)
         {
             if (!ModelState.IsValid)
@@ -36,14 +37,16 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
             try
             {
-                var stateDocument = activityStateService.GetStateDocument(model.StateId, model.ActivityId, model.Agent, model.Registration);
-                if (stateDocument == null)
+                var activityState = _activityStateService.GetActivityState(model.StateId, model.ActivityId, model.Agent, model.Registration);
+                if (activityState == null)
                     return new NotFoundResult();
 
+                var stateDocument = activityState.Document;
+
                 var contentType = new MediaTypeHeaderValue(stateDocument.ContentType);
-                var content = new FileContentResult(stateDocument.Content, contentType);
+                var content = new FileContentResult(stateDocument.Content, contentType.ToString());
                 content.LastModified = stateDocument.LastModified;
-                Response.Headers.Add("ETag", "\"" + stateDocument.ETag + "\"");
+                content.EntityTag = new EntityTagHeaderValue($"\"{stateDocument.Tag}\"");
                 return content;
             }
             catch (Exception ex)
@@ -61,9 +64,9 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
             try
             {
-                var state = activityStateService.MergeStateDocument(model.StateId, model.ActivityId, model.Agent, model.Registration, model.ContentType, model.Content);
-                var etag = EntityTagHeaderValue.Parse(state.ETag);
-                Response.Headers.Add("ETag", etag.ToString());
+                var state = _activityStateService.MergeStateDocument(model.StateId, model.ActivityId, model.Agent, model.Registration, model.ContentType, model.Content);
+                var etag = EntityTagHeaderValue.Parse(state.Tag);
+                //Response.Headers.Add("ETag", etag.ToString());
                 return NoContent();
             }
             catch (Exception ex)
@@ -82,7 +85,32 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
             try
             {
-                activityStateService.DeleteState(model.StateId, model.ActivityId, model.Agent, model.Registration);
+                var state = _activityStateService.GetActivityState(model.StateId, model.ActivityId, model.Agent, model.Registration);
+                if (state == null)
+                    return NotFound();
+
+                _activityStateService.DeleteState(state);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        // DELETE xapi/activities/state
+        [HttpDelete]
+        public IActionResult DeleteStates([FromQuery]Iri activityId, [FromQuery(Name ="agent")]string strAgent, [FromQuery]Guid? registration = null)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                Agent agent = Agent.Parse(strAgent);
+
+                _activityStateService.DeleteStates(activityId, agent, registration);
                 return NoContent();
             }
             catch (Exception ex)
@@ -99,7 +127,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="stateId"></param>
         /// <param name="registration"></param>
         /// <returns></returns>
-        [HttpGet]
+        [AcceptVerbs("GET", "HEAD")]
         public IActionResult GetMutipleStates(Iri activityId, [FromQuery(Name = "agent")]string strAgent, Guid? registration = null, DateTime? since = null)
         {
             if (!ModelState.IsValid)
@@ -109,7 +137,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             {
                 Agent agent = Agent.Parse(strAgent);
 
-                var states = activityStateService.GetStates(activityId, agent, registration, since);
+                var states = _activityStateService.GetStates(activityId, agent, registration, since);
 
                 IEnumerable<Guid> ids = states.Select(x => x.Id);
                 string lastModified = states.OrderByDescending(x => x.LastModified).FirstOrDefault().LastModified.ToString(Constants.Formats.DateTimeFormat);

@@ -3,12 +3,15 @@ using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
 using Doctrina.Core.Services;
 using Doctrina.Web.Areas.xAPI.Mvc.Formatters;
+using Doctrina.Web.Areas.xAPI.Routing;
 using Doctrina.xAPI.Json.Converters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Internal;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,8 +39,9 @@ namespace Doctrina.Web
             // Add framework services.
             _logger.LogInformation("Configuring DB");
             services.AddDbContext<DoctrinaContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DoctrinaContext"))
-                //options.UseInMemoryDatabase("Doctrina")
+
+                //options.UseSqlServer(Configuration.GetConnectionString("DoctrinaContext"))
+                options.UseInMemoryDatabase("Doctrina")
                 );
 
 
@@ -69,7 +73,7 @@ namespace Doctrina.Web
             services.AddScoped<IStatementRepository, StatementRepository>();
             services.AddScoped<IActivityRepository, ActivityRepository>();
             services.AddScoped<IActivityProfileRepository, ActivityProfileRepository>();
-            services.AddScoped<IActivityStateRepository, ActivityStateRepository>();
+            services.AddScoped<IActivitiesStateRepository, ActivityStateRepository>();
             services.AddScoped<IAgentRepository, AgentRepository>();
             services.AddScoped<IAgentProfileRepository, AgentProfileRepository>();
             //services.AddScoped<IAuthTokenRepository, AuthTokenRepository>();
@@ -82,7 +86,7 @@ namespace Doctrina.Web
             services.AddScoped<IActivityService, ActivityService>();
             services.AddScoped<IStatementService, StatementService>();
             services.AddScoped<IActivityProfileService, ActivityProfileService>();
-            services.AddScoped<IActivityStateService, ActivityStateService>();
+            services.AddScoped<IActivitiesStateService, ActivitiesStateService>();
             services.AddScoped<IAgentService, AgentService>();
             services.AddScoped<IAgentProfileService, AgentProfileService>();
             //services.AddScoped<IAuthTokenService, AuthTokenService>();
@@ -112,11 +116,22 @@ namespace Doctrina.Web
 
             //app.UseHttpsRedirection();
 
-            app.UseCookiePolicy();
 
+            // Return static files and end the pipeline.
             app.UseStaticFiles();
 
+            // Use Cookie Policy Middleware to conform to EU General Data 
+            // Protection Regulation (GDPR) regulations.
+            app.UseCookiePolicy();
+
+            // Authenticate before the user accesses secure resources.
             app.UseAuthentication();
+
+            // If the app uses session state, call Session Middleware after Cookie 
+            // Policy Middleware and before MVC Middleware.
+            //app.UseSession();
+
+            app.UseAlternateRequestSyntax();
 
             app.UseMvc(routes =>
             {

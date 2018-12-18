@@ -1,4 +1,5 @@
 ﻿using Doctrina.Core.Data;
+using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Services

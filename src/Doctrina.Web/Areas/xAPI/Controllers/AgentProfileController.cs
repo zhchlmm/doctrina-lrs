@@ -4,10 +4,13 @@ using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Doctrina.Web.Areas.xAPI.Controllers
 {
+    [HeadWithoutBody]
     [VersionHeader]
     [Route("xapi/agents/profile")]
     [Produces("application/json")]
@@ -20,8 +23,8 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             this.agentProfileService = agentProfileService;
         }
 
-        [HttpGet]
-        public ActionResult GetProfile(string profileId, [FromQuery(Name = "agent")]string strAgent)
+        [AcceptVerbs("GET", "HEAD")]
+        public ActionResult GetAgentProfile(string profileId, [FromQuery(Name = "agent")]string strAgent)
         {
             try
             {
@@ -40,7 +43,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
                 // TODO: Implement Concurrency
 
-                string lastModified = document.Timestamp.ToString(Constants.Formats.DateTimeFormat);
+                string lastModified = document.LastModified.ToString(Constants.Formats.DateTimeFormat);
                 // TODO: Implement concurrency
 
                 Response.ContentType = document.ContentType;
@@ -62,7 +65,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="document"></param>
         /// <returns></returns>
         [AcceptVerbs("PUT", "POST")]
-        public ActionResult StoreDocument(string profileId, [FromQuery(Name = "agent")]string strAgent, [FromBody]byte[] content)
+        public ActionResult SaveAgentProfile(string profileId, [FromQuery(Name = "agent")]string strAgent, [FromBody]byte[] content)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -80,9 +83,8 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                  );
 
                 // TODO: Implement concurrency
-
                 
-                Response.Headers.Add("ETag", $"\"{document.ETag}\"");
+                Response.Headers.Add("ETag", $"\"{document.Tag}\"");
                 Response.Headers.Add("LastModified", document.LastModified.ToString("o"));
                 return Ok();
             }
@@ -93,9 +95,29 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             }
         }
 
+        [AcceptVerbs("GET", "HEAD")]
+        [Produces("application/json")]
+        public ActionResult GetAgentProfiles([FromQuery(Name = "agent")]string strAgent, DateTimeOffset? since = null)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            Agent agent = Agent.Parse(strAgent);
+
+            var documents = agentProfileService.GetProfiles(agent, since);
+            if (documents == null)
+                return Ok(new Guid[] { });
+
+            IEnumerable<Guid> ids = documents.Select(x => x.Id);
+            string lastModified = documents.OrderByDescending(x => x.LastModified).FirstOrDefault().LastModified.ToString(Constants.Formats.DateTimeFormat);
+
+            Response.Headers.Add("LastModified", lastModified);
+            return Ok(ids);
+        }
+
 
         [HttpDelete]
-        public ActionResult DeleteProfile(string profileId, [FromQuery(Name = "agent")]string strAgent,  [FromBody]byte[] content)
+        public ActionResult DeleteProfile(string profileId, [FromQuery(Name = "agent")]string strAgent)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -109,7 +131,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                 if (profile == null)
                     return NotFound();
 
-                // TODO: Implement Concurrency
+                // TODO: Concurrency
 
                 agentProfileService.DeleteProfile(profile);
 

@@ -8,7 +8,7 @@ using Doctrina.xAPI.Models;
 
 namespace Doctrina.xAPI.Documents
 {
-    public class StateDocument : Document
+    public class StateDocument : Document, IStateDocument
     {
         [JsonProperty("activity")]
         public Activity Activity { get; set; }

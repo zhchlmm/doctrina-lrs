@@ -7,10 +7,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.Models
+namespace Doctrina.xAPI
 {
     /// <summary>
-    /// Internationalized Resource Identifiers
+    /// Internationalized Resource Identifiers, or IRIs, are unique identifiers which could also be resolvable. 
+    /// IRIs can contain some characters outside of the ASCII character set.
     /// </summary>
     [TypeConverter(typeof(IRITypeConverter))]
     public class Iri
