@@ -11,6 +11,6 @@ namespace Doctrina.Core.Services
         IDocumentEntity MergeAgentProfile(Agent agent, string profileId, byte[] content, string contentType);
         void DeleteProfile(IAgentProfileEntity id);
         IAgentProfileEntity GetAgentProfile(Agent agent, string profileId);
-        IEnumerable<IDocumentEntity> GetProfiles(Agent agent, DateTime? since = null);
+        IEnumerable<IDocumentEntity> GetProfiles(Agent agent, DateTimeOffset? since = null);
     }
 }

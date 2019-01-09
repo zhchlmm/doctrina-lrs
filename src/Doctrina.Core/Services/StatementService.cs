@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
 using Microsoft.Extensions.Logging;
+using Doctrina.xAPI.Http;
 
 namespace Doctrina.Core.Services
 {
@@ -21,7 +22,7 @@ namespace Doctrina.Core.Services
         private readonly ISubStatementService _subStatementService;
 
         public StatementService(DoctrinaContext dbContext, IStatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService, ILogger<StatementService> logger)
-            : base (dbContext, agentService, activityService, subStatementService, logger)
+            : base(dbContext, agentService, activityService, subStatementService, logger)
         {
             _statements = statementRepository;
             _verbService = verbService;
@@ -30,9 +31,9 @@ namespace Doctrina.Core.Services
             _subStatementService = subStatementService;
         }
 
-        public Statement GetStatement(Guid statementId, bool voided = false)
+        public StatementEntity GetStatement(Guid statementId, bool voided = false, bool includeAttachments = false)
         {
-            var stmt = this._statements.GetById(statementId);
+            var stmt = this._statements.GetById(statementId, voided, includeAttachments);
             if (stmt == null)
                 return null;
 
@@ -40,7 +41,7 @@ namespace Doctrina.Core.Services
             if (stmt.Voided != voided)
                 return null;
 
-            return ConvertFrom(stmt);
+            return stmt;
         }
 
         /// <summary>
@@ -49,12 +50,12 @@ namespace Doctrina.Core.Services
         /// <param name="authority"></param>
         /// <param name="statements">An array of Statements or a single Statement to be stored.</param>
         /// <returns>Array of Statement id(s) (UUID) in the same order as the corresponding stored Statements.</returns>
-        public Guid[] SaveStatements(Agent authority, params Statement[] statements)
+        public Guid[] CreateStatements(Agent authority, params Statement[] statements)
         {
             var guids = new List<Guid>();
             foreach (var statement in statements)
             {
-                if(statement.Authority == null)
+                if (statement.Authority == null)
                 {
                     statement.Authority = authority;
                 }
@@ -63,7 +64,7 @@ namespace Doctrina.Core.Services
                     // TODO: Validate authority
                     //throw new NotImplementedException();
                 }
-                guids.Add(SaveStatement(statement)); // Now it does have a value
+                guids.Add(CreateStatement(statement)); // Now it does have a value
             }
 
             // Now save all the statements in a single commit
@@ -73,7 +74,7 @@ namespace Doctrina.Core.Services
             return guids.ToArray();
         }
 
-        private Guid SaveStatement(Statement model)
+        private Guid CreateStatement(Statement model)
         {
             // Prevent conflic
             if (model.Id.HasValue)
@@ -110,7 +111,7 @@ namespace Doctrina.Core.Services
             MergeContext(entity, model.Context);
             MergeResult(entity, model.Result);
             MergeAuthority(entity, model.Authority);
-            AddAttachments(entity, model.Attachments);
+            /// Attachments are handled by the <see ref="AttachmentService">.
 
             // Make sure the fullStatement is persistet
             model.Id = entity.StatementId;
@@ -129,18 +130,18 @@ namespace Doctrina.Core.Services
                 VoidStatement(entity);
             }
 
-            this._statements.SaveChanges(entity);
+            this._statements.AddStatement(entity);
 
             return model.Id.Value;
         }
 
-        public IEnumerable<Statement> GetStatements(PagedStatementsQuery parameters, out int totalCount)
+        public IEnumerable<StatementEntity> GetStatements(PagedStatementsQuery parameters, out int totalCount)
         {
             totalCount = 0;
             bool includeAttachements = parameters.Attachments.GetValueOrDefault();
 
             // Exclude voided statements
-            var query = _statements.GetAll(voided: false, includeAttachments: includeAttachements);
+            var query = _statements.AsQueryable(voided: false, includeAttachments: includeAttachements);
 
             // Limit results by stored date
             if (parameters.Since.HasValue)
@@ -169,15 +170,19 @@ namespace Doctrina.Core.Services
                 query.Where(x => x.Verb.Id == parameters.VerbId.ToString());
             }
 
-            if (!string.IsNullOrWhiteSpace(parameters.ActivityId))
+            if (parameters.ActivityId != null)
             {
+                string strActivityId = parameters.ActivityId.ToString();
+
+                query.Where(x => x.ObjectActivity.ActivityId == strActivityId);
+
                 if (parameters.RelatedActivities.GetValueOrDefault())
                 {
-                    query.Where(x => 
-                        x.Context.ContextActivities.Category.Any(ca => ca.ActivityId == parameters.ActivityId)
-                    ||  x.Context.ContextActivities.Parent.Any(parent => parent.ActivityId == parameters.ActivityId)
-                    ||  x.Context.ContextActivities.Grouping.Any(grouping => grouping.ActivityId == parameters.ActivityId)
-                    ||  x.Context.ContextActivities.Other.Any(other => other.ActivityId == parameters.ActivityId)
+                    query.Where(x =>
+                        x.Context.ContextActivities.Category.Any(ca => ca.ActivityId == strActivityId)
+                    || x.Context.ContextActivities.Parent.Any(parent => parent.ActivityId == strActivityId)
+                    || x.Context.ContextActivities.Grouping.Any(grouping => grouping.ActivityId == strActivityId)
+                    || x.Context.ContextActivities.Other.Any(other => other.ActivityId == strActivityId)
                     );
                 }
             }
@@ -197,7 +202,7 @@ namespace Doctrina.Core.Services
                 query.OrderByDescending(x => x.Stored);
             }
 
-           
+
             // Ensure limit is not less than 0 or greather then MAX
             int limit = parameters.Limit.GetValueOrDefault(0);
             limit = Math.Max(limit, 0);
@@ -208,54 +213,48 @@ namespace Doctrina.Core.Services
             skip = Math.Max(skip, 0);
             parameters.Skip = skip; // Return skips
 
-            var result = new List<Statement>();
+            var result = new List<StatementEntity>();
+
+            var pageQuery = query.Select(x => new
+            {
+                TotalCount = query.Count(),
+                Statement = x,
+                Attachments = includeAttachements ? x.Attachments : new List<AttachmentEntity>()
+            });
+
             if (limit > 0)
             {
-                var page = query
-                    .Select(x => new
-                    {
-                        TotalCount = query.Count(),
-                        x.StatementId,
-                        x.FullStatement
-                    })
-                    .Skip(skip)
-                    .Take(limit)
-                    .ToList();
-
-                // Push out total rows count
-                totalCount = page.First().TotalCount;
-
-                // Parse page rows
-                result = page.Select(x => JsonConvert.DeserializeObject<Statement>(x.FullStatement))
-                    .ToList();
+                pageQuery = pageQuery.Skip(skip)
+                .Take(limit);
             }
-            else
+
+            // Execute query
+            var pagedResult = pageQuery.ToList();
+
+            if (!pagedResult.Any())
             {
-                var page = query
-                    .Select(x => new
-                    {
-                        TotalCount = query.Count(),
-                        x.StatementId,
-                        x.FullStatement
-                    })
-                    .ToList();
-
-                if (!page.Any())
-                {
-                    return new List<Statement>();
-                }
-
-                // Push out total rows count
-                totalCount = page.First().TotalCount;
-
-                // Parse page rows
-                result = page.Select(x => JsonConvert.DeserializeObject<Statement>(x.FullStatement))
-                    .ToList();
+                totalCount = 0;
+                return new List<StatementEntity>();
             }
 
-            
+            // Push out total rows count
+            totalCount = pagedResult.First().TotalCount;
+
+            // Parse page result back to statements
+            foreach(var item in pagedResult)
+            {
+                var stmt = item.Statement;
+                if (includeAttachements)
+                    stmt.Attachments = item.Attachments;
+                result.Add(stmt);
+            }
 
             return result;
+        }
+
+        public void SaveAndPublishWithStatus(StatementEntity statement)
+        {
+            this._statements.AddStatement(statement);
         }
 
         private void MergeAuthority(StatementEntity statement, Agent authority)
@@ -270,7 +269,7 @@ namespace Doctrina.Core.Services
                 var agent = this._agentService.MergeActor(authority);
                 statement.AuthorityId = agent.Key;
             }
-            else if(authority.ObjectType == ObjectType.Group)
+            else if (authority.ObjectType == ObjectType.Group)
             {
                 var group = authority as Group;
                 // The two Agents represent an application and user together.
@@ -288,13 +287,14 @@ namespace Doctrina.Core.Services
                 var agent = this._agentService.MergeActor(group);
                 statement.AuthorityId = agent.Key;
                 statement.Authority = agent;
-            } else
+            }
+            else
             {
                 throw new JsonSerializationException($"'{objType}' is not allowed as authority.");
             }
         }
 
-        private Statement ConvertFrom(StatementEntity entity)
+        public Statement ConvertFrom(StatementEntity entity)
         {
             return JsonConvert.DeserializeObject<Statement>(entity.FullStatement);
         }
@@ -302,6 +302,16 @@ namespace Doctrina.Core.Services
         public bool Exist(Guid statementId, bool voided = false)
         {
             return _statements.Exist(statementId, voided);
+        }
+
+        public DateTimeOffset GetConsistentThroughDate()
+        {
+            var date = _dbContext.Statements
+                .OrderByDescending(x => x.Stored)
+                .Select(x => x.Stored)
+                .SingleOrDefault();
+
+            return date;
         }
     }
 }

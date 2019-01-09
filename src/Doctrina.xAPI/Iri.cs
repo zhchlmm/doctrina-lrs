@@ -7,37 +7,44 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.Models
+namespace Doctrina.xAPI
 {
     /// <summary>
-    /// Internationalized Resource Identifiers
+    /// Internationalized Resource Identifiers, or IRIs, are unique identifiers which could also be resolvable. 
+    /// IRIs can contain some characters outside of the ASCII character set.
     /// </summary>
-    [TypeConverter(typeof(IrlTypeConverter))]
-    public class Irl
+    [TypeConverter(typeof(IRITypeConverter))]
+    public class Iri
     {
-        private readonly string _irlString = null;
+        private readonly string _iriString = null;
 
-        public Irl() { }
+        public Iri() { }
 
-        public Irl(string irlString)
+        public Iri(string iriString)
         {
-            if(!Uri.IsWellFormedUriString(irlString, UriKind.RelativeOrAbsolute))
-                throw new FormatException($"IRL '{irlString}' is not a well formatted IRL string.");
+            try
+            {
+                var url = new Uri(iriString);
+            }
+            catch (Exception)
+            {
+                throw new FormatException($"IRI '{iriString}' is not a well formatted IRI string.");
+            }
 
-            _irlString = irlString;
+            this._iriString = iriString;
         }
 
         public override string ToString()
         {
-            return _irlString;
+            return _iriString;
         }
 
-        public static bool TryParse(string iriString, out Irl iri)
+        public static bool TryParse(string iriString, out Iri iri)
         {
             iri = null;
             try
             {
-                iri = new Irl(iriString);
+                iri = new Iri(iriString);
                 return true;
             }
             catch (Exception)
@@ -48,38 +55,42 @@ namespace Doctrina.xAPI.Models
 
         public override bool Equals(object obj)
         {
-            var iri = obj as Irl;
+            var iri = obj as Iri;
             return iri != null &&
-                   _irlString == iri._irlString;
+                   _iriString == iri._iriString;
         }
 
         public override int GetHashCode()
         {
-            return 314876093 + EqualityComparer<string>.Default.GetHashCode(_irlString);
+            return 314876093 + EqualityComparer<string>.Default.GetHashCode(_iriString);
         }
 
-        public static bool operator ==(Irl iri1, Irl iri2)
+        public static bool operator ==(Iri iri1, Iri iri2)
         {
-            return EqualityComparer<Irl>.Default.Equals(iri1, iri2);
+            return EqualityComparer<Iri>.Default.Equals(iri1, iri2);
         }
 
-        public static bool operator !=(Irl iri1, Irl iri2)
+        public static bool operator !=(Iri iri1, Iri iri2)
         {
             return !(iri1 == iri2);
         }
 
-        public static implicit operator Uri(Irl d)
+        public static implicit operator Uri(Iri d)
         {
             return new Uri(d.ToString());
         }
 
-        public static implicit operator Irl(Uri d)
+        public static implicit operator Iri(Uri d)
         {
-            return new Irl(d.ToString());
+            return new Iri(d.ToString());
+        }
+
+        public static explicit operator Iri(string strIri){
+            return new Iri(strIri);
         }
     }
 
-    internal class IrlTypeConverter : TypeConverter
+    internal class IRITypeConverter: TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
@@ -95,8 +106,8 @@ namespace Doctrina.xAPI.Models
         {
             if(value is string)
             {
-                Irl iri = null;
-                if (Irl.TryParse(value as string, out iri))
+                Iri iri = null;
+                if (Iri.TryParse(value as string, out iri))
                 {
                     return iri;
                 }

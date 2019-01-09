@@ -1,4 +1,5 @@
 ﻿using Doctrina.Web.Areas.xAPI.Mvc.ModelBinders;
+using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -6,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Doctrina.Web.Areas.xAPI.Models
 {
-    [ModelBinder(typeof(StateDocumentModelBinder))]
+    [ModelBinder(typeof(ActivityStateModelBinder))]
     public class StateDocumentModel
     {
         [Required]

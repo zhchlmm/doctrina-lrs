@@ -18,7 +18,7 @@ namespace Doctrina.Web
     public class Program
     {
         public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-           .SetBasePath(Directory.GetCurrentDirectory() + "/Logs")
+           .SetBasePath(Directory.GetCurrentDirectory())
            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
            .AddEnvironmentVariables()
            .Build();
@@ -37,7 +37,7 @@ namespace Doctrina.Web
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.RollingFile("log-{Date}.txt", shared: true)
+                .WriteTo.RollingFile("logs/log-{Date}.log", shared: true)
                 //.ReadFrom.Configuration(Configuration)
                 .Enrich.WithProperty("AppName", "Doctrina LRS")
                 .CreateLogger();

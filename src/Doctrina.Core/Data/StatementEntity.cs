@@ -38,10 +38,10 @@ namespace Doctrina.Core.Data
         public Guid? ContextId { get; set; }
 
         [Required]
-        public DateTime Timestamp { get; set; }
+        public DateTimeOffset Timestamp { get; set; }
 
         [Required]
-        public DateTime Stored { get; set; }
+        public DateTimeOffset Stored { get; set; }
 
         public bool Voided { get; set; } = false;
 
@@ -84,7 +84,7 @@ namespace Doctrina.Core.Data
         [ForeignKey(nameof(AuthorityId))]
         public virtual AgentEntity Authority { get; set; }
 
-        public List<AttachmentEntity> Attachments { get; set; }
+        public virtual List<AttachmentEntity> Attachments { get; set; }
         #endregion
 
         /// <summary>

@@ -1,16 +1,19 @@
 ﻿using Doctrina.xAPI;
-using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.Core.Models
 {
     public class PagedStatementsQuery : StatementsQuery
     {
+        [FromQuery(Name = "skip")]
         public int? Skip { get; set; }
+
+        [FromHeader(Name = xAPI.Constants.Headers.XExperienceApiVersion)]
+        public string Version { get; set; }
+
+        [FromHeader(Name = "Accept-Languge")]
+        public string AcceptLanguage { get; set; }
 
         public override NameValueCollection ToParameterMap(XAPIVersion version)
         {

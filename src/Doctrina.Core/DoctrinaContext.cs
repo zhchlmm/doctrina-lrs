@@ -26,7 +26,8 @@ namespace Doctrina.Core
 
         public DoctrinaContext(DbContextOptions<DoctrinaContext> options)
             : base(options)
-        { }
+        {
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

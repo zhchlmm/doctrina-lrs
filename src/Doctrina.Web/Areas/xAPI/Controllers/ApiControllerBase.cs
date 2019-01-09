@@ -13,7 +13,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
     [Route("xapi/[controller]")]
     public class ApiControllerBase : ControllerBase
     {
-        public Agent CurrentAuthority
+        public Agent Authority
         {
             get
             {

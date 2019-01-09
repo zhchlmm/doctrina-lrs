@@ -40,37 +40,46 @@ namespace Doctrina.Web.Mvc.ModelBinders
 
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            if (bindingContext == null)
+            try
             {
-                throw new ArgumentNullException(nameof(bindingContext));
+                if (bindingContext == null)
+                {
+                    throw new ArgumentNullException(nameof(bindingContext));
+                }
+
+                // Specify a default argument name if none is set by ModelBinderAttribute
+                var modelName = bindingContext.BinderModelName;
+                if (string.IsNullOrEmpty(modelName))
+                {
+                    modelName = "statements";
+                }
+
+                if (bindingContext.ModelType != typeof(Statement))
+                    return Task.CompletedTask;
+
+                var request = bindingContext.ActionContext.HttpContext.Request;
+                string json = null;
+                using (var streamReader = new System.Net.Http.StreamContent(request.Body))
+                {
+                    json = streamReader.ReadAsStringAsync().Result;
+                }
+
+                Statement statement = statement = DeserializeStatement(bindingContext, json);
+           
+
+                if (statement != null)
+                {
+                    bindingContext.Result = ModelBindingResult.Success(statement);
+                }
+                else
+                {
+                    bindingContext.Result = ModelBindingResult.Failed();
+                }
+
             }
-
-            // Specify a default argument name if none is set by ModelBinderAttribute
-            var modelName = bindingContext.BinderModelName;
-            if (string.IsNullOrEmpty(modelName))
+            catch (Exception ex)
             {
-                modelName = "statements";
-            }
-
-            if (bindingContext.ModelType != typeof(Statement))
-                return Task.CompletedTask;
-
-            var request = bindingContext.ActionContext.HttpContext.Request;
-            string json = null;
-            using (var streamReader = new System.Net.Http.StreamContent(request.Body))
-            {
-                json = streamReader.ReadAsStringAsync().Result;
-            }
-
-            Statement statement = DeserializeStatement(bindingContext, json);
-
-            if (statement != null)
-            {
-                bindingContext.Result = ModelBindingResult.Success(statement);
-            }
-            else
-            {
-                bindingContext.Result = ModelBindingResult.Failed();
+                bindingContext.ModelState.AddModelError("", ex.Message);
             }
 
             return Task.CompletedTask;
@@ -94,7 +103,7 @@ namespace Doctrina.Web.Mvc.ModelBinders
             string strVersion = request.Headers[Constants.Headers.XExperienceApiVersion];
             if (string.IsNullOrWhiteSpace(strVersion))
             {
-                throw new Exception($"'{Constants.Headers.XExperienceApiVersion}' is missing.");
+                throw new Exception($"'{Constants.Headers.XExperienceApiVersion}' header is missing.");
             }
 
             XAPISerializer serializer = new XAPISerializer(strVersion);
@@ -105,6 +114,7 @@ namespace Doctrina.Web.Mvc.ModelBinders
             };
 
             var statement = serializer.Deserialize<Statement>(validatingReader);
+
             return statement;
         }
 

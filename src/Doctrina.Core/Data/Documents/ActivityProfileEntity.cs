@@ -22,15 +22,15 @@ namespace Doctrina.Core.Data.Documents
 
         public Guid? RegistrationId { get; set; }
 
-        [Required]
-        public Guid AgentId { get; set; }
+        //[Required]
+        //public Guid AgentId { get; set; }
 
         [Required]
         public Guid DocumentId { get; set; }
 
         #region Navigation Properties
-        [ForeignKey(nameof(AgentId))]
-        public virtual AgentEntity Agent { get; set; }
+        //[ForeignKey(nameof(AgentId))]
+        //public virtual AgentEntity Agent { get; set; }
 
         [ForeignKey(nameof(ActivityKey))]
         public virtual ActivityEntity Activity { get; set; }

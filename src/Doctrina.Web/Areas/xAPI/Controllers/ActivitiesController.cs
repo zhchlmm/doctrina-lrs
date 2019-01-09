@@ -1,11 +1,12 @@
 ﻿using Doctrina.Core.Services;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using Doctrina.xAPI.Models;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
+using Doctrina.xAPI;
+using Doctrina.xAPI.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Doctrina.Web.Areas.xAPI.Controllers
 {
+    [HeadWithoutBody]
     [VersionHeader]
     [Route("xapi/activities")]
     [Produces("application/json")]
@@ -13,12 +14,12 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
     {
         private readonly IActivityService activityService;
 
-        protected ActivitiesController(IActivityService activityService)
+        public ActivitiesController(IActivityService activityService)
         {
             this.activityService = activityService;
         }
 
-        [HttpGet]
+        [AcceptVerbs("GET", "HEAD")]
         public ActionResult GetActivityDocument(Iri activityId)
         {
             Activity activity = activityService.GetActivity(activityId);

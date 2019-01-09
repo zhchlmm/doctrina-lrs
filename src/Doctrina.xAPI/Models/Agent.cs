@@ -129,6 +129,11 @@ namespace Doctrina.xAPI.Models
             return ids;
         }
 
+        public override string ToString()
+        {
+            return ToJson(false);
+        }
+
         public override bool Equals(object obj)
         {
             var agent = obj as Agent;

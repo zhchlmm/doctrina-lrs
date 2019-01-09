@@ -1,5 +1,5 @@
 FROM microsoft/aspnetcore:2.0-nanoserver-1709 AS base
-WORKDIR /app
+WORKDIR /wwwroot
 EXPOSE 80
 
 FROM microsoft/aspnetcore-build:2.1-nanoserver-1709 AS build
@@ -14,6 +14,6 @@ FROM build AS publish
 RUN dotnet publish Doctrina.Web.csproj -c Release -o /app
 
 FROM base AS final
-WORKDIR /app
-COPY --from=publish /app .
+WORKDIR /wwwroot
+COPY --from=publish /wwwroot .
 ENTRYPOINT ["dotnet", "Doctrina.Web.dll"]

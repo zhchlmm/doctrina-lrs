@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Doctrina.xAPI.Models;
 
 namespace Doctrina.xAPI.Documents
 {
     public class AgentProfileDocument : Document
     {
-        
+        public Agent Agent { get; set; }
     }
 }

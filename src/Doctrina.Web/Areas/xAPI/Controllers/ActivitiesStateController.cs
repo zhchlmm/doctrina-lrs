@@ -3,6 +3,7 @@ using Doctrina.Web.Areas.xAPI.Models;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
 using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using System;
@@ -16,20 +17,20 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
     /// </summary>
     //[ApiAuthortize]
     //[ApiVersion]
+    [HeadWithoutBody]
     [VersionHeader]
     [Route("xapi/activities/state")]
-    [Produces("application/json")]
-    public class ActivityStatesController : ApiControllerBase
+    public class ActivitiesStateController : ApiControllerBase
     {
-        private readonly IActivityStateService activityStateService;
+        private readonly IActivitiesStateService _activityStateService;
 
-        protected ActivityStatesController(IActivityStateService activityStateService)
+        public ActivitiesStateController(IActivitiesStateService activityStateService)
         {
-            this.activityStateService = activityStateService;
+            _activityStateService = activityStateService;
         }
 
-        // GET xapi/activities/state
-        [HttpGet]
+        // GET|HEAD xapi/activities/state
+        [AcceptVerbs("GET", "HEAD")]
         public ActionResult<StateDocumentModel> GetSingleState(StateDocumentModel model)
         {
             if (!ModelState.IsValid)
@@ -37,19 +38,24 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
             try
             {
-                var stateDocument = activityStateService.GetStateDocument(model.StateId, model.ActivityId, model.Agent, model.Registration);
-                if (stateDocument == null)
-                    return new NotFoundResult();
+                var activityState = _activityStateService.GetActivityState(model.StateId, model.ActivityId, model.Agent, model.Registration);
+                if (activityState == null)
+                    return NotFound();
+
+                if (HttpMethods.IsHead(Request.Method))
+                    return NoContent();
+
+                var stateDocument = activityState.Document;
 
                 var contentType = new MediaTypeHeaderValue(stateDocument.ContentType);
-                var result = new FileContentResult(stateDocument.Content, contentType);
-                Response.Headers.Add("ETag", "\"" + stateDocument.ETag + "\"");
-                Response.Headers.Add("LastModified", stateDocument.Timestamp.ToString(Constants.Formats.DateTimeFormat));
-                return result;
+                var content = new FileContentResult(stateDocument.Content, contentType.ToString());
+                content.LastModified = stateDocument.LastModified;
+                content.EntityTag = new EntityTagHeaderValue($"\"{stateDocument.Tag}\"");
+                return content;
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -62,13 +68,14 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
             try
             {
-                var state = activityStateService.MergeStateDocument(model.StateId, model.ActivityId, model.Agent, model.Registration, model.ContentType, model.Content);
-                Response.Headers.Add("ETag", $"\"{state.ETag}\"");
+                var document = _activityStateService.MergeStateDocument(model.StateId, model.ActivityId, model.Agent, model.Registration, model.ContentType, model.Content);
+                var etag = EntityTagHeaderValue.Parse($"\"{document.Tag}\"");
+                //Response.Headers.Add("ETag", etag.ToString());
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -82,7 +89,32 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
             try
             {
-                activityStateService.DeleteState(model.StateId, model.ActivityId, model.Agent, model.Registration);
+                var state = _activityStateService.GetActivityState(model.StateId, model.ActivityId, model.Agent, model.Registration);
+                if (state == null)
+                    return NotFound();
+
+                _activityStateService.DeleteState(state);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        // DELETE xapi/activities/state
+        [HttpDelete]
+        public IActionResult DeleteStates([FromQuery]Iri activityId, [FromQuery(Name ="agent")]string strAgent, [FromQuery]Guid? registration = null)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                Agent agent = Agent.Parse(strAgent);
+
+                _activityStateService.DeleteStates(activityId, agent, registration);
                 return NoContent();
             }
             catch (Exception ex)
@@ -107,20 +139,19 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
             try
             {
-                Agent parsedAgent = Agent.Parse(strAgent);
+                Agent agent = Agent.Parse(strAgent);
 
-                var states = activityStateService.GetStates(activityId, parsedAgent, registration, since);
+                var states = _activityStateService.GetStates(activityId, agent, registration, since);
 
                 IEnumerable<Guid> ids = states.Select(x => x.Id);
-                string lastModified = states.OrderByDescending(x => x.Timestamp).FirstOrDefault().Timestamp.ToString(Constants.Formats.DateTimeFormat);
-
-                Response.Headers["LastModified"] = lastModified;
+                string lastModified = states.OrderByDescending(x => x.LastModified).FirstOrDefault().LastModified.ToString(Constants.Formats.DateTimeFormat);
+                Response.Headers.Add("LastModified", lastModified);
 
                 return Ok(ids);
             }
             catch (Exception ex)
             {
-                throw ex;
+                return BadRequest(ex);
             }
         }
     }

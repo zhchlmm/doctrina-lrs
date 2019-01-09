@@ -30,8 +30,8 @@ namespace Doctrina.Core.Services
                 Id = Guid.NewGuid(),
                 ContentType = contentType,
                 Content = buffer,
-                ETag = ComputeHash(buffer),
-                Timestamp = DateTime.UtcNow
+                Tag = ComputeHash(buffer),
+                LastModified = DateTime.UtcNow
             };
             dbContext.Documents.Add(entity);
             dbContext.Entry(entity).State = EntityState.Added;
@@ -76,8 +76,8 @@ namespace Doctrina.Core.Services
 
             // Update etag as the last thing
             entity.ContentType = contentType;
-            entity.Timestamp = DateTime.UtcNow;
-            entity.ETag = ComputeHash(content);
+            entity.LastModified = DateTime.UtcNow;
+            entity.Tag = ComputeHash(content);
 
             this.dbContext.Documents.Update((DocumentEntity)entity);
             dbContext.Entry((DocumentEntity)entity).State = EntityState.Modified;

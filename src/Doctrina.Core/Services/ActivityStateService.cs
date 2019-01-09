@@ -1,33 +1,32 @@
 ﻿using Doctrina.Core.Data;
+using Doctrina.Core.Data.Documents;
 using Doctrina.Core.Repositories;
+using Doctrina.xAPI;
+using Doctrina.xAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
-using Doctrina.xAPI.Documents;
-using Doctrina.xAPI.Models;
-using Doctrina.Core.Data.Documents;
 
 namespace Doctrina.Core.Services
 {
-    public sealed class ActivityStateService : IActivityStateService
+    public sealed class ActivitiesStateService : IActivitiesStateService
     {
         private readonly DoctrinaContext _dbContext;
-        private readonly IActivityStateRepository _activityStates;
+        private readonly IActivitiesStateRepository _activityStates;
         private readonly IActivityService _activityService;
         private readonly IAgentService _agentService;
         private readonly IDocumentService _documentService;
 
         //private readonly DocumentService documents;
 
-        public ActivityStateService(DoctrinaContext dbContext, IActivityStateRepository activityStateRepository, IActivityService activityService, IAgentService agentService, IDocumentService documentService)
+        public ActivitiesStateService(DoctrinaContext dbContext, IActivitiesStateRepository activityStateRepository, IActivityService activityService, IAgentService agentService, IDocumentService documentService)
         {
-            this._dbContext = dbContext;
-            this._activityStates = activityStateRepository;
+            _dbContext = dbContext;
+            _activityStates = activityStateRepository;
             _activityService = activityService;
-            this._agentService = agentService;
-            this._documentService = documentService;
+            _agentService = agentService;
+            _documentService = documentService;
         }
 
         public IDocumentEntity MergeStateDocument(string stateId, Iri activityId, Agent agent, Guid? registration, string contentType, byte[] content)
@@ -77,23 +76,24 @@ namespace Doctrina.Core.Services
             activityState.Document = document;
             activityState.DocumentId = document.Id;
 
-            this._activityStates.Create(activityState);
-
-            this._dbContext.SaveChanges();
+            _dbContext.ActivityStates.Add(activityState);
+            _dbContext.Entry(activityState).State = EntityState.Added;
+            _dbContext.SaveChanges();
 
             return activityState.Document;
         }
 
         private IDocumentEntity UpdateStateDocument(ActivityStateEntity activityState, string contentType, byte[] content)
         {
-            _documentService.UpdateDocument(activityState.Document, contentType, content);
-            this._dbContext.Entry(activityState).State = EntityState.Unchanged;
-            this._dbContext.SaveChanges();
+            var document = _documentService.UpdateDocument(activityState.Document, contentType, content);
 
-            return activityState.Document;
+            _dbContext.Entry(activityState).State = EntityState.Unchanged;
+            _dbContext.SaveChanges();
+
+            return document;
         }
 
-        public IDocumentEntity GetStateDocument(string stateId, Iri activityId, Agent agent, Guid? registration)
+        public ActivityStateEntity GetActivityState(string stateId, Iri activityId, Agent agent, Guid? registration)
         {
             var agentEntity = this._agentService.ConvertFrom(agent);
 
@@ -101,7 +101,7 @@ namespace Doctrina.Core.Services
             if (state == null)
                 return null;
 
-            return state.Document;
+            return state;
         }
 
         /// <summary>
@@ -133,10 +133,9 @@ namespace Doctrina.Core.Services
         /// <param name="stateId"></param>
         /// <param name="agent"></param>
         /// <param name="registration"></param>
-        public void DeleteState(string stateId, Iri activityId, Agent agent, Guid? registration)
+        public void DeleteState(ActivityStateEntity state)
         {
-            var agentEntity = _agentService.ConvertFrom(agent);
-            this._activityStates.Delete(stateId, activityId, agentEntity, registration);
+            this._activityStates.Delete(state);
         }
 
         /// <summary>

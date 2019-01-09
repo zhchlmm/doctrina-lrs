@@ -33,7 +33,7 @@ namespace Doctrina.xAPI.Models
             Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
         [DataType(DataType.DateTime)]
-        public DateTime? Stored { get; set; }
+        public DateTimeOffset? Stored { get; set; }
 
         /// <summary>
         /// Agent or Group who is asserting this Statement is true. 

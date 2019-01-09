@@ -18,8 +18,9 @@ namespace Doctrina.xAPI.Models
     [TypeConverter(typeof(DurationTypeConverter))]
     public struct Duration
     {
-        private static char[] _dateDesignators = new char[] { 'P', 'Y', 'M', 'W', 'D' };
-        private static char[] _timeDesignators = new char[] { 'P', 'T', 'H', 'M', 'S' };
+        private static string _regexPattern = @"^P((\d+(?:\.\d+)?Y)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?D)?(T(?=\d)(\d+(?:\.\d+)?H)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?S)?)?)$|^P(\d+(?:\.\d+)?W)?$";
+        private static char[] _dateDesignators = new char[] { 'Y', 'M', 'W', 'D' };
+        private static char[] _timeDesignators = new char[] { 'T', 'H', 'M', 'S' };
 
         public long Ticks;
 
@@ -34,13 +35,18 @@ namespace Doctrina.xAPI.Models
 
         public Duration(string s)
         {
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                throw new ArgumentNullException(nameof(s));
+            }
+
             string strDuration = s.Trim();
 
             if (!strDuration.StartsWith("P"))
-                throw new Exception("Duration must start with the designator 'P' (for period).");
+                throw new FormatException("Duration must start with the designator 'P' (for period).");
 
             if (strDuration.Length == 1)
-                throw new Exception("'P' designator is not valid for duration alone.");
+                throw new FormatException("'P' designator is not valid for duration alone.");
 
             Years = null;
             Months = null;
@@ -51,8 +57,9 @@ namespace Doctrina.xAPI.Models
             Seconds = null;
             Ticks = 0;
 
-            List<KeyValuePair<char, double>> elements = GetElements(strDuration);
-            AddElements(ref this, elements);
+            List<KeyValuePair<char, double>> elements = ParseElements(strDuration);
+
+            AddElements(elements);
         }
 
         public Duration(long ticks)
@@ -74,42 +81,59 @@ namespace Doctrina.xAPI.Models
             return new Duration(s);
         }
 
-        private static List<KeyValuePair<char, double>> GetElements(string s)
+        private List<KeyValuePair<char, double>> ParseElements(string s)
         {
             string strValue = "";
             string strDuration = s.Trim();
-            char pre;
+            char periodOrTime = 'P';
             var elements = new List<KeyValuePair<char, double>>();
+            var destinct = new List<string>();
             for (int i = 0; i < strDuration.Length; i++)
             {
                 var chr = strDuration[i];
 
+                if (chr == 'P' || chr == 'T')
+                {
+                    periodOrTime = chr;
+                    elements.Add(new KeyValuePair<char, double>(chr, 0.0));
+                    continue;
+                }
+
                 // We expect digits first
-                if (char.IsDigit(chr) || chr == '.')
+                if (char.IsDigit(chr) || (chr == '.' || chr == ','))
                 {
                     strValue += chr;
                     continue;
                 }
                 else if (char.IsLetter(chr))
                 {
-                    // Skip if period or time designator
-                    if (chr == 'T' || chr == 'P')
+                    string combined = "";
+                    combined += periodOrTime;
+                    combined += chr;
+                    if (destinct.Contains(combined))
                     {
-                        pre = chr;
-                        elements.Add(new KeyValuePair<char, double>(chr, 0.0));
-                        continue;
+                        throw new FormatException($"Duplicate designator '{chr}' at index '{i}'.");
+                    }
+                    destinct.Add(combined);
+
+                    // Not a valid date or time designator
+                    bool validDateDesignator = _dateDesignators.Contains(chr);
+                    bool validTimeDesignator = _timeDesignators.Contains(chr);
+
+                    if (!(validDateDesignator || validTimeDesignator))
+                    {
+                        throw new FormatException($"'{chr}' is not a valid period or time designator.");
                     }
 
-                    var designator = chr;
-                    if (!_dateDesignators.Contains(chr) && !_timeDesignators.Contains(chr))
+                    if(!validDateDesignator && validDateDesignator && periodOrTime != 'T')
                     {
-                        throw new Exception($"'{chr}' is not a valid designator.");
+                        throw new FormatException($"Time designator 'T' must appear before '{chr}'.");
                     }
 
-                    // We have received digits
+                    // If we have not received any digits for this designator
                     if (string.IsNullOrEmpty(strValue))
                     {
-                        throw new Exception($"'{chr}' designator must have a value.");
+                        throw new FormatException($"'{chr}' designator must have a value.");
                     }
 
                     double value;
@@ -120,7 +144,7 @@ namespace Doctrina.xAPI.Models
                     }
                     else
                     {
-                        throw new Exception($"'{strValue}' is not valid for designator '{chr}'.");
+                        throw new FormatException($"'{strValue}' is not valid for designator '{chr}'.");
                     }
                 }
             }
@@ -128,71 +152,153 @@ namespace Doctrina.xAPI.Models
             return elements;
         }
 
-        private static void AddElements(ref Duration d, List<KeyValuePair<char, double>> elements)
+        private void AddElements(List<KeyValuePair<char, double>> elements)
         {
-            char pt = 'P';
-            foreach (var element in elements)
+            if (elements == null)
             {
-                if (element.Key == 'P')
-                    continue;
+                throw new ArgumentNullException(nameof(elements));
+            }
 
-                if (element.Key == 'T')
+            string orderedDesignators = "PYMDTHMS";
+
+            char periodOrTime = 'P';
+            int prevIndexOf = -1; 
+            for (int i = 0; i < elements.Count(); i++)
+            {
+                var element = elements[i];
+
+                if (element.Key == 'P' || element.Key == 'T')
                 {
-                    pt = 'T';
+                    // Is period or time designator
+                    periodOrTime = element.Key;
+                    prevIndexOf = -1; // Reset
                     continue;
                 }
 
-                if (pt == 'P')
+                if (element.Key == 'W')
                 {
-                    AddPeriod(ref d, element);
+                    if (elements.Count() > 2)
+                    {
+                        throw new FormatException($"'W' is the week designator, and cannot be paired with other designators.");
+                    }
                 }
-                else if (pt == 'T')
+
+                // Ensure the order of the designators
+                if(element.Key != 'W')
                 {
-                    AddTime(ref d, element);
+                    if(periodOrTime == 'P')
+                    {
+                        int indexOf = Array.IndexOf(_dateDesignators, element.Key);
+                        if (prevIndexOf > indexOf)
+                        {
+                            // Previous designator
+                            throw new FormatException($"Date designators must be in the following order 'Y, M, D'.");
+                        }
+                        prevIndexOf = indexOf;
+                    }
+                    else if(periodOrTime == 'T')
+                    {
+                        int indexOf = Array.IndexOf(_timeDesignators, element.Key);
+                        if (prevIndexOf > indexOf)
+                        {
+                            // Previous designator
+                            throw new FormatException($"Time designators must be in the following order 'H, M, S'.");
+                        }
+                        prevIndexOf = indexOf;
+                    }
+                }
+
+                if (periodOrTime == 'P')
+                {
+                    AddPeriod(element.Key, element.Value);
+                }
+                else if (periodOrTime == 'T')
+                {
+                    AddTime(element.Key, element.Value);
                 }
             }
         }
 
-        private static void AddPeriod(ref Duration d, KeyValuePair<char, double> element)
+        private void AddPeriod(char designator, double value)
         {
-            switch (element.Key)
+            switch (designator)
             {
                 case 'Y':
-                    d.Years = element.Value;
-                    d.Ticks += (long)Math.Floor((TimeSpan.TicksPerDay * 365.242199) * element.Value);
+                    AddYears(value);
                     break;
                 case 'M':
-                    d.Months = element.Value;
-                    d.Ticks += (long)Math.Floor((TimeSpan.TicksPerDay * 30.4368499) * element.Value);
+                    AddMonths(value);
                     break;
                 case 'W':
-                    d.Weeks = element.Value;
-                    d.Ticks += (long)Math.Floor((TimeSpan.TicksPerDay * 7) * element.Value);
+                    AddWeeks(value);
                     break;
                 case 'D':
-                    d.Days = element.Value;
-                    d.Ticks += (long)Math.Floor(TimeSpan.TicksPerDay * element.Value);
+                    AddDays(value);
                     break;
+
+                default:
+                    throw new FormatException($"'{designator}' is not a valid period designator.");
             }
         }
 
-        private static void AddTime(ref Duration d, KeyValuePair<char, double> element)
+        public void AddYears(double value)
         {
-            switch (element.Key)
+            Years = value;
+            Ticks += (long)Math.Floor((TimeSpan.TicksPerDay * 365.242199) * value);
+        }
+
+        public void AddMonths(double value)
+        {
+            Months = value;
+            Ticks += (long)Math.Floor((TimeSpan.TicksPerDay * 30.4368499) * value);
+        }
+
+        public void AddWeeks(double value)
+        {
+            Weeks = value;
+            Ticks += (long)Math.Floor((TimeSpan.TicksPerDay * 7) * value);
+        }
+
+        public void AddDays(double value)
+        {
+            Days = value;
+            Ticks += (long)Math.Floor(TimeSpan.TicksPerDay * value);
+        }
+
+        private void AddTime(char designator, double value)
+        {
+            switch (designator)
             {
                 case 'H':
-                    d.Hours = element.Value;
-                    d.Ticks += (long)Math.Floor(TimeSpan.TicksPerHour * element.Value);
+                    AddHours(value);
                     break;
                 case 'M':
-                    d.Minutes = element.Value;
-                    d.Ticks += (long)Math.Floor(TimeSpan.TicksPerMinute * element.Value);
+                    AddMinutes(value);
                     break;
                 case 'S':
-                    d.Seconds = element.Value;
-                    d.Ticks += (long)Math.Floor(TimeSpan.TicksPerSecond * element.Value);
+                    AddSeconds(value);
                     break;
+                default:
+                    throw new FormatException($"'{designator}' is not a valid time designator.");
             }
+        }
+
+        public void AddHours(double value)
+        {
+            Hours = value;
+            Ticks += (long)Math.Floor(TimeSpan.TicksPerHour * value);
+        }
+
+        public void AddMinutes(double value)
+        {
+            Minutes = value;
+            Ticks += (long)Math.Floor(TimeSpan.TicksPerMinute * value);
+        }
+
+        public void AddSeconds(double value)
+        {
+            Seconds = value;
+            Ticks += (long)Math.Floor(TimeSpan.TicksPerSecond * value);
         }
 
         public static Duration FromTicks(long ticks)
@@ -210,15 +316,15 @@ namespace Doctrina.xAPI.Models
             }
             if (Months.HasValue)
             {
-                sb.AppendFormat("{0}Y", Months.Value);
+                sb.AppendFormat("{0}M", Months.Value);
             }
             if (Weeks.HasValue)
             {
-                sb.AppendFormat("{0}Y", Weeks.Value);
+                sb.AppendFormat("{0}W", Weeks.Value);
             }
             if (Days.HasValue)
             {
-                sb.AppendFormat("{0}Y", Days.Value);
+                sb.AppendFormat("{0}D", Days.Value);
             }
 
             if (Hours.HasValue || Minutes.HasValue || Seconds.HasValue)
@@ -249,7 +355,7 @@ namespace Doctrina.xAPI.Models
                 duration = new Duration(durationString);
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -287,6 +393,26 @@ namespace Doctrina.xAPI.Models
             return hashCode;
         }
 
+        //public static explicit operator Duration(string s)
+        //{
+        //    return new Duration(s);
+        //}
+
+        //public static explicit operator string(Duration d)
+        //{
+        //    return d.ToString();
+        //}
+
+        //public static explicit operator Duration(long lng)
+        //{
+        //    return new Duration(lng);
+        //}
+
+        //public static explicit operator long(Duration d)
+        //{
+        //    return d.Ticks;
+        //}
+
         public static bool operator ==(Duration left, Duration right)
         {
             return left.ToString() == right.ToString();
@@ -308,7 +434,7 @@ namespace Doctrina.xAPI.Models
         }
     }
 
-    internal class DurationTypeConverter : TypeConverter
+    public class DurationTypeConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {

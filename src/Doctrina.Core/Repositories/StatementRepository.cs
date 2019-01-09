@@ -16,12 +16,20 @@ namespace Doctrina.Core.Repositories
             this.dbContext = context;
         }
 
-        public StatementEntity GetById(Guid statementId)
+        public StatementEntity GetById(Guid statementId, bool voided, bool includeAttachments)
         {
-            return this.dbContext.Statements.Find(statementId);
+            if (includeAttachments)
+            {
+                return this.dbContext.Statements
+                    .Include(x=> x.Attachments)
+                    .FirstOrDefault(x => x.StatementId == statementId && x.Voided == voided);
+            }
+
+            return this.dbContext.Statements
+                    .FirstOrDefault(x => x.StatementId == statementId && x.Voided == voided);
         }
 
-        public IQueryable<StatementEntity> GetAll(bool voided, bool includeAttachments)
+        public IQueryable<StatementEntity> AsQueryable(bool voided, bool includeAttachments)
         {
             if (includeAttachments)
             {
@@ -42,13 +50,21 @@ namespace Doctrina.Core.Repositories
             return sql.Count() == 1;
         }
 
-        public void SaveChanges(StatementEntity entity)
+        /// <summary>
+        /// Begins tracking for the StatementEntity
+        /// </summary>
+        /// <param name="entity"></param>
+        public void AddStatement(StatementEntity entity)
         {
             this.dbContext.Statements.Add(entity);
             this.dbContext.Entry(entity).State = EntityState.Added;
             //this.dbContext.SaveChanges();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="voidedStatement"></param>
         public void Update(StatementEntity voidedStatement)
         {
             this.dbContext.Statements.Update(voidedStatement);

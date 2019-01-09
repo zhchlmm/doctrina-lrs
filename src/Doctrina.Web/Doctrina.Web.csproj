@@ -7,12 +7,15 @@
     <StartupObject></StartupObject>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
+    <Company>REM Solutions</Company>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.html</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\xAPI\Mvc\Bindings\" />
     <Folder Include="Controllers\" />
     <Folder Include="Logs\" />
-    <Folder Include="Models\" />
     <Folder Include="Mvc\" />
   </ItemGroup>
 

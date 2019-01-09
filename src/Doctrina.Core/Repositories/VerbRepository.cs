@@ -1,7 +1,5 @@
-﻿using Doctrina.Core;
-using Doctrina.Core.Data;
-using Doctrina.xAPI.Models;
-using System;
+﻿using Doctrina.Core.Data;
+using Doctrina.xAPI;
 using System.Linq;
 
 namespace Doctrina.Core.Repositories

@@ -9,29 +9,30 @@ namespace Doctrina.xAPI.Http
 {
     public interface IRemoteLRS
     {
-        Task<HttpResponseMessage> SaveStatement(Statement statement);
-        Task<HttpResponseMessage> SaveStatements(IEnumerable<Statement> statement);
-        Task<HttpResponseMessage> GetStatement(Guid id);
-        Task<HttpResponseMessage> GetVoidedStatement(Guid id);
-        Task<HttpResponseMessage> QueryStatements(StatementsQuery query);
-        Task<HttpResponseMessage> MoreStatements(StatementsResult result);
-        Task<HttpResponseMessage> GetAbout();
-        Task<HttpResponseMessage> VoidStatement(Guid id, Agent agent);
+        Task<About> GetAbout();
 
-        Task<HttpResponseMessage> GetStateIds(Activity activity, Agent agent, Guid? registration = null);
-        Task<HttpResponseMessage> GetState(String id, Activity activity, Agent agent, Guid? registration = null);
-        Task<HttpResponseMessage> SaveState(StateDocument state);
-        Task<HttpResponseMessage> DeleteState(StateDocument state);
-        Task<HttpResponseMessage> ClearState(Activity activity, Agent agent, Nullable<Guid> registration = null);
+        Task<Statement> SaveStatement(Statement statement);
+        Task<Statement[]> SaveStatements(Statement[] statement);
+        Task<Statement> GetStatement(Guid id);
+        Task<Statement> GetVoidedStatement(Guid id);
+        Task<StatementsResult> QueryStatements(StatementsQuery query);
+        Task<StatementsResult> MoreStatements(StatementsResult result);
+        Task<Statement> VoidStatement(Guid id, Agent agent);
 
-        Task<HttpResponseMessage> GetActivityProfileIds(Activity activity);
-        Task<HttpResponseMessage> GetActivityProfile(string id, Activity activity);
-        Task<HttpResponseMessage> SaveActivityProfile(ActivityProfileDocument profile);
-        Task<HttpResponseMessage> DeleteActivityProfile(ActivityProfileDocument profile);
+        Task<Guid[]> GetStateIds(Iri activityId, Agent agent, Guid? registration = null);
+        Task<StateDocument> GetState(string id, Iri activityId, Agent agent, Guid? registration = null);
+        Task SaveState(StateDocument state, ETagMatch? matchType = null);
+        Task DeleteState(StateDocument state, ETagMatch? matchType = null);
+        Task ClearState(Iri activityId, Agent agent, Guid? registration = null, ETagMatch? matchType = null);
 
-        Task<HttpResponseMessage> GetAgentProfileIds(Agent agent);
-        Task<HttpResponseMessage> GetAgentProfile(string id, Agent agent);
-        Task<HttpResponseMessage> SaveAgentProfile(AgentProfileDocument profile);
-        Task<HttpResponseMessage> DeleteAgentProfile(AgentProfileDocument profile);
+        Task<Guid[]> GetActivityProfileIds(Iri activityId, DateTimeOffset? since = null);
+        Task<ActivityProfileDocument> GetActivityProfile(string id, Iri activityId);
+        Task SaveActivityProfile(ActivityProfileDocument profile, ETagMatch? matchType = null);
+        Task DeleteActivityProfile(ActivityProfileDocument profile, ETagMatch? matchType = null);
+
+        Task<Guid[]> GetAgentProfileIds(Agent agent);
+        Task<AgentProfileDocument> GetAgentProfile(string id, Agent agent);
+        Task SaveAgentProfile(AgentProfileDocument profile, ETagMatch? matchType = null);
+        Task DeleteAgentProfile(AgentProfileDocument profile, ETagMatch? matchType = null);
     }
 }

@@ -18,15 +18,13 @@ namespace Doctrina.Core.Data
 
         public byte[] Content { get; set; }
 
-        [StringLength(150)]
-        public string Payload { get; set; }
+        public string FileUrl { get; set; }
+
+        public string SHA2 { get; set; }
 
         public Guid StatementId { get; set; }
 
-        public string SHA { get; set; }
-
         [ForeignKey(nameof(StatementId))]
         public virtual StatementEntity Statement { get; set; }
-
     }
 }
