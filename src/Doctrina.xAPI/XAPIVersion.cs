@@ -19,7 +19,7 @@ namespace Doctrina.xAPI
 
         public static XAPIVersion Latest()
         {
-            return V101;
+            return V103;
         }
 
         private static Dictionary<string, XAPIVersion> KnownVersions;

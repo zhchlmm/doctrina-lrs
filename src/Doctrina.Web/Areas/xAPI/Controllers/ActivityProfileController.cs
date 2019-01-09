@@ -1,11 +1,16 @@
 ﻿using Doctrina.Core.Services;
+using Doctrina.Web.Areas.xAPI.Models;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
 using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Doctrina.Web.Areas.xAPI.Controllers
 {
@@ -28,8 +33,8 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="activityId">The Activity id associated with this Profile document.</param>
         /// <param name="profileId">The profile id associated with this Profile document.</param>
         /// <returns>200 OK, the Profile document</returns>
-        [AcceptVerbs("GET", "HEAD")]
-        public IActionResult GetProfile(Iri activityId, string profileId)
+        [AcceptVerbs("GET", "HEAD", Order = 1)]
+        public IActionResult GetProfile([BindRequired]string profileId, [BindRequired]Iri activityId)
         {
             try
             {
@@ -37,6 +42,9 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                     return BadRequest(ModelState);
 
                 var profile = this.profileService.GetActivityProfile(profileId, activityId);
+                if (profile == null)
+                    return NotFound();
+
                 var document = profile.Document;
                 string lastModified = document.LastModified.ToString(Constants.Formats.DateTimeFormat);
                 // TODO: Implement concurrency
@@ -58,7 +66,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="activityId">The Activity id associated with these Profile documents.</param>
         /// <param name="since">Only ids of Profile documents stored since the specified Timestamp (exclusive) are returned.</param>
         /// <returns>200 OK, Array of Profile id(s)</returns>
-        [AcceptVerbs("GET", "HEAD")]
+        [AcceptVerbs("GET", "HEAD", Order = 2)]
         public ActionResult<Guid[]> GetProfiles(Iri activityId, DateTimeOffset? since = null)
         {
             try
@@ -92,20 +100,20 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="document">The document to be stored or updated.</param>
         /// <returns>204 No Content</returns>
         [AcceptVerbs("PUT", "POST")]
-        public IActionResult SaveProfile(Iri activityId, string profileId, [FromBody]byte[] content, Guid? registration = null)
+        public IActionResult SaveProfile(string profileId, Iri activityId, [FromBody]byte[] document, Guid? registration = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             string contentType = Request.ContentType;
+
             try
             {
-                // TODO: Implement concurrency
                 var profile = profileService.CreateActivityProfile(
                     profileId,
                     activityId,
                     registration,
-                    content,
+                    document,
                     contentType
                  );
 
@@ -116,7 +124,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             catch (Exception ex)
             {
                 // TODO: If exception is by ETagMatchException
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 

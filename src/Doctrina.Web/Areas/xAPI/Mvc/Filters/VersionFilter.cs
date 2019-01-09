@@ -37,6 +37,7 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.Filters
             }
             catch (Exception ex)
             {
+                context.HttpContext.Response.Headers.Add(Constants.Headers.XExperienceApiVersion, XAPIVersion.Latest().ToString());
                 context.Result = new BadRequestObjectResult(ex.Message + " Supported Versions are: " + string.Join(", ", supported.Select(x => x.Key)));
             }
         }

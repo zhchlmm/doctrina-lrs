@@ -9,12 +9,14 @@ namespace Doctrina.Core.Services
 {
     public class ActivityProfileService : IActivityProfileService
     {
+        private readonly DoctrinaContext _context;
         private readonly IActivityProfileRepository activityProfileRepository;
         private readonly IActivityService _activityService;
         private readonly IDocumentService documentService;
 
-        public ActivityProfileService(IActivityProfileRepository activityProfileRepository, IActivityService activityService, IDocumentService documentService)
+        public ActivityProfileService(DoctrinaContext context, IActivityProfileRepository activityProfileRepository, IActivityService activityService, IDocumentService documentService)
         {
+            _context = context;
             this.activityProfileRepository = activityProfileRepository;
             _activityService = activityService;
             this.documentService = documentService;
@@ -33,8 +35,10 @@ namespace Doctrina.Core.Services
         public IActivityProfileEntity CreateActivityProfile(string profileId, Iri activityId, Guid? registration, byte[] content, string contentType)
         {
             var profile = this.activityProfileRepository.GetProfile(activityId, profileId, registration);
+
             if (profile == null)
                 return CreateProfile(activityId, profileId, registration, content, contentType);
+
             return UpdateProfile(profile, content, contentType);
         }
 
@@ -52,12 +56,15 @@ namespace Doctrina.Core.Services
             {
                 Key = Guid.NewGuid(),
                 ActivityKey = activity.Key,
+                Activity = activity,
                 ProfileId = profileId,
                 RegistrationId = registration,
-                DocumentId = doc.Id
+                DocumentId = doc.Id,
+                Document = (DocumentEntity)doc
             };
 
-            this.activityProfileRepository.AddAndSave(profile);
+            _context.ActivityProfiles.Add(profile);
+            _context.SaveChanges();
 
             return profile;
         }

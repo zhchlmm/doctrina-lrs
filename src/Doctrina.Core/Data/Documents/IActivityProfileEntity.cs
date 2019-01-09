@@ -2,7 +2,7 @@
 
 namespace Doctrina.Core.Data.Documents
 {
-    public interface IActivityProfileEntity: IQueryableAgent
+    public interface IActivityProfileEntity
     {
         ActivityEntity Activity { get; set; }
         Guid ActivityKey { get; set; }

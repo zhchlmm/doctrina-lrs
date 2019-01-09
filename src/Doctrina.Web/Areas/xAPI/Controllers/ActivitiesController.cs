@@ -14,7 +14,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
     {
         private readonly IActivityService activityService;
 
-        protected ActivitiesController(IActivityService activityService)
+        public ActivitiesController(IActivityService activityService)
         {
             this.activityService = activityService;
         }

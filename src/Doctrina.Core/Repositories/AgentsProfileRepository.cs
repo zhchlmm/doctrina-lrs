@@ -1,6 +1,7 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.Core.Data.Documents;
 using Doctrina.Core.Data.Extensions;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,9 @@ namespace Doctrina.Core.Repositories
 
         public AgentProfileEntity GetProfile(AgentEntity agent, string profileId)
         {
-            var sql = this.dbContext.AgentProfiles.WhereAgent(agent)
+            var sql = this.dbContext.AgentProfiles
+                .Include(x=> x.Document)
+                .WhereAgent(agent)
                 .FirstOrDefault(x => x.ProfileId == profileId);
 
             return sql;
@@ -32,7 +35,9 @@ namespace Doctrina.Core.Repositories
 
         public IEnumerable<AgentProfileEntity> GetProfiles(AgentEntity agent, DateTimeOffset? since = null)
         {
-            var sql = this.dbContext.AgentProfiles.WhereAgent(agent);
+            var sql = this.dbContext.AgentProfiles
+                .Include(x=> x.Document)
+                .WhereAgent(agent);
 
             if (since.HasValue)
             {

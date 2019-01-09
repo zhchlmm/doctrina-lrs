@@ -30,7 +30,9 @@ namespace Doctrina.Core.Repositories
             //    .Where<ActivityStateEntity>(x => x.ActivityId == strActivityId, this.context.SqlSyntax)
             //    .Where<ActivityStateEntity>(x => x.StateId == stateId, this.context.SqlSyntax);
 
-            var query = this.dbcontext.ActivityStates.WhereAgent(agent);
+            var query = this.dbcontext.ActivityStates
+                .Include(x=> x.Document)
+                .WhereAgent(agent);
 
             if (registration.HasValue)
             {
@@ -50,7 +52,9 @@ namespace Doctrina.Core.Repositories
             //    .WhereAgent<ActivityStateEntity>(agent, this.context.SqlSyntax)
             //    .Where<ActivityStateEntity>(x => x.ActivityId == strActivityId, this.context.SqlSyntax);
 
-            var sql = this.dbcontext.ActivityStates.WhereAgent(agent)
+            var sql = this.dbcontext.ActivityStates
+                .Include(x=> x.Document)
+                .WhereAgent(agent)
                 .Where(x => x.Activity.ActivityId == strActivityId);
 
             if (registration.HasValue)

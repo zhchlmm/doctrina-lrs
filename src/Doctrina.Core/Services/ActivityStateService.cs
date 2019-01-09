@@ -76,20 +76,21 @@ namespace Doctrina.Core.Services
             activityState.Document = document;
             activityState.DocumentId = document.Id;
 
-            this._activityStates.Create(activityState);
-
-            this._dbContext.SaveChanges();
+            _dbContext.ActivityStates.Add(activityState);
+            _dbContext.Entry(activityState).State = EntityState.Added;
+            _dbContext.SaveChanges();
 
             return activityState.Document;
         }
 
         private IDocumentEntity UpdateStateDocument(ActivityStateEntity activityState, string contentType, byte[] content)
         {
-            _documentService.UpdateDocument(activityState.Document, contentType, content);
-            this._dbContext.Entry(activityState).State = EntityState.Unchanged;
-            this._dbContext.SaveChanges();
+            var document = _documentService.UpdateDocument(activityState.Document, contentType, content);
 
-            return activityState.Document;
+            _dbContext.Entry(activityState).State = EntityState.Unchanged;
+            _dbContext.SaveChanges();
+
+            return document;
         }
 
         public ActivityStateEntity GetActivityState(string stateId, Iri activityId, Agent agent, Guid? registration)

@@ -4,12 +4,14 @@ using Doctrina.Core.Repositories;
 using Doctrina.Core.Services;
 using Doctrina.Web.Areas.xAPI.Mvc.Formatters;
 using Doctrina.Web.Areas.xAPI.Routing;
+using Doctrina.Web.Formatters;
 using Doctrina.xAPI.Json.Converters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -57,6 +59,8 @@ namespace Doctrina.Web
                 // Add input formatter. This should be inserted at position 0 or else the normal json input
                 // formatter will take precedence.
                 opt.InputFormatters.Insert(0, new StatementsInputFormatter());
+                //opt.InputFormatters.Insert(1, new StringInputFormatter());
+                opt.InputFormatters.Insert(1, new BytesInputFormatter());
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
             .AddJsonOptions(opt =>
@@ -132,6 +136,11 @@ namespace Doctrina.Web
             //app.UseSession();
 
             app.UseAlternateRequestSyntax();
+
+            // Protect against parameters writting using different cases
+            app.UseUnrecognizedParameters();
+
+            app.UseConsistentThrough();
 
             app.UseMvc(routes =>
             {

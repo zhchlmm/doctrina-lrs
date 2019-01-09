@@ -58,8 +58,7 @@ namespace Doctrina.xAPI.Models
             Order = 8,
             Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
-        public DateTime? Timestamp { get; set; }
-
+        public DateTimeOffset? Timestamp { get; set; }
 
         [JsonProperty("attachments",
             Order = 9,

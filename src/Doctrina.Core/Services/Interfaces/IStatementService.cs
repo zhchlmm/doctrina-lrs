@@ -15,5 +15,6 @@ namespace Doctrina.Core.Services
         IEnumerable<StatementEntity> GetStatements(PagedStatementsQuery parameters, out int totalCount);
         //IEnumerable<StatementEntity> GetStatements();
         bool Exist(Guid statementId, bool voided = false);
+        DateTimeOffset GetConsistentThroughDate();
     }
 }

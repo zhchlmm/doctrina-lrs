@@ -303,5 +303,15 @@ namespace Doctrina.Core.Services
         {
             return _statements.Exist(statementId, voided);
         }
+
+        public DateTimeOffset GetConsistentThroughDate()
+        {
+            var date = _dbContext.Statements
+                .OrderByDescending(x => x.Stored)
+                .Select(x => x.Stored)
+                .SingleOrDefault();
+
+            return date;
+        }
     }
 }

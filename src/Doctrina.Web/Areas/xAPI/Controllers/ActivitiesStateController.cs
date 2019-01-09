@@ -3,6 +3,7 @@ using Doctrina.Web.Areas.xAPI.Models;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
 using Doctrina.xAPI;
 using Doctrina.xAPI.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using System;
@@ -39,7 +40,10 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             {
                 var activityState = _activityStateService.GetActivityState(model.StateId, model.ActivityId, model.Agent, model.Registration);
                 if (activityState == null)
-                    return new NotFoundResult();
+                    return NotFound();
+
+                if (HttpMethods.IsHead(Request.Method))
+                    return NoContent();
 
                 var stateDocument = activityState.Document;
 
@@ -51,7 +55,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -64,14 +68,14 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
             try
             {
-                var state = _activityStateService.MergeStateDocument(model.StateId, model.ActivityId, model.Agent, model.Registration, model.ContentType, model.Content);
-                var etag = EntityTagHeaderValue.Parse(state.Tag);
+                var document = _activityStateService.MergeStateDocument(model.StateId, model.ActivityId, model.Agent, model.Registration, model.ContentType, model.Content);
+                var etag = EntityTagHeaderValue.Parse($"\"{document.Tag}\"");
                 //Response.Headers.Add("ETag", etag.ToString());
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -127,7 +131,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <param name="stateId"></param>
         /// <param name="registration"></param>
         /// <returns></returns>
-        [AcceptVerbs("GET", "HEAD")]
+        [HttpGet]
         public IActionResult GetMutipleStates(Iri activityId, [FromQuery(Name = "agent")]string strAgent, Guid? registration = null, DateTime? since = null)
         {
             if (!ModelState.IsValid)

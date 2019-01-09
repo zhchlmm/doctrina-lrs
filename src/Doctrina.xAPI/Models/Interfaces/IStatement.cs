@@ -11,8 +11,8 @@ namespace Doctrina.xAPI.Models
         Context Context { get; set; }
         IStatementTarget Object { get; set; }
         Result Result { get; set; }
-        DateTime? Stored { get; set; }
-        DateTime? Timestamp { get; set; }
+        DateTimeOffset? Stored { get; set; }
+        DateTimeOffset? Timestamp { get; set; }
         Verb Verb { get; set; }
         XAPIVersion Version { get; set; }
     }

@@ -17,7 +17,13 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.Filters
         {
             if(context.HttpContext.Request.Method == "HEAD")
             {
-                context.Result = new StatusCodeResult(context.HttpContext.Response.StatusCode);
+                int statusCode = context.HttpContext.Response.StatusCode;
+                if (statusCode == 200 
+                    || statusCode == 204)
+                {
+                    // Return No Content
+                    context.Result = new StatusCodeResult(statusCode);
+                }
             }
         }
     }

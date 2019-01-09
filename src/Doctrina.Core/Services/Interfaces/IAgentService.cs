@@ -12,5 +12,6 @@ namespace Doctrina.Core.Services
     {
         AgentEntity MergeActor(Agent actor);
         AgentEntity ConvertFrom(Agent actor);
+        Person GetPerson(Agent agent);
     }
 }

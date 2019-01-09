@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.Internal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -129,19 +130,23 @@ namespace Doctrina.Web.Areas.xAPI.Routing
                     }
                 }
 
+                await _next.Invoke(context);
             }
             catch (Exception ex)
             {
-                //context.Response.StatusCode = 400;
-                throw ex;
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.StatusCode = 400;
+                    using (var writer = new StreamWriter(context.Response.Body))
+                    {
+                        await writer.WriteAsync(ex.Message);
+                    }
+                }
             }
-
-            // Call the next delegate/middleware in the pipeline
-            await _next(context);
         }
     }
 
-    public static class AlternateRequestMiddlewareExtesions
+    public static class AlternateRequestMiddlewareExtensions
     {
         public static IApplicationBuilder UseAlternateRequestSyntax(
             this IApplicationBuilder builder)

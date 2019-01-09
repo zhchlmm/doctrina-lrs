@@ -10,21 +10,36 @@ namespace Doctrina.Core.Services
 {
     public class AgentService : IAgentService
     {
-        private readonly DoctrinaContext dbContext;
-        private readonly IAgentRepository agents;
+        private readonly DoctrinaContext _dbContext;
 
-        public AgentService(DoctrinaContext dbContext, IAgentRepository agentRepository)
+        public AgentService(DoctrinaContext dbContext)
         {
-            this.dbContext = dbContext;
-            this.agents = agentRepository;
+            this._dbContext = dbContext;
         }
 
-        //https://github.com/adlnet/ADL_LRS/blob/master/lrs/models.py#L248
-        public JObject ToPerson()
+        /// <summary>
+        /// Gets the person object for an agent
+        /// </summary>
+        /// <param name="agent">Agent to match</param>
+        /// <returns>Person object</returns>
+        public Person GetPerson(Agent agent)
         {
-            throw new NotImplementedException();
+            var person = new Person();
+            person.Add(agent);
+
+            if (TryGetEntity(agent, out AgentEntity entity))
+            {
+                person.Add(ConvertFrom(entity));
+            }
+
+            return person;
         }
 
+        /// <summary>
+        /// Merge an actor without persisting
+        /// </summary>
+        /// <param name="actor">Actor to merge</param>
+        /// <returns></returns>
         public AgentEntity MergeActor(Agent actor)
         {
             if (actor == null)
@@ -93,7 +108,7 @@ namespace Doctrina.Core.Services
         private bool TryGetEntity(Agent actor, out AgentEntity entity)
         {
             entity = null;
-            var match = this.agents.GetAgentOrGroup(ConvertFrom(actor));
+            var match = GetAgentOrGroup(ConvertFrom(actor));
 
             if (match != null)
             {
@@ -139,7 +154,7 @@ namespace Doctrina.Core.Services
             if (actor == null || actor.Key == null)
                 throw new ArgumentNullException("group");
 
-            var related = dbContext.GroupMembers.FirstOrDefault(x=> x.GroupId == group.Key && x.MemberId == actor.Key);
+            var related = _dbContext.GroupMembers.FirstOrDefault(x=> x.GroupId == group.Key && x.MemberId == actor.Key);
 
             if (related == null)
             {
@@ -149,7 +164,7 @@ namespace Doctrina.Core.Services
                     MemberId = actor.Key
                 };
 
-                this.dbContext.GroupMembers.Add(related);
+                this._dbContext.GroupMembers.Add(related);
             }
             return related;
         }
@@ -165,8 +180,8 @@ namespace Doctrina.Core.Services
                 Name = group.Name
             };
 
-            // TODO: A Learning Record Consumer MUST consider each Anonymous Group distinct even if it has an identical set of members.
-            this.agents.Insert(entity);
+            // A Learning Record Consumer MUST consider each Anonymous Group distinct even if it has an identical set of members.
+            this._dbContext.Agents.Add(entity);
 
             if (hasMember)
             {
@@ -178,7 +193,7 @@ namespace Doctrina.Core.Services
         }
 
         /// <summary>
-        /// Creates new agent without saving
+        /// Creates new agent without persisting
         /// </summary>
         /// <param name="agent"></param>
         /// <returns></returns>
@@ -186,15 +201,14 @@ namespace Doctrina.Core.Services
         {
             AgentEntity entity = ConvertFrom(agent);
 
-            this.agents.Insert(entity);
-            this.dbContext.Entry(entity).State = EntityState.Added;
-            //this.dbContext.SaveChanges();
+            this._dbContext.Agents.Add(entity);
+            this._dbContext.Entry(entity).State = EntityState.Added;
 
             return entity;
         }
 
         /// <summary>
-        /// Creates new group, without saving
+        /// Creates new group, without persisting
         /// </summary>
         /// <param name="agent"></param>
         /// <returns></returns>
@@ -202,8 +216,8 @@ namespace Doctrina.Core.Services
         {
             AgentEntity entity = ConvertFrom(group);
 
-            this.agents.Insert(entity);
-            this.dbContext.Entry(entity).State = EntityState.Added;
+            this._dbContext.Agents.Add(entity);
+            this._dbContext.Entry(entity).State = EntityState.Added;
             //this.dbContext.SaveChanges();
 
             return entity;
@@ -219,7 +233,8 @@ namespace Doctrina.Core.Services
             var entity = new AgentEntity()
             {
                 ObjectType = agent.ObjectType == ObjectType.Agent ? EntityObjectType.Agent : EntityObjectType.Group,
-                Key = Guid.NewGuid()
+                Key = Guid.NewGuid(),
+                Name = agent.Name
             };
 
             if (agent.Mbox != null)
@@ -248,20 +263,71 @@ namespace Doctrina.Core.Services
             return entity;
         }
 
-        // TODO: Person API GetCombined
-        //public Person GetCombined(Agent agent)
-        //{
-        //    var person = new Person();
-        //    person.Add(agent);
-        //    var args = new CombineInformationEventArgs()
-        //    {
-        //        Agent = agent,
-        //        Person = person
-        //    };
-        //    OnCombineInformation(args);
+        public Agent ConvertFrom(AgentEntity entity)
+        {
+            if (!(entity.ObjectType == EntityObjectType.Agent || entity.ObjectType == EntityObjectType.Group))
+                throw new ArgumentException($"An actor must have objectType Agent or Group.", "agent");
 
-        //    return args.Person;
-        //}
+            Agent agent = new Agent()
+            {
+                Name = entity.Name
+            };
+
+            if(entity.ObjectType == EntityObjectType.Group)
+            {
+                agent = new Group()
+                {
+                    Name = entity.Name
+                };
+            }
+
+            if(entity.Mbox != null)
+            {
+                agent.Mbox = new Mbox(entity.Mbox);
+            }else if (!string.IsNullOrWhiteSpace(entity.Mbox_SHA1SUM))
+            {
+                agent.MboxSHA1SUM = entity.Mbox_SHA1SUM;
+            }else if (!string.IsNullOrWhiteSpace(entity.OpenId))
+            {
+                agent.OpenId = new xAPI.Iri(entity.OpenId);
+            } else if(!string.IsNullOrWhiteSpace(entity.Account_HomePage) 
+                && !string.IsNullOrWhiteSpace(entity.Account_Name))
+            {
+                agent.Account = new Account()
+                {
+                    HomePage = new Uri(entity.Account_HomePage),
+                    Name = entity.Account_Name
+                };
+            }
+
+            return agent;
+        }
+
+        public AgentEntity GetAgentOrGroup(AgentEntity agent)
+        {
+            var query = _dbContext.Agents.Where(x => x.ObjectType == agent.ObjectType);
+
+            if (string.IsNullOrEmpty(agent.Mbox))
+            {
+                return query.FirstOrDefault(x => x.Mbox == agent.Mbox);
+            }
+
+            if (string.IsNullOrEmpty(agent.Mbox_SHA1SUM))
+            {
+                return query.FirstOrDefault(x => x.Mbox_SHA1SUM == agent.Mbox_SHA1SUM);
+            }
+
+            if (string.IsNullOrEmpty(agent.OpenId))
+            {
+                return query.FirstOrDefault(x => x.OpenId == agent.OpenId);
+            }
+
+            if (string.IsNullOrEmpty(agent.Account_HomePage))
+            {
+                return query.FirstOrDefault(x => x.Account_HomePage == agent.Account_HomePage && x.Account_Name == agent.Account_Name);
+            }
+            return null;
+        }
 
         #region Events
         //protected virtual void OnCombineInformation(CombineInformationEventArgs e)

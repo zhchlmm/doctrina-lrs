@@ -33,6 +33,24 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
     [Produces("application/json")]
     public class StatementsController : ApiControllerBase
     {
+        private readonly string[] recognizedParameters = new string[]
+        {
+            "statementId",
+            "voidedStatementId",
+            "agent",
+            "verb",
+            "activity",
+            "registration",
+            "related_activities",
+            "related_agents",
+            "since",
+            "until",
+            "limit",
+            "format",
+            "attachments",
+            "ascending"
+        };
+
         private readonly IStatementService _statementService;
         private readonly IAttachmentService _attachmentService;
         private readonly ILogger<StatementsController> _logger;
@@ -54,6 +72,9 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
 
             if (parameters == null)
                 parameters = new PagedStatementsQuery();
+
+            // Ensure all requests are return it a 'x-experience-api-version' header.
+            Response.Headers.Add(Constants.Headers.XExperienceApiVersion, XAPIVersion.Latest().ToString());
 
             if (parameters.StatementId.HasValue)
                 return await GetStatement(parameters.StatementId.Value);
