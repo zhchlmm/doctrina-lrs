@@ -51,17 +51,6 @@ namespace Doctrina.Core.Repositories
         }
 
         /// <summary>
-        /// Begins tracking for the StatementEntity
-        /// </summary>
-        /// <param name="entity"></param>
-        public void AddStatement(StatementEntity entity)
-        {
-            this.dbContext.Statements.Add(entity);
-            this.dbContext.Entry(entity).State = EntityState.Added;
-            //this.dbContext.SaveChanges();
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="voidedStatement"></param>

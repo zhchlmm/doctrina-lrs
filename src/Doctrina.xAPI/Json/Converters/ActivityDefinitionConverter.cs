@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Doctrina.xAPI.Models;
-using Doctrina.xAPI.Models.InteractionTypes;
+using Doctrina.xAPI;
+using Doctrina.xAPI.InteractionTypes;
 using System.Runtime.Serialization;
 
 namespace Doctrina.xAPI.Json.Converters

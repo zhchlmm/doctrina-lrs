@@ -1,6 +1,5 @@
 ﻿using Doctrina.Web.Areas.xAPI.Mvc.ModelBinders;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.ComponentModel.DataAnnotations;

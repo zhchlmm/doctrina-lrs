@@ -1,7 +1,6 @@
 ﻿using Doctrina.Core.Services;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Doctrina.Web.Areas.xAPI.Controllers

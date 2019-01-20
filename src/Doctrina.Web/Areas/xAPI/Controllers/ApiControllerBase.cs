@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Doctrina.xAPI;
+using Doctrina.xAPI.Http;
 using Microsoft.AspNetCore.Mvc;
-using Doctrina.xAPI.Models;
-using Doctrina.xAPI;
+using System;
 
 namespace Doctrina.Web.Areas.xAPI.Controllers
 {
@@ -31,11 +27,11 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             }
         }
 
-        public XAPIVersion APIVersion
+        public ApiVersion APIVersion
         {
             get
             {
-                return Request.Headers[Constants.Headers.XExperienceApiVersion].ToString();
+                return Request.Headers[Headers.XExperienceApiVersion].ToString();
             }
         }
     }

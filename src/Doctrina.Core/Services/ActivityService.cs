@@ -1,7 +1,6 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
 using Newtonsoft.Json;
 using System;
 

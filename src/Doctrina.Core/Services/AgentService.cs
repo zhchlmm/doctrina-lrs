@@ -1,10 +1,8 @@
 ﻿using Doctrina.Core.Data;
-using Doctrina.Core.Repositories;
-using Newtonsoft.Json.Linq;
+using Doctrina.xAPI;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-using Doctrina.xAPI.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Doctrina.Core.Services
 {
@@ -72,7 +70,6 @@ namespace Doctrina.Core.Services
 
             if (!group.IsAnonymous())
             {
-
                 if (group.HasMember())
                 {
                     CreateGroupMembers(group, entity);
@@ -172,6 +169,16 @@ namespace Doctrina.Core.Services
         private AgentEntity HandleAnonymousGroup(Group group)
         {
             bool hasMember = group.HasMember();
+
+            if (group.Member == null)
+            {
+                throw new NullReferenceException("An Anonymous Group MUST include a 'member' property listing constituent Agents.");
+            }
+
+            if(group.Member.Any(x=> x.ObjectType == ObjectType.Group))
+            {
+                throw new Exception("An Anonymous Group MUST NOT contain Group Objects in the 'member' identifiers.");
+            }
 
             var entity = new AgentEntity()
             {

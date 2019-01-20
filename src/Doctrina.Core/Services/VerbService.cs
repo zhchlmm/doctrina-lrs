@@ -1,8 +1,8 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
+using Doctrina.xAPI;
 using Newtonsoft.Json;
 using System;
-using Doctrina.xAPI.Models;
 
 namespace Doctrina.Core.Services
 {

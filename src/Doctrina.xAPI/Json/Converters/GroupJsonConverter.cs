@@ -1,4 +1,4 @@
-﻿using Doctrina.xAPI.Models;
+﻿using Doctrina.xAPI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

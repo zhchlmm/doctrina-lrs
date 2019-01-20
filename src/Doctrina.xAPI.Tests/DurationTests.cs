@@ -1,4 +1,4 @@
-using Doctrina.xAPI.Models;
+using Doctrina.xAPI;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 

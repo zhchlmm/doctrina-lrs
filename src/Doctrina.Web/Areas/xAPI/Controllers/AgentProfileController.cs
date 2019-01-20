@@ -1,13 +1,10 @@
 ﻿using Doctrina.Core.Services;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Doctrina.Web.Areas.xAPI.Controllers
@@ -53,7 +50,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                 if (document == null)
                     return NotFound();
 
-                string lastModified = document.LastModified.ToString(Constants.Formats.DateTimeFormat);
+                string lastModified = document.LastModified.ToString("o");
 
                 Response.ContentType = document.ContentType;
                 Response.Headers.Add("LastModified", lastModified);
@@ -94,7 +91,8 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                     return Ok(new Guid[] { });
 
                 IEnumerable<Guid> ids = documents.Select(x => x.Id);
-                string lastModified = documents.OrderByDescending(x => x.LastModified).FirstOrDefault().LastModified.ToString(Constants.Formats.DateTimeFormat);
+                // TODO: Check for null
+                string lastModified = documents.OrderByDescending(x => x.LastModified).FirstOrDefault().LastModified.ToString("o");
 
                 Response.Headers.Add("LastModified", lastModified);
                 return Ok(ids);

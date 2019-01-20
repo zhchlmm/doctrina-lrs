@@ -1,11 +1,8 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.Core.Repositories;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Http;
-using Doctrina.xAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;

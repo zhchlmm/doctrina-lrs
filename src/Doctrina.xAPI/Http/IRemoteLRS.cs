@@ -1,8 +1,5 @@
-﻿using Doctrina.xAPI.Models;
-using Doctrina.xAPI.Documents;
+﻿using Doctrina.xAPI.Documents;
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Http
@@ -12,9 +9,10 @@ namespace Doctrina.xAPI.Http
         Task<About> GetAbout();
 
         Task<Statement> SaveStatement(Statement statement);
+        Task PutStatement(Statement statement);
         Task<Statement[]> SaveStatements(Statement[] statement);
-        Task<Statement> GetStatement(Guid id);
-        Task<Statement> GetVoidedStatement(Guid id);
+        Task<Statement> GetStatement(Guid id, bool attachments, ResultFormats format);
+        Task<Statement> GetVoidedStatement(Guid id, bool attachments, ResultFormats format);
         Task<StatementsResult> QueryStatements(StatementsQuery query);
         Task<StatementsResult> MoreStatements(StatementsResult result);
         Task<Statement> VoidStatement(Guid id, Agent agent);

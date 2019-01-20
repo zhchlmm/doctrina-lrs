@@ -1,8 +1,9 @@
 ﻿using Doctrina.xAPI.Documents;
-using Doctrina.xAPI.Models;
+using Doctrina.xAPI.Json;
+using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -18,14 +19,14 @@ namespace Doctrina.xAPI.Http
         private readonly string _auth;
 
         public Uri BaseAddress { get; }
-        public XAPIVersion Version { get; }
+        public ApiVersion Version { get; }
 
         public RemoteLRS(string endpoint, string username, string password)
-            : this(endpoint, username, password, XAPIVersion.Latest())
+            : this(endpoint, username, password, ApiVersion.GetLatest())
         {
         }
 
-        public RemoteLRS(string endpoint, string username, string password, XAPIVersion version)
+        public RemoteLRS(string endpoint, string username, string password, ApiVersion version)
         {
             BaseAddress = new Uri(endpoint.TrimEnd('/'));
 
@@ -33,7 +34,7 @@ namespace Doctrina.xAPI.Http
             _auth = Convert.ToBase64String(bytes);
 
             client.BaseAddress = BaseAddress;
-            client.DefaultRequestHeaders.Add(Constants.Headers.XExperienceApiVersion, version.ToString());
+            client.DefaultRequestHeaders.Add(Headers.XExperienceApiVersion, version.ToString());
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _auth);
         }
 
@@ -54,7 +55,13 @@ namespace Doctrina.xAPI.Http
         #region Statements
         public async Task<StatementsResult> QueryStatements(StatementsQuery query)
         {
-            var result = new StatementsResult();
+            if (query.StatementId.HasValue
+                || query.VoidedStatementId.HasValue)
+            {
+                // Single statement response
+                throw new ArgumentException("Use GetStatement or GetVoidedStatement methods indstead.");
+            }
+
             var parameters = query.ToParameterMap(Version);
 
             var uriBuilder = new UriBuilder(BaseAddress);
@@ -62,25 +69,31 @@ namespace Doctrina.xAPI.Http
             uriBuilder.Query = parameters.ToString();
             var response = await client.GetAsync(uriBuilder.Uri);
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(response.ReasonPhrase);
+            response.EnsureSuccessStatusCode();
 
-            var contentType = response.Content.Headers.ContentType;
-            var mediaType = contentType.MediaType;
+            StatementsResultContent responseContent = response.Content as StatementsResultContent;
 
-            if (mediaType == MediaTypes.Application.Json)
-            {
-                string str = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<StatementsResult>(str);
-            }
-            else if(mediaType == MediaTypes.Multipart.Mixed)
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                throw new NotSupportedException($"Response content-type: '{contentType}' is not supported.");
-            }
+            return await responseContent.ReadAsStatementsResultAsync(ApiVersion.GetLatest());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public async Task<StatementsResult> MoreStatements(Iri more)
+        {
+            if (more == null)
+                return null;
+
+            var requestUri = new Uri(BaseAddress, more);
+            var response = await client.GetAsync(requestUri);
+
+            response.EnsureSuccessStatusCode();
+
+            StatementsResultContent responseContent = response.Content as StatementsResultContent;
+
+            return await responseContent.ReadAsStatementsResultAsync(ApiVersion.GetLatest());
         }
 
         /// <summary>
@@ -90,57 +103,100 @@ namespace Doctrina.xAPI.Http
         /// <returns></returns>
         public async Task<StatementsResult> MoreStatements(StatementsResult result)
         {
-            if (result.More == null)
-                return null;
-
-            var requestUri = new Uri(BaseAddress, result.More);
-            var response = await client.GetAsync(requestUri);
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(response.ReasonPhrase);
-
-            var contentType = response.Content.Headers.ContentType;
-            var mediaType = contentType.MediaType;
-
-            if (mediaType == MediaTypes.Application.Json)
-            {
-                string str = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<StatementsResult>(str);
-            }
-            else if (mediaType == MediaTypes.Multipart.Mixed)
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                throw new NotSupportedException($"Response content-type: '{contentType}' is not supported.");
-            }
+            return await MoreStatements(result.More);
         }
 
         public async Task<Statement> SaveStatement(Statement statement)
         {
             var uriBuilder = new UriBuilder(BaseAddress);
             uriBuilder.Path += "/statements";
-            var stringContent = new StringContent(statement.ToJson(), Encoding.UTF8, MediaTypes.Application.Json);
 
-            statement.Stamp();
+            var jsonContent = new StringContent(statement.ToJson(), Encoding.UTF8, MediaTypes.Application.Json);
 
-            var response = await client.PostAsync(uriBuilder.Uri, stringContent);
+            HttpContent requestContent = jsonContent;
+
+            var attachmentsWithPayload = statement.Attachments.Where(x => x.Payload != null);
+            if (attachmentsWithPayload.Any())
+            {
+                var multipart = new MultipartContent("mixed");
+                multipart.Add(jsonContent);
+
+                foreach (var attachment in attachmentsWithPayload)
+                {
+                    multipart.Add(new AttachmentContent(attachment));
+                }
+            }
+            else
+            {
+                requestContent = jsonContent;
+            }
+
+            var response = await client.PostAsync(uriBuilder.Uri, requestContent);
 
             return statement;
+        }
+
+        public async Task PutStatement(Statement statement)
+        {
+            var uriBuilder = new UriBuilder(BaseAddress);
+            uriBuilder.Path += "/statements";
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+            query.Add("statementId", statement.Id.ToString());
+
+            var jsonContent = new StringContent(statement.ToJson(), Encoding.UTF8, MediaTypes.Application.Json);
+
+            HttpContent requestContent = jsonContent;
+
+            var attachmentsWithPayload = statement.Attachments.Where(x => x.Payload != null);
+            if (attachmentsWithPayload.Any())
+            {
+                var multipart = new MultipartContent("mixed");
+                multipart.Add(jsonContent);
+
+                foreach (var attachment in attachmentsWithPayload)
+                {
+                    multipart.Add(new AttachmentContent(attachment));
+                }
+            }
+            else
+            {
+                requestContent = jsonContent;
+            }
+
+            var response = await client.PutAsync(uriBuilder.Uri, requestContent);
+
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task<Statement[]> SaveStatements(Statement[] statements)
         {
             var uriBuilder = new UriBuilder(BaseAddress);
             uriBuilder.Path += "/statements";
+
             var serializedObject = JsonConvert.SerializeObject(statements);
-            var stringContent = new StringContent(serializedObject, Encoding.UTF8, MediaTypes.Application.Json);
+            var jsonContent = new StringContent(serializedObject, Encoding.UTF8, MediaTypes.Application.Json);
 
-            var response = await client.PostAsync(uriBuilder.Uri, stringContent);
+            HttpContent postContent = jsonContent;
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(response.ReasonPhrase);
+            var attachmentsWithPayload = statements.SelectMany(s => s.Attachments.Where(x => x.Payload != null));
+            if (attachmentsWithPayload.Any())
+            {
+                var multipartContent = new MultipartContent("mixed")
+                {
+                    jsonContent
+                };
+
+                foreach (var attachment in attachmentsWithPayload)
+                {
+                    multipartContent.Add(new AttachmentContent(attachment));
+                }
+
+                postContent = multipartContent;
+            }
+
+            var response = await client.PostAsync(uriBuilder.Uri, postContent);
+
+            response.EnsureSuccessStatusCode();
 
             string strResponse = await response.Content.ReadAsStringAsync();
 
@@ -159,20 +215,62 @@ namespace Doctrina.xAPI.Http
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<Statement> GetStatement(Guid id)
+        public async Task<Statement> GetStatement(Guid id, bool attachments = false, ResultFormats format = ResultFormats.Exact)
         {
             var uriBuilder = new UriBuilder(BaseAddress);
             uriBuilder.Path += "/statements";
-            uriBuilder.Query = $"statementId={id}";
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+            query.Add("statementId", id.ToString());
+            if (attachments == true)
+                query.Add("attachments", "true");
+
+            if (format != ResultFormats.Exact)
+                query.Add("format", ResultFormats.Exact.ToString());
+
+            uriBuilder.Query = query.ToString();
 
             var response = await client.GetAsync(uriBuilder.Uri);
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(response.ReasonPhrase);
+            response.EnsureSuccessStatusCode();
 
-            string strResponse = await response.Content.ReadAsStringAsync();
+            var contentType = response.Content.Headers.ContentType;
+            if (contentType.MediaType == MediaTypes.Application.Json)
+            {
+                string strResponse = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Statement>(strResponse);
+            }
+            else if (contentType.MediaType == MediaTypes.Multipart.Mixed)
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var boundary = contentType.Parameters.SingleOrDefault(x => x.Name == "boundary");
+                var multipart = new MultipartReader(boundary.Value, stream);
+                var section = await multipart.ReadNextSectionAsync();
+                int sectionIndex = 0;
+                Statement statement = null;
+                while (section != null)
+                {
+                    if (sectionIndex == 0)
+                    {
+                        string jsonString = await section.ReadAsStringAsync();
+                        var serializer = new ApiJsonSerializer(ApiVersion.GetLatest());
+                        var jsonReader = new JsonTextReader(new StringReader(jsonString));
+                        statement = serializer.Deserialize<Statement>(jsonReader);
+                    }
+                    else
+                    {
+                        var attachmentSection = new MultipartAttachmentSection(section);
+                        string hash = attachmentSection.XExperienceApiHash;
+                        var attachment = statement.Attachments.FirstOrDefault(x => x.SHA2 == hash);
+                    }
 
-            return JsonConvert.DeserializeObject<Statement>(strResponse);
+                    section = await multipart.ReadNextSectionAsync();
+                    sectionIndex++;
+                }
+
+                return statement;
+            }
+
+            throw new Exception("Unsupported Content-Type response.");
         }
 
         /// <summary>
@@ -180,20 +278,60 @@ namespace Doctrina.xAPI.Http
         /// </summary>
         /// <param name="id">Id of the voided statement</param>
         /// <returns>A voided statement</returns>
-        public async Task<Statement> GetVoidedStatement(Guid id)
+        public async Task<Statement> GetVoidedStatement(Guid id, bool attachments = false, ResultFormats format = ResultFormats.Exact)
         {
             var uriBuilder = new UriBuilder(BaseAddress);
             uriBuilder.Path += "/statements";
-            uriBuilder.Query += $"voidedStatementId={id}";
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+            query.Add("voidedStatementId", id.ToString());
+            if (attachments == true)
+                query.Add("attachments", "true");
+
+            if (format != ResultFormats.Exact)
+                query.Add("format", ResultFormats.Exact.ToString());
 
             var response = await client.GetAsync(uriBuilder.Uri);
 
-            if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException(response.ReasonPhrase);
+            response.EnsureSuccessStatusCode();
 
-            string strResponse = await response.Content.ReadAsStringAsync();
+            var contentType = response.Content.Headers.ContentType;
+            if (contentType.MediaType == MediaTypes.Application.Json)
+            {
+                string strResponse = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Statement>(strResponse);
+            }
+            else if (contentType.MediaType == MediaTypes.Multipart.Mixed)
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var boundary = contentType.Parameters.SingleOrDefault(x => x.Name == "boundary");
+                var multipart = new MultipartReader(boundary.Value, stream);
+                var section = await multipart.ReadNextSectionAsync();
+                int sectionIndex = 0;
+                Statement statement = null;
+                while (section != null)
+                {
+                    if (sectionIndex == 0)
+                    {
+                        string jsonString = await section.ReadAsStringAsync();
+                        var serializer = new ApiJsonSerializer(ApiVersion.GetLatest());
+                        var jsonReader = new JsonTextReader(new StringReader(jsonString));
+                        statement = serializer.Deserialize<Statement>(jsonReader);
+                    }
+                    else
+                    {
+                        var attachmentSection = new MultipartAttachmentSection(section);
+                        string hash = attachmentSection.XExperienceApiHash;
+                        var attachment = statement.Attachments.FirstOrDefault(x => x.SHA2 == hash);
+                    }
 
-            return JsonConvert.DeserializeObject<Statement>(strResponse);
+                    section = await multipart.ReadNextSectionAsync();
+                    sectionIndex++;
+                }
+
+                return statement;
+            }
+
+            throw new Exception("Unsupported Content-Type response.");
         }
 
         /// <summary>
@@ -233,14 +371,13 @@ namespace Doctrina.xAPI.Http
             query.Add("agent", agent.ToString());
 
             if (registration.HasValue)
-                query.Add("registration", registration.Value.ToString(Constants.Formats.DateTimeFormat));
+                query.Add("registration", registration.Value.ToString("o"));
 
             builder.Query = query.ToString();
 
             var response = await client.GetAsync(builder.Uri);
 
-            if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException(response.ReasonPhrase);
+            response.EnsureSuccessStatusCode();
 
             string strResponse = await response.Content.ReadAsStringAsync();
 
@@ -258,14 +395,13 @@ namespace Doctrina.xAPI.Http
             query.Add("agent", agent.ToString());
 
             if (registration.HasValue)
-                query.Add("registration", registration.Value.ToString(Constants.Formats.DateTimeFormat));
+                query.Add("registration", registration.Value.ToString("o"));
 
             builder.Query = query.ToString();
 
             var response = await client.GetAsync(builder.Uri);
 
-            if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException(response.ReasonPhrase);
+            response.EnsureSuccessStatusCode();
 
             var state = new StateDocument();
             state.Content = await response.Content.ReadAsByteArrayAsync();
@@ -288,7 +424,7 @@ namespace Doctrina.xAPI.Http
             query.Add("agent", state.Agent.ToString());
 
             if (state.Registration.HasValue)
-                query.Add("registration", state.Registration.Value.ToString(Constants.Formats.DateTimeFormat));
+                query.Add("registration", state.Registration.Value.ToString("o"));
 
             builder.Query = query.ToString();
 
@@ -331,7 +467,7 @@ namespace Doctrina.xAPI.Http
             query.Add("agent", state.Agent.ToString());
 
             if (state.Registration.HasValue)
-                query.Add("registration", state.Registration.Value.ToString(Constants.Formats.DateTimeFormat));
+                query.Add("registration", state.Registration.Value.ToString("o"));
 
             builder.Query = query.ToString();
 
@@ -370,7 +506,7 @@ namespace Doctrina.xAPI.Http
             query.Add("agent", agent.ToString());
 
             if (registration.HasValue)
-                query.Add("registration", registration.Value.ToString(Constants.Formats.DateTimeFormat));
+                query.Add("registration", registration.Value.ToString("o"));
 
             builder.Query = query.ToString();
 
@@ -410,9 +546,9 @@ namespace Doctrina.xAPI.Http
             var query = HttpUtility.ParseQueryString(string.Empty);
             query.Add("activityId", activityId.ToString());
             if (since.HasValue)
-                query.Add("since", since.Value.ToString(Constants.Formats.DateTimeFormat));
+                query.Add("since", since.Value.ToString("o"));
             builder.Query = query.ToString();
-            
+
             var response = await client.GetAsync(builder.Uri);
 
             if (!response.IsSuccessStatusCode)
@@ -459,7 +595,7 @@ namespace Doctrina.xAPI.Http
             query.Add("activityId", profile.ActivityId.ToString());
 
             if (profile.Registration.HasValue)
-                query.Add("registration", profile.Registration.Value.ToString(Constants.Formats.DateTimeFormat));
+                query.Add("registration", profile.Registration.Value.ToString("o"));
 
             builder.Query = query.ToString();
 

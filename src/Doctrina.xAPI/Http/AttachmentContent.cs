@@ -11,63 +11,64 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Http
 {
-    public class AttachmentContent : HttpContent
+    public class AttachmentContent : ByteArrayContent
     {
         public string XExperienceApiHash
         {
             get
             {
                 IEnumerable<string> values;
-                if (base.Headers.TryGetValues(Constants.Headers.XExperienceApiHash, out values))
+                if (base.Headers.TryGetValues(Http.Headers.XExperienceApiHash, out values))
                 {
                     return values.FirstOrDefault();
                 }
                 return null;
             }
-        }
-        private MemoryStream _stream;
-
-        public AttachmentContent(string contentType, byte[] content)
-        {
-            base.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            base.Headers.TryAddWithoutValidation(Constants.Headers.XExperienceApiHash, ComputeHash(content));
-            _stream = new MemoryStream(content);
-        }
-
-        public AttachmentContent(string contentType, byte[] content, string hash)
-        {
-            base.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            base.Headers.TryAddWithoutValidation(Constants.Headers.XExperienceApiHash, ComputeHash(content));
-            _stream = new MemoryStream(content);
-        }
-
-        private string ComputeHash(byte[] content)
-        {
-            var sha = SHA256.Create();
-            byte[] hashBytes = sha.ComputeHash(_stream.ToArray());
-
-            return Encoding.UTF8.GetString(hashBytes);
-        }
-
-        protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
-        {
-            // TODO: Does the headers get streamed too?
-            await _stream.CopyToAsync(stream);
-        }
-
-        protected override bool TryComputeLength(out long length)
-        {
-            // TODO: Compute length by serializing to stream.
-            if (!_stream.CanSeek)
+            set
             {
-                length = 0;
-                return false;
+                base.Headers.TryAddWithoutValidation(Http.Headers.XExperienceApiHash, value);
             }
-            else
+        }
+
+        //public AttachmentContent()
+        //{
+            
+        //}
+
+        //public AttachmentContent(string contentType, byte[] content)
+        //{
+        //    base.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+        //    base.Headers.TryAddWithoutValidation(Http.Headers.XExperienceApiHash, ComputeHash(content));
+        //    _stream = new MemoryStream(content);
+        //}
+
+        //public AttachmentContent(string contentType, byte[] content, string hash)
+        //{
+        //    base.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+        //    base.Headers.TryAddWithoutValidation(Http.Headers.XExperienceApiHash, ComputeHash(content));
+        //    _stream = new MemoryStream(content);
+        //}
+
+        public AttachmentContent(Attachment attachment)
+            : base(attachment.Payload)
+        {
+            if (string.IsNullOrEmpty(attachment.ContentType))
             {
-                length = _stream.Length;
-                return true;
+                throw new ArgumentNullException("Attachment Content-Type must be defined in order to sent payload.");
             }
+
+            if (string.IsNullOrWhiteSpace(attachment.SHA2))
+            {
+                throw new ArgumentNullException("Attachment SHA-2 must be defined in order to sent payload.");
+            }
+
+            if(attachment.Payload == null)
+            {
+                throw new ArgumentNullException("Attachment Pyload is null.");
+            }
+
+            base.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
+            base.Headers.TryAddWithoutValidation(Http.Headers.XExperienceApiHash, attachment.SHA2);
         }
     }
 }

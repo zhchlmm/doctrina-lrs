@@ -1,14 +1,12 @@
-﻿using Doctrina.xAPI.Models;
+﻿using Doctrina.Web.Areas.xAPI.Models;
+using Doctrina.xAPI;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Doctrina.Web.Models;
-using Doctrina.Web.Areas.xAPI.Models;
-using Doctrina.xAPI;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 {

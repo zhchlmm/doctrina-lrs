@@ -1,4 +1,4 @@
-﻿using Doctrina.xAPI.Models;
+﻿using Doctrina.xAPI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class AgentJsonConverter : JsonConverter
+    public class AgentJsonConverter : ApiJsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -50,9 +50,9 @@ namespace Doctrina.xAPI.Json.Converters
             return null;
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
-            var xapiSerializer = (XAPISerializer)serializer;
+            var xapiSerializer = (ApiJsonSerializer)serializer;
             var format = xapiSerializer.ResultFormat;
             writer.WriteStartObject();
             // TODO: Write Agent result based on result format.

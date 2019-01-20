@@ -1,6 +1,5 @@
-﻿using Doctrina.Core;
-using Doctrina.Core.Services;
-using Doctrina.xAPI;
+﻿using Doctrina.Core.Services;
+using Doctrina.xAPI.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
@@ -14,13 +13,17 @@ namespace Doctrina.Web.Areas.xAPI.Routing
         public ConsistentThroughMiddleware(RequestDelegate next)
         {
             _next = next;
-            //_statementService = statementService;
         }
 
         public async Task InvokeAsync(HttpContext context, IStatementService statementService)
         {
-            var date = statementService.GetConsistentThroughDate();
-            context.Response.Headers.Add("X-Experience-API-Consistent-Through", date.ToString("o"));
+            string headerKey = Headers.XExperienceApiConsistentThrough;
+            var headers = context.Response.Headers;
+            if (!headers.ContainsKey(headerKey))
+            {
+                var date = statementService.GetConsistentThroughDate();
+                headers.Add(headerKey, date.ToString("o"));
+            }
             await _next.Invoke(context);
         }
     }

@@ -1,20 +1,22 @@
 ﻿using Doctrina.Web.Areas.xAPI.Models;
 using Doctrina.xAPI;
 using Doctrina.xAPI.Http;
-using Doctrina.xAPI.Models;
+using Doctrina.xAPI.Json;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 {
     public class StatementsPostContentModelBinder : IModelBinder
     {
-        private static JSchema _schema;
-
         public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
             try
@@ -26,49 +28,51 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
 
                 var request = bindingContext.ActionContext.HttpContext.Request;
 
-                var version = request.Headers[Constants.Headers.XExperienceApiVersion];
-                var content = new StatementsHttpContent(request.ContentType, request.Body);
-                var jsonString = await content.ReadStatementsString();
+                var version = request.Headers[Headers.XExperienceApiVersion];
 
-                var serializer = new XAPISerializer((string)version);
-                serializer.Error += delegate (object sender, ErrorEventArgs args)
+                var contentType = MediaTypeHeaderValue.Parse(request.ContentType);
+                if(contentType.MediaType == MediaTypes.Application.Json)
                 {
-                    bindingContext.ModelState.AddModelError(args.ErrorContext.Path, args.ErrorContext.Error.Message);
-                    args.ErrorContext.Handled = true;
-                };
-                var validationReader = CreateValidationReader(jsonString);
+                    using(System.IO.MemoryStream ms = new System.IO.MemoryStream())
+                    {
+                        request.Body.CopyTo(ms);
+                        string jsonString = Encoding.UTF8.GetString(ms.ToArray());
+                        model.Statements = ReadStatements(bindingContext, jsonString);
+                    }
+                }else if(contentType.MediaType == MediaTypes.Multipart.Mixed)
+                {
+                    var boundary = contentType.Parameters.FirstOrDefault(x => x.Name == "boundary");
+                    var multipartReader = new MultipartReader(boundary.Value, request.Body);
+                    var section = await multipartReader.ReadNextSectionAsync();
+                    int sectionIndex = 0;
+                    while (section != null)
+                    {
+                        if (sectionIndex == 0)
+                        {
+                            string jsonString = await section.ReadAsStringAsync();
+                            model.Statements = ReadStatements(bindingContext, jsonString);
+                        }
+                        else
+                        {
+                            var attachmentSection = new MultipartAttachmentSection(section);
+                            string hash = attachmentSection.XExperienceApiHash;
+                            Attachment attachment = model.Statements.Select(s => s.Attachments.SingleOrDefault(x => x.SHA2 == hash))
+                                .SingleOrDefault();
+                            attachment.SetPayload(await attachmentSection.ReadAsByteArrayAsync());
+                        }
 
-                validationReader.ValidationEventHandler += delegate (object sender, SchemaValidationEventArgs args)
-                {
-                    bindingContext.ModelState.AddModelError(args.Path, args.Message);
-                };
-
-                if(content.Attachments != null)
-                {
-                    // TODO: Attachments
-                    //model.Attachments = content.Attachments;
-                    throw new NotImplementedException();
+                        section = await multipartReader.ReadNextSectionAsync();
+                        sectionIndex++;
+                    }
                 }
 
-                if (jsonString.StartsWith("{"))
-                {
-                    var stmt = serializer.Deserialize<Statement>(validationReader);
-                    model.Statements = new Statement[] { stmt };
-                    
-                }
-                else if (jsonString.StartsWith("["))
-                {
-                    var stmts = serializer.Deserialize<Statement[]>(validationReader);
-                    model.Statements = stmts;
-                }
-                else
+                if(model.Statements == null)
                 {
                     bindingContext.Result = ModelBindingResult.Failed();
                     return;
                 }
 
                 bindingContext.Result = ModelBindingResult.Success(model);
-                return;
             }
             catch (Exception ex)
             {
@@ -77,26 +81,42 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.ModelBinders
             }
         }
 
-        private JSchemaValidatingReader CreateValidationReader(string json)
+        private Statement[] ReadStatements(ModelBindingContext bindingContext, string jsonString)
         {
-            JsonTextReader jsonReader = new JsonTextReader(new System.IO.StringReader(json));
-            var validatingReader = new JSchemaValidatingReader(jsonReader);
-            validatingReader.Schema = GetSchema();
-            return validatingReader;
+            if (jsonString.StartsWith("{"))
+            {
+                var stmt = DeserializeStatement<Statement>(bindingContext, jsonString);
+                return new Statement[] { stmt };
+            }
+            else if (jsonString.StartsWith("["))
+            {
+                return DeserializeStatement<Statement[]>(bindingContext, jsonString);
+            }
+
+            return null;
         }
 
-        private JSchema GetSchema()
+        private T DeserializeStatement<T>(ModelBindingContext bindingContext, string json)
         {
-            if (_schema == null)
-            {
-                using (System.IO.StreamReader file = System.IO.File.OpenText(@"result.schema.json"))
-                using (JsonTextReader reader = new JsonTextReader(file))
-                {
-                    _schema = JSchema.Load(reader);
-                }
+            var request = bindingContext.ActionContext.HttpContext.Request;
 
+            JsonTextReader jsonReader = new JsonTextReader(new System.IO.StringReader(json));
+
+            string strVersion = request.Headers[Headers.XExperienceApiVersion];
+            if (string.IsNullOrWhiteSpace(strVersion))
+            {
+                throw new Exception($"'{Headers.XExperienceApiVersion}' header is missing.");
             }
-            return _schema;
+
+            ApiJsonSerializer serializer = new ApiJsonSerializer(strVersion);
+            serializer.MissingMemberHandling = MissingMemberHandling.Error;
+            serializer.Error += delegate (object sender, ErrorEventArgs args)
+            {
+                bindingContext.ModelState.AddModelError(args.ErrorContext.Path, args.ErrorContext.Error.Message);
+                args.ErrorContext.Handled = true;
+            };
+
+            return serializer.Deserialize<T>(jsonReader); ;
         }
     }
 }

@@ -1,15 +1,13 @@
-﻿using Doctrina.Core.Models;
-using Doctrina.Core.Data;
+﻿using Doctrina.Core.Data;
+using Doctrina.Core.Models;
 using Doctrina.Core.Repositories;
+using Doctrina.xAPI;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
-using Microsoft.Extensions.Logging;
-using Doctrina.xAPI.Http;
+using System.Threading.Tasks;
 
 namespace Doctrina.Core.Services
 {
@@ -20,8 +18,9 @@ namespace Doctrina.Core.Services
         private readonly IAgentService _agentService;
         private readonly IActivityService _activityService;
         private readonly ISubStatementService _subStatementService;
+        private readonly IAttachmentService _attachmentService;
 
-        public StatementService(DoctrinaContext dbContext, IStatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService, ILogger<StatementService> logger)
+        public StatementService(DoctrinaContext dbContext, IStatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService, IAttachmentService attachmentService, ILogger<StatementService> logger)
             : base(dbContext, agentService, activityService, subStatementService, logger)
         {
             _statements = statementRepository;
@@ -29,6 +28,7 @@ namespace Doctrina.Core.Services
             _agentService = agentService;
             _activityService = activityService;
             _subStatementService = subStatementService;
+            _attachmentService = attachmentService;
         }
 
         public StatementEntity GetStatement(Guid statementId, bool voided = false, bool includeAttachments = false)
@@ -45,94 +45,81 @@ namespace Doctrina.Core.Services
         }
 
         /// <summary>
-        /// Stores a Statement, or a set of Statements.
+        /// Create a new Statement entity, without persisting.
         /// </summary>
         /// <param name="authority"></param>
         /// <param name="statements">An array of Statements or a single Statement to be stored.</param>
         /// <returns>Array of Statement id(s) (UUID) in the same order as the corresponding stored Statements.</returns>
-        public Guid[] CreateStatements(Agent authority, params Statement[] statements)
+        public StatementEntity CreateStatement(Statement statement)
         {
-            var guids = new List<Guid>();
-            foreach (var statement in statements)
+            if (statement.Authority == null)
             {
-                if (statement.Authority == null)
-                {
-                    statement.Authority = authority;
-                }
-                else
-                {
-                    // TODO: Validate authority
-                    //throw new NotImplementedException();
-                }
-                guids.Add(CreateStatement(statement)); // Now it does have a value
+                throw new ArgumentException(nameof(statement.Authority));
             }
 
-            // Now save all the statements in a single commit
-
-            this._dbContext.SaveChanges();
-
-            return guids.ToArray();
-        }
-
-        private Guid CreateStatement(Statement model)
-        {
             // Prevent conflic
-            if (model.Id.HasValue)
+            if (statement.Id.HasValue)
             {
                 // TODO: Statement Comparision Requirements
                 /// https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#statement-comparision-requirements
-                if (Exist(model.Id.Value))
-                {
-                    return model.Id.Value;
-                }
+                var exist = GetStatement(statement.Id.Value);
+                if (exist != null)
+                    return exist;
             }
 
-            var verb = this._verbService.MergeVerb(model.Verb);
-            var actor = this._agentService.MergeActor(model.Actor);
+            var verb = _verbService.MergeVerb(statement.Verb);
+            var actor = _agentService.MergeActor(statement.Actor);
 
-            model.Stamp();
+            statement.Stamp();
 
             var entity = new StatementEntity()
             {
-                StatementId = model.Id.Value,
+                StatementId = statement.Id.Value,
                 ActorKey = actor.Key,
                 Actor = actor,
                 VerbKey = verb.Key,
                 Verb = verb,
                 Stored = DateTime.UtcNow,
-                Timestamp = model.Timestamp.Value,
-                //User = Guid.NewGuid() // Default to Umbraco Master
+                Timestamp = statement.Timestamp.Value,
+                // TODO: Implement which store
             };
 
-            entity.Version = model.Version != null ? model.Version.ToString() : XAPIVersion.Latest().ToString();
+            entity.Version = statement.Version != null ? statement.Version.ToString() : ApiVersion.GetLatest().ToString();
 
             // TODO: HandleStatementAuthority(statement, model.Authority);
-            MergeTarget(entity, model.Object);
-            MergeContext(entity, model.Context);
-            MergeResult(entity, model.Result);
-            MergeAuthority(entity, model.Authority);
-            /// Attachments are handled by the <see ref="AttachmentService">.
+            MergeTarget(entity, statement.Object);
+            MergeContext(entity, statement.Context);
+            MergeResult(entity, statement.Result);
+            MergeAuthority(entity, statement.Authority);
+
+            if (statement.Attachments != null)
+            {
+                foreach (var attachment in statement.Attachments)
+                {
+                    _attachmentService.CreateAttachment(entity.StatementId, attachment);
+                }
+            }
 
             // Make sure the fullStatement is persistet
-            model.Id = entity.StatementId;
-            model.Stored = entity.Stored;
-            model.Timestamp = entity.Timestamp;
-            model.Version = entity.Version; // Update version if not applied
+            statement.Id = entity.StatementId;
+            statement.Stored = entity.Stored;
+            statement.Timestamp = entity.Timestamp;
+            statement.Version = entity.Version; // Update version if not applied
 
             // Check if this new statement, has been voided by another statement.
-            entity.Voided = this._statements.HasVoidingStatement(model.Id.Value);
+            entity.Voided = this._statements.HasVoidingStatement(statement.Id.Value);
 
-            // TODO: Save the statement for quick parsing, or perhaps just cache the statements?
-            entity.FullStatement = model.ToJson();
+            // Save the statement for quick parsing?
+            entity.FullStatement = statement.ToJson();
 
             if (entity.Verb.Id == Verbs.Voided)
             {
                 VoidStatement(entity);
             }
 
-            this._statements.AddStatement(entity);
+            _dbContext.Statements.Add(entity);
 
-            return model.Id.Value;
+            return entity;
         }
 
         public IEnumerable<StatementEntity> GetStatements(PagedStatementsQuery parameters, out int totalCount)
@@ -143,7 +130,7 @@ namespace Doctrina.Core.Services
             // Exclude voided statements
             var query = _statements.AsQueryable(voided: false, includeAttachments: includeAttachements);
 
-            // Limit results by stored date
+            // Limit results by stored date since timestamp
             if (parameters.Since.HasValue)
             {
                 DateTime since = parameters.Since.Value;
@@ -241,7 +228,7 @@ namespace Doctrina.Core.Services
             totalCount = pagedResult.First().TotalCount;
 
             // Parse page result back to statements
-            foreach(var item in pagedResult)
+            foreach (var item in pagedResult)
             {
                 var stmt = item.Statement;
                 if (includeAttachements)
@@ -252,9 +239,14 @@ namespace Doctrina.Core.Services
             return result;
         }
 
-        public void SaveAndPublishWithStatus(StatementEntity statement)
+        public async Task SaveAsync(params StatementEntity[] statements)
         {
-            this._statements.AddStatement(statement);
+            foreach (var statement in statements)
+            {
+                _dbContext.Statements.Add(statement);
+            }
+
+            await _dbContext.SaveChangesAsync();
         }
 
         private void MergeAuthority(StatementEntity statement, Agent authority)
@@ -299,17 +291,12 @@ namespace Doctrina.Core.Services
             return JsonConvert.DeserializeObject<Statement>(entity.FullStatement);
         }
 
-        public bool Exist(Guid statementId, bool voided = false)
-        {
-            return _statements.Exist(statementId, voided);
-        }
-
         public DateTimeOffset GetConsistentThroughDate()
         {
             var date = _dbContext.Statements
                 .OrderByDescending(x => x.Stored)
                 .Select(x => x.Stored)
-                .SingleOrDefault();
+                .FirstOrDefault();
 
             return date;
         }

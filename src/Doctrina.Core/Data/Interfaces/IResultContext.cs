@@ -1,7 +1,4 @@
-﻿using Doctrina.xAPI.Models;
-using System;
-
-namespace Doctrina.Core.Data
+﻿namespace Doctrina.Core.Data
 {
     public interface IResultEntity
     {

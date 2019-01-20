@@ -1,16 +1,11 @@
 ﻿using Doctrina.Core.Services;
-using Doctrina.Web.Areas.xAPI.Models;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.Web.Areas.xAPI.Controllers
 {
@@ -46,7 +41,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                     return NotFound();
 
                 var document = profile.Document;
-                string lastModified = document.LastModified.ToString(Constants.Formats.DateTimeFormat);
+                string lastModified = document.LastModified.ToString("o");
                 // TODO: Implement concurrency
 
                 Response.ContentType = document.ContentType;
@@ -81,7 +76,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                 IEnumerable<Guid> ids = documents.Select(x => x.Id);
                 string lastModified = documents.OrderByDescending(x => x.LastModified)
                     .FirstOrDefault()
-                    .LastModified.ToString(Constants.Formats.DateTimeFormat);
+                    .LastModified.ToString("o");
 
                 Response.Headers.Add("LastModified", lastModified);
                 return Ok(ids);

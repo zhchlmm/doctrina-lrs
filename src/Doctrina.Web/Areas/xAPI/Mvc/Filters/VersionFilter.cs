@@ -1,4 +1,5 @@
 ﻿using Doctrina.xAPI;
+using Doctrina.xAPI.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
@@ -15,19 +16,19 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.Filters
     {
         public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
-            var supported = XAPIVersion.GetSupported();
+            var supported = ApiVersion.GetSupported();
             try
             {
-                if (!context.HttpContext.Request.Headers.ContainsKey(Constants.Headers.XExperienceApiVersion))
+                if (!context.HttpContext.Request.Headers.ContainsKey(Headers.XExperienceApiVersion))
                     throw new Exception("Missing 'X-Experience-API-Version' header.");
 
-                string requestVersion = context.HttpContext.Request.Headers[Constants.Headers.XExperienceApiVersion];
+                string requestVersion = context.HttpContext.Request.Headers[Headers.XExperienceApiVersion];
                 if (string.IsNullOrEmpty(requestVersion))
                     throw new Exception("'X-Experience-API-Version' header or it's null or empty.");
 
                 try
                 {
-                    XAPIVersion version = (XAPIVersion)requestVersion;
+                    ApiVersion version = (ApiVersion)requestVersion;
                     await next();
                 }
                 catch (Exception)
@@ -37,7 +38,7 @@ namespace Doctrina.Web.Areas.xAPI.Mvc.Filters
             }
             catch (Exception ex)
             {
-                context.HttpContext.Response.Headers.Add(Constants.Headers.XExperienceApiVersion, XAPIVersion.Latest().ToString());
+                context.HttpContext.Response.Headers.Add(Headers.XExperienceApiVersion, ApiVersion.GetLatest().ToString());
                 context.Result = new BadRequestObjectResult(ex.Message + " Supported Versions are: " + string.Join(", ", supported.Select(x => x.Key)));
             }
         }

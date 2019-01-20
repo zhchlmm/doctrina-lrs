@@ -2,7 +2,6 @@
 using Doctrina.Core.Data.Documents;
 using Doctrina.Core.Repositories;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

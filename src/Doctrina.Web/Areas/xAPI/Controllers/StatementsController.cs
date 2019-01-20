@@ -5,7 +5,8 @@ using Doctrina.Web.Areas.xAPI.Models;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
 using Doctrina.Web.Mvc.ModelBinders;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
+using Doctrina.xAPI.Exceptions;
+using Doctrina.xAPI.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -62,8 +63,88 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             _logger = logger;
         }
 
-        [HeadWithoutBody]
-        [AcceptVerbs("GET", "HEAD")]
+        [HttpGet(Order = 1)]
+        [Produces("application/json", "multipart/mixed")]
+        private async Task<IActionResult> GetStatement(
+            [FromQuery]Guid statementId,
+            [FromQuery(Name = "attachments")]bool includeAttachments = false,
+            [FromQuery]ResultFormats format = ResultFormats.Exact)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            StatementEntity entity = this._statementService.GetStatement(statementId, false, includeAttachments);
+
+            if (entity == null)
+                return NotFound();
+
+            if (includeAttachments && entity.Attachments.Any(x => x.Content != null))
+            {
+                var multipart = new MultipartContent("mixed")
+                        {
+                            new StringContent(entity.FullStatement, Encoding.UTF8, MediaTypes.Application.Json)
+                    };
+                foreach (var attachment in entity.Attachments)
+                {
+                    if (attachment.Content != null)
+                    {
+                        var byteArrayContent = new ByteArrayContent(attachment.Content);
+                        byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(attachment.ContentType);
+                        byteArrayContent.Headers.Add(Headers.ContentTransferEncoding, "binary");
+                        byteArrayContent.Headers.Add(Headers.XExperienceApiHash, attachment.SHA2);
+                        multipart.Add(byteArrayContent);
+                    }
+                }
+                var strMultipart = await multipart.ReadAsStringAsync();
+                return Content(strMultipart, MediaTypes.Multipart.Mixed);
+            }
+
+            return Content(entity.FullStatement, MediaTypes.Application.Json);
+
+        }
+
+        [HttpGet(Order = 2)]
+        [Produces("application/json", "multipart/mixed")]
+        private async Task<IActionResult> GetVoidedStatement(
+            [FromQuery]Guid voidedStatementId,
+            [FromQuery(Name = "attachments")]bool includeAttachments = false,
+            [FromQuery]ResultFormats format = ResultFormats.Exact)
+        {
+            StatementEntity entity = this._statementService.GetStatement(voidedStatementId, true, includeAttachments);
+
+            if (entity == null)
+                return NotFound();
+
+            if (includeAttachments && entity.Attachments.Any(x => x.Content != null))
+            {
+                var multipart = new MultipartContent("mixed")
+                    {
+                        new StringContent(entity.FullStatement, Encoding.UTF8, MediaTypes.Application.Json)
+                    };
+                foreach (var attachment in entity.Attachments)
+                {
+                    if (attachment.Content != null)
+                    {
+                        var byteArrayContent = new ByteArrayContent(attachment.Content);
+                        byteArrayContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
+                        byteArrayContent.Headers.Add(Headers.ContentTransferEncoding, "binary");
+                        byteArrayContent.Headers.Add(Headers.XExperienceApiHash, attachment.SHA2);
+                        multipart.Add(byteArrayContent);
+                    }
+                }
+
+                return Content(await multipart.ReadAsStringAsync(), MediaTypes.Multipart.Mixed);
+            }
+
+            return Content(entity.FullStatement, MediaTypes.Application.Json);
+        }
+
+        /// <summary>
+        /// Get statements
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        [AcceptVerbs("GET", "HEAD", Order = 3)]
         [Produces("application/json", "multipart/mixed")]
         public async Task<IActionResult> GetStatements([FromQuery]PagedStatementsQuery parameters)
         {
@@ -73,178 +154,95 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
             if (parameters == null)
                 parameters = new PagedStatementsQuery();
 
-            // Ensure all requests are return it a 'x-experience-api-version' header.
-            Response.Headers.Add(Constants.Headers.XExperienceApiVersion, XAPIVersion.Latest().ToString());
-
-            if (parameters.StatementId.HasValue)
-                return await GetStatement(parameters.StatementId.Value);
-
-            if (parameters.VoidedStatementId.HasValue)
-                return await GetVoidedStatement(parameters.VoidedStatementId.Value);
-
-            try
+            // Validate parameters for combinations
+            if (parameters.StatementId.HasValue || parameters.VoidedStatementId.HasValue)
             {
-                StatementsResult result = new StatementsResult();
-                int totalCount = 0;
-                var statementEntities = this._statementService.GetStatements(parameters, out totalCount);
-
-                // Derserialize to json statement object
-                result.Statements = statementEntities
-                    .Select(x => JsonConvert.DeserializeObject<Statement>(x.FullStatement))
-                    .ToArray();
-
-                Response.Headers.Add(Constants.Headers.ConsistentThrough, DateTime.UtcNow.ToString("o"));
-
-                // Generate more url
-                if (result.Statements != null && parameters.Limit.HasValue)
+                var otherParameters = parameters.ToParameterMap(ApiVersion.GetLatest());
+                otherParameters.Remove("attachments");
+                otherParameters.Remove("format");
+                if (otherParameters.Count > 0)
                 {
-                    parameters.Skip = (parameters.Skip.Value + parameters.Limit.Value);
-                    if (parameters.Skip.Value < totalCount)
-                    {
-                        string parameterMap = parameters.ToParameterMap(parameters.Version).ToString();
-                        result.More = new Uri(Url.Action("GetStatements") + "?" + parameterMap, UriKind.Relative);
-                    }
+                    return BadRequest("");
                 }
 
-                bool includeAttachements = parameters.Attachments.GetValueOrDefault();
-                if (includeAttachements)
-                {
-                    // TODO: If the "attachment" property of a GET Statement is used and is set to true, the LRS MUST use the multipart response format and include all Attachments as described in Part Two.
-                    // Include attachment data, and return mutlipart/mixed
-                    Response.ContentType = MediaTypes.Multipart.Mixed;
-                    var attachmentsWithPayload = statementEntities.SelectMany(x => x.Attachments.Where(a => a.Content != null));
+                bool attachments = parameters.Attachments.GetValueOrDefault();
+                ResultFormats format = parameters.Format ?? ResultFormats.Exact;
 
-                    var multipart = new MultipartContent("mixed")
-                    {
-                        new StringContent(result.ToJson(), Encoding.UTF8, MediaTypes.Application.Json)
-                    };
-                    foreach (var attachment in attachmentsWithPayload)
-                    {
-                        var byteArrayContent = new ByteArrayContent(attachment.Content);
-                        byteArrayContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
-                        byteArrayContent.Headers.Add(Constants.Headers.ContentTransferEncoding, "binary");
-                        byteArrayContent.Headers.Add(Constants.Headers.XExperienceApiHash, attachment.SHA2);
-                        multipart.Add(byteArrayContent);
-                    }
-                    var strMultipartContent = await multipart.ReadAsStringAsync();
-                    return Content(strMultipartContent, MediaTypes.Multipart.Mixed);
-                }
+                if (parameters.StatementId.HasValue)
+                    return await GetStatement(
+                        parameters.StatementId.Value,
+                        attachments,
+                        format);
 
-                //var response = Request.CreateResponse(HttpStatusCode.OK);
-                //response.Content = new StringContent(result.ToJson(), Encoding.UTF8, MIMETypes.Application.Json);
-                Response.ContentType = MediaTypes.Application.Json;
-
-                return Ok(result);
+                if (parameters.VoidedStatementId.HasValue)
+                    return await GetVoidedStatement(
+                        parameters.VoidedStatementId.Value,
+                        attachments,
+                        format);
             }
-            catch (Exception ex)
+
+            StatementsResult result = new StatementsResult();
+            int totalCount = 0;
+            var statementEntities = this._statementService.GetStatements(parameters, out totalCount);
+
+            // Derserialize to json statement object
+            result.Statements = statementEntities
+                .Select(x => JsonConvert.DeserializeObject<Statement>(x.FullStatement))
+                .ToArray();
+
+            // Generate more url
+            if (result.Statements != null && parameters.Limit.HasValue)
             {
-                _logger.LogError(ex, "GetStatements");
-                return BadRequest(ex.Message);
+                parameters.Skip = (parameters.Skip.Value + parameters.Limit.Value);
+                if (parameters.Skip.Value < totalCount)
+                {
+                    string parameterMap = parameters.ToParameterMap(parameters.Version).ToString();
+                    result.More = new Uri(Url.Action("GetStatements") + "?" + parameterMap, UriKind.Relative);
+                }
             }
+
+            bool includeAttachements = parameters.Attachments.GetValueOrDefault();
+            if (includeAttachements)
+            {
+                // TODO: If the "attachment" property of a GET Statement is used and is set to true, the LRS MUST use the multipart response format and include all Attachments as described in Part Two.
+                // Include attachment data, and return mutlipart/mixed
+                return await MultipartResult(result, statementEntities);
+            }
+
+            //var response = Request.CreateResponse(HttpStatusCode.OK);
+            //response.Content = new StringContent(result.ToJson(), Encoding.UTF8, MIMETypes.Application.Json);
+            Response.ContentType = MediaTypes.Application.Json;
+
+            return Ok(result);
         }
 
-        [HttpGet]
-        [Produces("application/json", "multipart/mixed")]
-        private async Task<IActionResult> GetStatement(
-            [FromQuery]Guid statementId,
-            [FromQuery(Name = "attachments")]bool includedAttachments = false,
-            [FromQuery]ResultFormats format = ResultFormats.Exact)
+        private async Task<IActionResult> MultipartResult(object result, IEnumerable<StatementEntity> statementEntities)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            Response.ContentType = MediaTypes.Multipart.Mixed;
+            var attachmentsWithPayload = statementEntities.SelectMany(x => x.Attachments.Where(a => a.Content != null));
+            string jsonString = JsonConvert.SerializeObject(result);
 
-            try
+            var multipart = new MultipartContent("mixed") {
+                new StringContent(jsonString, Encoding.UTF8, MediaTypes.Application.Json)
+            };
+
+            foreach (var attachment in attachmentsWithPayload)
             {
-                StatementEntity entity = this._statementService.GetStatement(statementId, false, includedAttachments);
-
-                // TODO: Are we doing it right?
-                Response.Headers.Add(Constants.Headers.ConsistentThrough, DateTime.UtcNow.ToString("o"));
-
-                if (entity == null)
-                    return NotFound();
-
-                if (includedAttachments && entity.Attachments.Any(x=> x.Content != null))
-                {
-                    var multipart = new MultipartContent("mixed")
-                    {
-                        new StringContent(entity.FullStatement, Encoding.UTF8, MediaTypes.Application.Json)
-                }   ;
-                    foreach (var attachment in entity.Attachments)
-                    {
-                        if(attachment.Content != null)
-                        {
-                            var byteArrayContent = new ByteArrayContent(attachment.Content);
-                            byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(attachment.ContentType);
-                            byteArrayContent.Headers.Add(Constants.Headers.ContentTransferEncoding, "binary");
-                            byteArrayContent.Headers.Add(Constants.Headers.XExperienceApiHash, attachment.SHA2);
-                            multipart.Add(byteArrayContent);
-                        }
-                    }
-                    var strMultipart = await multipart.ReadAsStringAsync();
-                    return Content(strMultipart, MediaTypes.Multipart.Mixed);
-                }
-
-                return Content(entity.FullStatement, MediaTypes.Application.Json);
+                var byteArrayContent = new ByteArrayContent(attachment.Content);
+                byteArrayContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
+                byteArrayContent.Headers.Add(Headers.ContentTransferEncoding, "binary");
+                byteArrayContent.Headers.Add(Headers.XExperienceApiHash, attachment.SHA2);
+                multipart.Add(byteArrayContent);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "GetStatement");
-                return BadRequest(ex.Message);
-            }
+            var strMultipartContent = await multipart.ReadAsStringAsync();
+            return Content(strMultipartContent, MediaTypes.Multipart.Mixed);
         }
 
-        [HttpGet]
-        [Produces("application/json", "multipart/mixed")]
-        private async Task<IActionResult> GetVoidedStatement(
-            [FromQuery]Guid voidedStatementId, 
-            [FromQuery(Name="attachments")]bool includeAttachments = false, 
-            [FromQuery]ResultFormats format = ResultFormats.Exact)
-        {
-            try
-            {
-                StatementEntity entity = this._statementService.GetStatement(voidedStatementId, true, includeAttachments);
-
-                // TODO: Are we doing it right?
-                Response.Headers.Add(Constants.Headers.ConsistentThrough, DateTime.UtcNow.ToString("o"));
-
-                if (entity == null)
-                    return NotFound();
-
-                // TODO: Deserialize based on format
-                //var version = XAPIVersion.Latest();
-                //XAPISerializer xserializer = new XAPISerializer(version, format);
-                //xserializer.Deserialize()
-
-                if (includeAttachments && entity.Attachments.Any(x=> x.Content != null))
-                {
-                    var multipart = new MultipartContent("mixed")
-                    {
-                        new StringContent(entity.FullStatement, Encoding.UTF8, MediaTypes.Application.Json)
-                    };
-                    foreach (var attachment in entity.Attachments)
-                    {
-                        if(attachment.Content != null)
-                        {
-                            var byteArrayContent = new ByteArrayContent(attachment.Content);
-                            byteArrayContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
-                            byteArrayContent.Headers.Add(Constants.Headers.ContentTransferEncoding, "binary");
-                            byteArrayContent.Headers.Add(Constants.Headers.XExperienceApiHash, attachment.SHA2);
-                            multipart.Add(byteArrayContent);
-                        }
-                    }
-
-                    return Content(await multipart.ReadAsStringAsync(), MediaTypes.Multipart.Mixed);
-                }
-             
-                return Content(entity.FullStatement, MediaTypes.Application.Json);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "GetVoidedStatement");
-                return BadRequest(ex.Message);
-            }
-        }
-
+        /// <summary>
+        /// Create statement(s) with attachment(s)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Array of Statement id(s) (UUID) in the same order as the corresponding stored Statements.</returns>
         [HttpPost(Order = 2)]
         [Produces("application/json")]
         public ActionResult<Guid[]> PostStatements(StatementsPostContent model)
@@ -255,18 +253,31 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                Guid[] ids = _statementService.CreateStatements(Authority, model.Statements);
 
-                // TODO: Save attachments
+                var ids = new List<Guid>();
+                var statements = new List<StatementEntity>();
+                foreach (var statement in model.Statements)
+                {
+                    if (statement.Authority == null)
+                    {
+                        statement.Authority = Authority;
+                    }
+                    var entity = _statementService.CreateStatement(statement);
+                    statements.Add(entity);
+                    ids.Add(entity.StatementId);
+                }
 
+                _statementService.SaveAsync(statements.ToArray());
 
-                Response.Headers.Add(Constants.Headers.ConsistentThrough, DateTime.UtcNow.ToString(Constants.Formats.DateTimeFormat));
                 return Ok(ids);
+            }
+            catch(ValidationException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "PostStatements");
-                return BadRequest(ex.Message);
+                return BadRequest(ex);
             }
         }
 
@@ -278,17 +289,25 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
         /// <returns></returns>
         [VersionHeader]
         [HttpPut]
-        public IActionResult PutStatement([FromQuery]Guid statementId, [ModelBinder(typeof(StatementModelBinder))]Statement statement)
+        public IActionResult PutStatement([FromQuery]Guid statementId, [ModelBinder(typeof(StatementPutModelBinder))]Statement statement)
         {
+            if (statementId.Equals(Guid.Empty))
+            {
+                return BadRequest(new ArgumentNullException(nameof(statementId)));
+            }
+
+            if (statement == null)
+                return BadRequest(new ArgumentNullException(nameof(statementId)));
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
                 statement.Id = statementId;
-                statement.Authority = Authority;
+                statement.Authority = Authority; // TODO: Validate authority
                 var savedEntity = this._statementService.GetStatement(statementId);
                 if (savedEntity != null)
                 {
@@ -300,10 +319,7 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                     return Conflict();
                 }
 
-                if (statement == null)
-                    throw new ArgumentNullException("statement");
-
-                _statementService.CreateStatements(Authority, statement);
+                var entity = _statementService.CreateStatement(statement);
 
                 return NoContent();
             }

@@ -1,7 +1,6 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.Core.Data.Documents;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
 using System;
 using System.Collections.Generic;
 

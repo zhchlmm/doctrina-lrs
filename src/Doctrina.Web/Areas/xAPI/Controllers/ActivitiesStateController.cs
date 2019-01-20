@@ -2,7 +2,6 @@
 using Doctrina.Web.Areas.xAPI.Models;
 using Doctrina.Web.Areas.xAPI.Mvc.Filters;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
@@ -144,7 +143,9 @@ namespace Doctrina.Web.Areas.xAPI.Controllers
                 var states = _activityStateService.GetStates(activityId, agent, registration, since);
 
                 IEnumerable<Guid> ids = states.Select(x => x.Id);
-                string lastModified = states.OrderByDescending(x => x.LastModified).FirstOrDefault().LastModified.ToString(Constants.Formats.DateTimeFormat);
+                string lastModified = states.OrderByDescending(x => x.LastModified)
+                    .FirstOrDefault()
+                    .LastModified.ToString("0");
                 Response.Headers.Add("LastModified", lastModified);
 
                 return Ok(ids);

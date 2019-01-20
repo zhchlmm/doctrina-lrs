@@ -1,44 +1,23 @@
 ﻿using Doctrina.xAPI;
-using Doctrina.xAPI.Models;
+using Doctrina.xAPI.Http;
+using Doctrina.xAPI.Json;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 
 namespace Doctrina.Web.Mvc.ModelBinders
 {
-    public class StatementModelBinder : IModelBinder
+    /// <summary>
+    /// Binds a single statement
+    /// </summary>
+    public class StatementPutModelBinder : IModelBinder
     {
-        private static JSchema _schema;
-        private JSchema Schema
-        {
-            get
-            {
-                if(_schema == null)
-                {
-                    //JSchemaGenerator generator  = new JSchemaGenerator();
-                    //generator.GenerationProviders.Add(new StringEnumGenerationProvider());
-                    //JSchema schema = generator .Generate(typeof(Statement));
-                    ////_schema = JSchema.From.FromTypeAsync<Statement>().Result;
-                    //schema.AllowAdditionalProperties = false;
-                    //_schema = schema;
-
-                    using (System.IO.StreamReader file = System.IO.File.OpenText(@"result.schema.json"))
-                    using (JsonTextReader reader = new JsonTextReader(file))
-                    {
-                        _schema = JSchema.Load(reader);
-                    }
-                }
-                return _schema;
-            }
-        }
-
-
-        public Task BindModelAsync(ModelBindingContext bindingContext)
+        public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
             try
             {
@@ -54,18 +33,49 @@ namespace Doctrina.Web.Mvc.ModelBinders
                     modelName = "statements";
                 }
 
-                if (bindingContext.ModelType != typeof(Statement))
-                    return Task.CompletedTask;
+                //if (bindingContext.ModelType != typeof(Statement))
+                //    return Task.CompletedTask;
 
                 var request = bindingContext.ActionContext.HttpContext.Request;
-                string json = null;
-                using (var streamReader = new System.Net.Http.StreamContent(request.Body))
-                {
-                    json = streamReader.ReadAsStringAsync().Result;
-                }
 
-                Statement statement = statement = DeserializeStatement(bindingContext, json);
-           
+                Statement statement = null;
+
+                var contentType = MediaTypeHeaderValue.Parse(request.ContentType);
+                if(contentType.MediaType == MediaTypes.Application.Json)
+                {
+                    string json = null;
+                    using (var streamReader = new System.Net.Http.StreamContent(request.Body))
+                    {
+                        json = streamReader.ReadAsStringAsync().Result;
+                    }
+
+                    statement = DeserializeStatement(bindingContext, json);
+                }
+                else if(contentType.MediaType == MediaTypes.Multipart.Mixed)
+                {
+                    var boundary = contentType.Parameters.FirstOrDefault(x => x.Name == "boundary");
+                    var multipartReader = new MultipartReader(boundary.Value, request.Body);
+                    var section = await multipartReader.ReadNextSectionAsync();
+                    int sectionIndex = 0;
+                    while (section != null)
+                    {
+                        if (sectionIndex == 0)
+                        {
+                            string jsonString = await section.ReadAsStringAsync();
+                            statement = DeserializeStatement(bindingContext, jsonString);
+                        }
+                        else
+                        {
+                            var attachmentSection = new MultipartAttachmentSection(section);
+                            string hash = attachmentSection.XExperienceApiHash;
+                            var attachment = statement.Attachments.SingleOrDefault(x => x.SHA2 == hash);
+                            attachment.SetPayload(await attachmentSection.ReadAsByteArrayAsync());
+                        }
+
+                        section = await multipartReader.ReadNextSectionAsync();
+                        sectionIndex++;
+                    }
+                }
 
                 if (statement != null)
                 {
@@ -81,8 +91,6 @@ namespace Doctrina.Web.Mvc.ModelBinders
             {
                 bindingContext.ModelState.AddModelError("", ex.Message);
             }
-
-            return Task.CompletedTask;
         }
 
         private Statement DeserializeStatement(ModelBindingContext bindingContext, string json)
@@ -91,29 +99,20 @@ namespace Doctrina.Web.Mvc.ModelBinders
 
             JsonTextReader jsonReader = new JsonTextReader(new System.IO.StringReader(json));
 
-            JSchemaValidatingReader validatingReader = new JSchemaValidatingReader(jsonReader)
-            {
-                Schema = Schema
-            };
-            validatingReader.ValidationEventHandler += delegate (object sender, SchemaValidationEventArgs args)
-            {
-                bindingContext.ModelState.AddModelError(args.Path, args.Message);
-            };
-
-            string strVersion = request.Headers[Constants.Headers.XExperienceApiVersion];
+            string strVersion = request.Headers[Headers.XExperienceApiVersion];
             if (string.IsNullOrWhiteSpace(strVersion))
             {
-                throw new Exception($"'{Constants.Headers.XExperienceApiVersion}' header is missing.");
+                throw new Exception($"'{Headers.XExperienceApiVersion}' header is missing.");
             }
 
-            XAPISerializer serializer = new XAPISerializer(strVersion);
+            ApiJsonSerializer serializer = new ApiJsonSerializer(strVersion);
             serializer.Error += delegate (object sender, ErrorEventArgs args)
             {
                 bindingContext.ModelState.AddModelError(args.ErrorContext.Path, args.ErrorContext.Error.Message);
                 args.ErrorContext.Handled = true;
             };
 
-            var statement = serializer.Deserialize<Statement>(validatingReader);
+            var statement = serializer.Deserialize<Statement>(jsonReader);
 
             return statement;
         }

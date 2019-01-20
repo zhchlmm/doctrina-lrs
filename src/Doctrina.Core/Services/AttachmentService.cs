@@ -1,7 +1,5 @@
 ﻿using Doctrina.Core.Data;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Http;
-using Doctrina.xAPI.Models;
 using Newtonsoft.Json.Linq;
 using System;
 
@@ -11,9 +9,19 @@ namespace Doctrina.Core.Services
     {
         private readonly DoctrinaContext dbContext;
 
-        public void AddAttachment(StatementEntity statement, Attachment attachment, byte[] payload = null)
+        public AttachmentService(DoctrinaContext dbContext)
         {
+            this.dbContext = dbContext;
+        }
 
+        /// <summary>
+        /// Creates attachment without persiting
+        /// </summary>
+        /// <param name="statementId"></param>
+        /// <param name="attachment"></param>
+        /// <returns></returns>
+        public AttachmentEntity CreateAttachment(Guid statementId, Attachment attachment)
+        {
             // Signature Requirements
             if (attachment.ContentType.StartsWith(MediaTypes.Application.OctetStream)
                 && attachment.UsageType == new Iri("http://adlnet.gov/expapi/attachments/signature"))
@@ -21,6 +29,7 @@ namespace Doctrina.Core.Services
                 /// https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#signature-requirements
                 // TODO: Create attachment using documentService?
                 throw new NotImplementedException();
+
             }
 
             // 
@@ -39,7 +48,7 @@ namespace Doctrina.Core.Services
             {
                 SHA2 = attachment.SHA2,
                 ContentType = attachment.ContentType,
-                StatementId = statement.StatementId,
+                StatementId = statementId,
                 CanonicalData = canonicalData.ToString(Newtonsoft.Json.Formatting.None),
             };
 
@@ -48,13 +57,17 @@ namespace Doctrina.Core.Services
                 // Attachment is located on a remote resource
                 attachmentEntity.FileUrl = attachment.FileUrl.ToString();
             }
-            else
+            
+
+            if(attachment.Payload != null)
             {
                 // Attachment was part of the post body
-                attachmentEntity.Content = payload;
+                attachmentEntity.Content = attachment.Payload;
             }
 
-            statement.Attachments.Add(attachmentEntity);
+            dbContext.Attachments.Add(attachmentEntity);
+
+            return attachmentEntity;
         }
     }
 }

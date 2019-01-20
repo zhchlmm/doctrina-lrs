@@ -1,5 +1,5 @@
 ﻿using Doctrina.Web.Areas.xAPI.Mvc.ModelBinders;
-using Doctrina.xAPI.Models;
+using Doctrina.xAPI;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,6 +9,6 @@ namespace Doctrina.Web.Areas.xAPI.Models
     public class StatementsPostContent
     {
         [Required]
-        public Statement[] Statements { get; set; }
+        public Statement[] Statements { get; internal set; }
     }
 }

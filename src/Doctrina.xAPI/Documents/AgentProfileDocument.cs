@@ -1,4 +1,4 @@
-﻿using Doctrina.xAPI.Models;
+﻿using Doctrina.xAPI;
 
 namespace Doctrina.xAPI.Documents
 {

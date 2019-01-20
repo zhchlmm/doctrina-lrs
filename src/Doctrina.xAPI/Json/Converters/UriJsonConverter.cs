@@ -18,7 +18,7 @@ namespace Doctrina.xAPI.Json.Converters
             return objectType == typeof(Uri);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
             string uriString = reader.Value as string;
             if(Uri.IsWellFormedUriString(uriString, UriKind.RelativeOrAbsolute))
@@ -29,7 +29,7 @@ namespace Doctrina.xAPI.Json.Converters
             throw new JsonSerializationException($"'{uriString}' is not a well formed Uri string.");
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
             var uri = value as Uri;
             var jvalue = new JValue(uri.ToString());

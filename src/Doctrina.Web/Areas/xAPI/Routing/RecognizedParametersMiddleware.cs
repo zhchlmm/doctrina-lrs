@@ -29,7 +29,8 @@ namespace Doctrina.Web.Areas.xAPI.Routing
             "attachments",
             "ascending",
             "skip",
-            "activityId"
+            "activityId",
+            "stateId"
         };
 
         private readonly RequestDelegate _next;

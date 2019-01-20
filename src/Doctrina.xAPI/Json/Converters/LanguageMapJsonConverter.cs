@@ -1,13 +1,7 @@
-﻿using Doctrina.xAPI.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Json.Converters
 {
@@ -18,7 +12,7 @@ namespace Doctrina.xAPI.Json.Converters
             return objectType == typeof(LanguageMap);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
             if(reader.TokenType == JsonToken.StartObject)
             {
@@ -67,7 +61,7 @@ namespace Doctrina.xAPI.Json.Converters
             throw new JsonSerializationException("Must be a Object");
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
             //serializer.Serialize(writer, value);
             var langMap = value as LanguageMap;

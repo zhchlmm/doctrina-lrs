@@ -1,11 +1,6 @@
-﻿using Doctrina.xAPI.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Json.Converters
 {
@@ -13,7 +8,7 @@ namespace Doctrina.xAPI.Json.Converters
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType.Equals(typeof(Models.Extensions));
+            return objectType.Equals(typeof(Extensions));
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
@@ -22,7 +17,7 @@ namespace Doctrina.xAPI.Json.Converters
                 return null;
 
             JObject jobj = JObject.Load(reader);
-            var extensions = new Models.Extensions();
+            var extensions = new Extensions();
             foreach(var pair in jobj)
             {
                 try

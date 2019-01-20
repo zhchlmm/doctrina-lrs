@@ -1,4 +1,5 @@
-﻿using Doctrina.xAPI.Models;
+﻿using Doctrina.xAPI;
+using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,30 @@ namespace Doctrina.xAPI
     [JsonObject]
     public class StatementsResult : IStatementsResult
     {
+        public StatementsResult()
+        {
+        }
+
+        public StatementsResult(string json)
+           : this(json, ApiVersion.GetLatest(), ResultFormats.Exact)
+        {
+        }
+
+        public StatementsResult(string json, ApiVersion version)
+            : this(json, version, ResultFormats.Exact)
+        {
+        }
+
+        public StatementsResult(string json, ApiVersion version, ResultFormats format)
+        {
+            var apiSerializer = new xAPI.Json.ApiJsonSerializer(version, format);
+            var reader = new JsonTextReader(new System.IO.StringReader(json));
+            var result = apiSerializer.Deserialize<StatementsResult>(reader);
+            Statements = result.Statements;
+            More = result.More;
+        }
+
+
         /// <summary>
         /// List of Statements. If the list returned has been limited (due to pagination), and there are more results, they will be located at the "statements" property within the container located at the IRL provided by the "more" property of this Statement result Object. Where no matching Statements are found, this property will contain an empty array.
         /// </summary>
@@ -52,6 +77,53 @@ namespace Doctrina.xAPI
             writer.WriteEndObject();
 
             return sw.ToString();
+        }
+
+        public static async Task<StatementsResult> ReadAsMultipartAsync(Stream stream, string boundary, ApiVersion version)
+        {
+            return await ReadAsMultipartAsync(stream, boundary, version, ResultFormats.Exact);
+        }
+
+        public static async Task<StatementsResult> ReadAsMultipartAsync(Stream stream, string boundary, ApiVersion version, ResultFormats format)
+        {
+            var result = new StatementsResult();
+
+            var multipartReader = new MultipartReader(boundary, stream);
+            var section = await multipartReader.ReadNextSectionAsync();
+            int sectionIxdex = 0;
+            while (section != null)
+            {
+                if (sectionIxdex == 0)
+                {
+                    // StatementsResult
+                    string jsonString = await section.ReadAsStringAsync();
+                    result = new StatementsResult(jsonString, version);
+                }
+                else
+                {
+                    
+                }
+
+                section = await multipartReader.ReadNextSectionAsync();
+                sectionIxdex++;
+            }
+
+            return result;
+        }
+
+        public Attachment GetAttachmentByHash(string hash)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Attachment GetStatementByHash(string hash)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetAttachmentByHash(string hash, byte[] payload)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Doctrina.xAPI.Models;
+﻿using Doctrina.xAPI;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Specialized;
@@ -29,13 +29,13 @@ namespace Doctrina.xAPI
         /// <summary>
         /// Filter, only return Statements matching the specified Verb id.	
         /// </summary>
-        [FromQuery(Name ="verbId")]
+        [FromQuery(Name ="verb")]
         public Uri VerbId { get; set; }
 
         /// <summary>
         /// Filter, only return Statements for which the Object of the Statement is an Activity with the specified id.	
         /// </summary>
-        [FromQuery(Name ="activityId")]
+        [FromQuery(Name ="activity")]
         public Iri ActivityId { get; set; }
 
         /// <summary>
@@ -50,12 +50,21 @@ namespace Doctrina.xAPI
         [FromQuery(Name = "related_agents")]
         public bool? RelatedAgents { get; set; }
 
+        /// <summary>
+        /// Only Statements stored since the specified Timestamp (exclusive) are returned.	
+        /// </summary>
         [FromQuery(Name = "since")]
         public DateTime? Since { get; set; }
 
+        /// <summary>
+        /// Only Statements stored at or before the specified Timestamp are returned.
+        /// </summary>
         [FromQuery(Name = "until")]
         public DateTime? Until { get; set; }
 
+        /// <summary>
+        /// Maximum number of Statements to return. 0 indicates return the maximum the server will allow.
+        /// </summary>
         [FromQuery(Name = "limit")]
         public int? Limit { get; set; }
 
@@ -73,7 +82,7 @@ namespace Doctrina.xAPI
 
         public StatementsQuery() { }
 
-        public virtual NameValueCollection ToParameterMap(XAPIVersion version)
+        public virtual NameValueCollection ToParameterMap(ApiVersion version)
         {
             var result = HttpUtility.ParseQueryString(string.Empty);
 
@@ -103,11 +112,11 @@ namespace Doctrina.xAPI
             }
             if (Since != null)
             {
-                result.Add("since", Since.Value.ToString(Constants.Formats.DateTimeFormat));
+                result.Add("since", Since.Value.ToString("o"));
             }
             if (Until != null)
             {
-                result.Add("until", Until.Value.ToString(Constants.Formats.DateTimeFormat));
+                result.Add("until", Until.Value.ToString("o"));
             }
             if (Limit != null)
             {
