@@ -1,16 +1,16 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Repositories;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
 using Newtonsoft.Json;
 using System;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public class VerbService : IVerbService
     {
         private readonly IVerbRepository _verbsRepo;
 
-        public VerbService(DoctrinaContext dbContext, IVerbRepository verbRepository)
+        public VerbService(DoctrinaDbContext dbContext, IVerbRepository verbRepository)
         {
             _verbsRepo = verbRepository;
         }

@@ -9,8 +9,8 @@ namespace Doctrina.xAPI
     /// <summary>
     /// The Statement object
     /// </summary>
-    //[JsonConverter(typeof(StatementConverter))]
-    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+    [JsonConverter(typeof(StatementConverter))]
+    [JsonObject()]
     public class Statement : StatementBase
     {
         /// <summary>

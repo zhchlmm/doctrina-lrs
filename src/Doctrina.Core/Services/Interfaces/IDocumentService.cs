@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net.Mime;
-using Doctrina.Core.Data;
+using Doctrina.Persistence.Entities;
 using Doctrina.xAPI.Documents;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public interface IDocumentService
     {

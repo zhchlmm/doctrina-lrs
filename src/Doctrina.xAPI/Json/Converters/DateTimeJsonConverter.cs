@@ -16,12 +16,24 @@ namespace Doctrina.xAPI.Json.Converters
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(DateTime)
-                || objectType == typeof(DateTimeOffset);
+                || objectType == typeof(DateTime?)
+                || objectType == typeof(DateTimeOffset)
+                || objectType == typeof(DateTimeOffset?);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
-            string strDateTime = reader.Value as string;
+            JToken token = JToken.Load(reader);
+
+            if(token.Type != JTokenType.Date || token.Type != JTokenType.String)
+            {
+
+            }
+
+            string strDateTime = token.Value<string>();
+
+            if (strDateTime == null)
+                return null;
 
             if (strDateTime.EndsWith("-00:00")
                 || strDateTime.EndsWith("-0000")

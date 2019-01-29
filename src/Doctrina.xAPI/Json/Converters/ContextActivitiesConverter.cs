@@ -27,7 +27,7 @@ namespace Doctrina.xAPI.Json.Converters
             //    "parent", "grouping", "category", "other"
             //};
             //if (properties.Any(x => !names.Contains(x.Name)))
-            //    throw new JsonSerializationException("Only \"parent\", \"grouping\", \"category\", or \"other\"");
+            //    throw new JsonSerializationException("Only 'parent', 'grouping', 'category', or 'other'");
 
             var context = new ContextActivities();
 

@@ -1,6 +1,6 @@
-﻿using Doctrina.Core.Data;
+﻿using Doctrina.Persistence.Entities;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public interface ISubStatementRepository
     {

@@ -1,18 +1,18 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Repositories;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
 using Newtonsoft.Json;
 using System;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public class ActivityService : IActivityService
     {
-        private readonly DoctrinaContext dbContext;
+        private readonly DoctrinaDbContext dbContext;
         private readonly IAgentService agentService;
         private readonly IActivityRepository activities;
 
-        public ActivityService(DoctrinaContext dbContext, IAgentService agentService, IActivityRepository activityRepository)
+        public ActivityService(DoctrinaDbContext dbContext, IAgentService agentService, IActivityRepository activityRepository)
         {
             this.dbContext = dbContext;
             this.agentService = agentService;

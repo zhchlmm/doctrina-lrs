@@ -77,6 +77,8 @@ namespace Doctrina.xAPI
         /// <param name="bytes">The bytes representing the payload.</param>
         public void SetPayload(byte[] bytes)
         {
+            Payload = bytes;
+
             if (UsageType == new Iri("http://adlnet.gov/expapi/attachments/signature")
                 && ContentType == "application/octet-stream")
             {
@@ -90,8 +92,6 @@ namespace Doctrina.xAPI
 
                 // Validate that the signature requirements outlined above have been met.
             }
-
-            Payload = bytes;
         }
     }
 }

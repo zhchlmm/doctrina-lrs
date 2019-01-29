@@ -1,17 +1,17 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Data.Documents;
-using Doctrina.Core.Repositories;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Entities.Documents;
+using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public sealed class ActivitiesStateService : IActivitiesStateService
     {
-        private readonly DoctrinaContext _dbContext;
+        private readonly DoctrinaDbContext _dbContext;
         private readonly IActivitiesStateRepository _activityStates;
         private readonly IActivityService _activityService;
         private readonly IAgentService _agentService;
@@ -19,7 +19,7 @@ namespace Doctrina.Core.Services
 
         //private readonly DocumentService documents;
 
-        public ActivitiesStateService(DoctrinaContext dbContext, IActivitiesStateRepository activityStateRepository, IActivityService activityService, IAgentService agentService, IDocumentService documentService)
+        public ActivitiesStateService(DoctrinaDbContext dbContext, IActivitiesStateRepository activityStateRepository, IActivityService activityService, IAgentService agentService, IDocumentService documentService)
         {
             _dbContext = dbContext;
             _activityStates = activityStateRepository;

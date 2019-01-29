@@ -1,11 +1,11 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Models;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Models;
 using Doctrina.xAPI;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public interface IStatementService
     {
@@ -22,5 +22,6 @@ namespace Doctrina.Core.Services
         DateTimeOffset GetConsistentThroughDate();
 
         Task SaveAsync(params StatementEntity[] statements);
+        void Save(params StatementEntity[] statements);
     }
 }

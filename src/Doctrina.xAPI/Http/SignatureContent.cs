@@ -13,6 +13,15 @@ namespace Doctrina.xAPI.Http
     /// https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#signature-requirements
     public class SignatureContent : HttpContent
     {
+        public SignatureContent()
+        {
+        }
+
+        public SignatureContent(Attachment attachment)
+        {
+
+        }
+
         private void Decode()
         {
             //TODO: Decode the JWS signature, and load the signed serialization of the Statement from the JWS signature payload.

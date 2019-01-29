@@ -1,4 +1,4 @@
-﻿using Doctrina.Core;
+﻿using Doctrina.Persistence;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog.Events;
 using Serilog.Core;
+using Doctrina.xAPI.LRS;
 
 namespace Doctrina.Web
 {
@@ -26,6 +27,7 @@ namespace Doctrina.Web
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseStartup<LrsStartup>()
                 .UseSerilog()
                 //.UseKestrel(options =>
                 //{
@@ -37,9 +39,15 @@ namespace Doctrina.Web
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.RollingFile("logs/log-{Date}.log", shared: true)
+                //.ReadFrom.AppSettings()
+                .WriteTo.RollingFile("logs/log-{Date}.log", 
+                    shared: true, 
+                    flushToDiskInterval: new TimeSpan(0,0, 5))
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Warning)
+                //.WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Error)
                 //.ReadFrom.Configuration(Configuration)
-                .Enrich.WithProperty("AppName", "Doctrina LRS")
+                //.Enrich.WithProperty("AppName", "Doctrina LRS")
                 .CreateLogger();
 
             try
@@ -49,10 +57,10 @@ namespace Doctrina.Web
                 using (var scope = host.Services.CreateScope())
                 {
                     var services = scope.ServiceProvider;
-                    var context = services.GetRequiredService<DoctrinaContext>();
+                    var context = services.GetRequiredService<DoctrinaDbContext>();
                     try
                     {
-                        SeedData.Initialize(services);
+                        DoctrinaInitializer.Initialize(services);
                     }
                     catch (Exception ex)
                     {

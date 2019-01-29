@@ -6,11 +6,19 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Exceptions
 {
-    public class ValidationException : Exception
+    public class RequirementException : Exception
     {
-        public ValidationException(string message) 
+        public string[] Requirement { get; private set; }
+
+        public RequirementException(string message) 
             : base(message)
         {
+        }
+
+        public RequirementException(string message, params string[] requirement)
+            : base(message)
+        {
+            Requirement = requirement;
         }
     }
 }

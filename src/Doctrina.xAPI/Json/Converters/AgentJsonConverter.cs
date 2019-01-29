@@ -1,11 +1,7 @@
-﻿using Doctrina.xAPI;
+﻿using Doctrina.xAPI.Json.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Json.Converters
 {
@@ -25,6 +21,8 @@ namespace Doctrina.xAPI.Json.Converters
             var jObjectType = jobj["objectType"];
             if (jObjectType != null)
             {
+                JsonValidator.IsString(jObjectType);
+
                 string strObjectType = jObjectType.Value<string>();
                 if (!Enum.TryParse(strObjectType, out objType))
                     throw new JsonSerializationException($"'{strObjectType}' is not valid. Path: '{jObjectType.Path}'");

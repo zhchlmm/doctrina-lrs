@@ -20,10 +20,8 @@ namespace Doctrina.xAPI.Json
             ResultFormat = format;
             CheckAdditionalContent = true;
             MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;
-            //MetadataPropertyHandling = Newtonsoft.Json.MetadataPropertyHandling.
-            //ContractResolver = new OptInNamesContractResolver();
-            //Converters.Insert(0, new CaseSensitiveJsonConverter());
             Converters.Insert(0, new StrictNumberConverter());
+            Converters.Insert(0, new StrictStringConverter());
             Converters.Insert(1, new UriJsonConverter());
             Converters.Insert(2, new DateTimeJsonConverter());
         }

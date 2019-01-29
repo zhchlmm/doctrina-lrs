@@ -1,17 +1,17 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Data.Documents;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Entities.Documents;
 using Doctrina.xAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public class ActivityProfileRepository : IActivityProfileRepository
     {
-        private readonly DoctrinaContext _context;
+        private readonly DoctrinaDbContext _context;
 
-        public ActivityProfileRepository(DoctrinaContext context)
+        public ActivityProfileRepository(DoctrinaDbContext context)
         {
             this._context = context;
         }
@@ -21,7 +21,7 @@ namespace Doctrina.Core.Repositories
 
             string strActivityId = activityId.ToString();
 
-            return _context.ActivityProfiles.FirstOrDefault(x => x.Activity.ActivityId == strActivityId && x.ProfileId == profileId && x.RegistrationId == registragion);
+            return _context.ActivityProfiles.FirstOrDefault(x => x.Activity.Id == strActivityId && x.ProfileId == profileId && x.RegistrationId == registragion);
         }
 
         public ActivityProfileEntity GetProfile(Iri activityId, string profileId)
@@ -29,7 +29,7 @@ namespace Doctrina.Core.Repositories
 
             string strActivityId = activityId.ToString();
 
-            return _context.ActivityProfiles.FirstOrDefault(x => x.Activity.ActivityId == strActivityId && x.ProfileId == profileId);
+            return _context.ActivityProfiles.FirstOrDefault(x => x.Activity.Id == strActivityId && x.ProfileId == profileId);
         }
 
 
@@ -37,7 +37,7 @@ namespace Doctrina.Core.Repositories
         {
             string strActivityId = activityId.ToString();
 
-            var query = _context.ActivityProfiles.Where(x => x.Activity.ActivityId == strActivityId);
+            var query = _context.ActivityProfiles.Where(x => x.Activity.Id == strActivityId);
 
             if (since.HasValue)
             {

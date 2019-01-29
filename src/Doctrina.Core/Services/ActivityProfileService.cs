@@ -1,20 +1,20 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Data.Documents;
-using Doctrina.Core.Repositories;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Entities.Documents;
+using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
 using System;
 using System.Collections.Generic;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public class ActivityProfileService : IActivityProfileService
     {
-        private readonly DoctrinaContext _context;
+        private readonly DoctrinaDbContext _context;
         private readonly IActivityProfileRepository activityProfileRepository;
         private readonly IActivityService _activityService;
         private readonly IDocumentService documentService;
 
-        public ActivityProfileService(DoctrinaContext context, IActivityProfileRepository activityProfileRepository, IActivityService activityService, IDocumentService documentService)
+        public ActivityProfileService(DoctrinaDbContext context, IActivityProfileRepository activityProfileRepository, IActivityService activityService, IDocumentService documentService)
         {
             _context = context;
             this.activityProfileRepository = activityProfileRepository;

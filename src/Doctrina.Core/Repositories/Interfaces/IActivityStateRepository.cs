@@ -1,10 +1,10 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Data.Documents;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Entities.Documents;
 using Doctrina.xAPI;
 using System;
 using System.Collections.Generic;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public interface IActivitiesStateRepository
     {

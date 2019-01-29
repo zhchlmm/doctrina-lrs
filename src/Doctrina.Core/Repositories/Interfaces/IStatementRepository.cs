@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Doctrina.Domain.Entities;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Doctrina.Core.Data;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public interface IStatementRepository
     {

@@ -43,7 +43,7 @@ namespace Doctrina.xAPI
                    //EqualityComparer<LanguageMap>.Default.Equals(Name, definition.Name) &&
                    //EqualityComparer<LanguageMap>.Default.Equals(Description, definition.Description) &&
                    EqualityComparer<Iri>.Default.Equals(Type, definition.Type) &&
-                   EqualityComparer<Irl>.Default.Equals(MoreInfo, definition.MoreInfo);
+                   EqualityComparer<Uri>.Default.Equals(MoreInfo, definition.MoreInfo);
         }
 
         public override int GetHashCode()

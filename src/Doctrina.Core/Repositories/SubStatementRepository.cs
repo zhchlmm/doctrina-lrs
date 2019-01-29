@@ -1,15 +1,15 @@
-﻿using Doctrina.Core;
-using Doctrina.Core.Data;
+﻿using Doctrina.Persistence;
+using Doctrina.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public class SubStatementRepository : ISubStatementRepository
     {
-        private readonly DoctrinaContext _dbContext;
+        private readonly DoctrinaDbContext _dbContext;
 
-        public SubStatementRepository(DoctrinaContext context)
+        public SubStatementRepository(DoctrinaDbContext context)
         {
             this._dbContext = context;
         }

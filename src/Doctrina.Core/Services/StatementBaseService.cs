@@ -1,24 +1,25 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Repositories;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
+using Doctrina.xAPI.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public abstract class StatementBaseService<TStatement>
         where TStatement : IStatementEntityBase
     {
-        public readonly DoctrinaContext _dbContext;
+        public readonly DoctrinaDbContext _dbContext;
         private readonly IAgentService _agentService;
         private readonly IActivityService _activityService;
         private readonly ISubStatementService _subStatementService;
         private readonly ILogger _logger;
 
-        public StatementBaseService(DoctrinaContext dbContext, IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService, ILogger logger)
+        public StatementBaseService(DoctrinaDbContext dbContext, IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService, ILogger logger)
         {
             _dbContext = dbContext;
             _agentService = agentService;
@@ -33,7 +34,7 @@ namespace Doctrina.Core.Services
         /// <param name="statementRepository"></param>
         /// <param name="agentService"></param>
         /// <param name="activityService"></param>
-        public StatementBaseService(DoctrinaContext dbContext, IStatementRepository statementRepository, IAgentService agentService, IActivityService activityService)
+        public StatementBaseService(DoctrinaDbContext dbContext, IStatementRepository statementRepository, IAgentService agentService, IActivityService activityService)
         {
             _dbContext = dbContext;
             _agentService = agentService;
@@ -223,11 +224,11 @@ namespace Doctrina.Core.Services
         {
             // When issuing a Statement that voids another, the Object of that voiding Statement MUST have the "objectType" property set to StatementRef.
             if (!voidingStatement.ObjectStatementRefId.HasValue)
-                throw new Exception("When issuing a Statement that voids another, the Object of that voiding Statement MUST have the 'objectType' property set to StatementRef.");
+                throw new RequirementException("When issuing a Statement that voids another, the Object of that voiding Statement MUST have the 'objectType' property set to StatementRef.");
 
             // An LRS MUST consider a Statement it contains voided if and only if the Statement is not itself a voiding Statement and the LRS also contains a voiding Statement referring to the first Statement.
             if (voidingStatement.Verb.Id != Verbs.Voided)
-                throw new Exception("Any Statement that voids another must have the verb: \"" + Verbs.Voided + "\"");
+                throw new RequirementException("Any Statement that voids another must have the verb: \"" + Verbs.Voided + "\"");
 
             var statementRefId = voidingStatement.ObjectStatementRefId.Value;
             var voidedStatement = this._dbContext.Statements

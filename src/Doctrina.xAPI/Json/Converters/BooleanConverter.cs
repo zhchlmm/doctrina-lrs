@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Json.Converters
 {
@@ -25,7 +22,7 @@ namespace Doctrina.xAPI.Json.Converters
 
             if (_typesNotToReadAsString.Contains(objectType) && token.Type != JTokenType.Boolean)
             {
-                throw new JsonSerializationException($"A boolean is required.");
+                throw new JsonSerializationException($"A boolean value is required.");
             }
 
             return token.ToObject(objectType);
@@ -33,7 +30,7 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            writer.WriteValue(value);
         }
 
         public override bool CanWrite

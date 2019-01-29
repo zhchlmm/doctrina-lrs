@@ -1,9 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Json.Converters
 {
@@ -21,9 +17,10 @@ namespace Doctrina.xAPI.Json.Converters
                 case JsonToken.Integer:
                 case JsonToken.Float: // Accepts numbers like 4.00
                 case JsonToken.Null:
-                    return serializer.Deserialize(reader, objectType);
+                    var ser = new JsonSerializer();
+                    return ser.Deserialize(reader, objectType);
                 default:
-                    throw new JsonSerializationException(string.Format("Token \"{0}\" of type {1} was not a JSON integer", reader.Value, reader.TokenType));
+                    throw new JsonSerializationException(string.Format("Token '{0}' of type {1} was not a JSON integer", reader.Value, reader.TokenType));
             }
         }
 

@@ -1,19 +1,19 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Data.Documents;
-using Doctrina.Core.Data.Extensions;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Entities.Documents;
+using Doctrina.Persistence.Entities.Extensions;
 using Doctrina.xAPI;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public class ActivityStateRepository : IActivitiesStateRepository
     {
-        private readonly DoctrinaContext dbcontext;
+        private readonly DoctrinaDbContext dbcontext;
 
-        public ActivityStateRepository(DoctrinaContext context)
+        public ActivityStateRepository(DoctrinaDbContext context)
         {
             this.dbcontext = context;
         }

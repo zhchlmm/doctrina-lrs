@@ -1,15 +1,15 @@
-﻿using Doctrina.Core;
-using Doctrina.Core.Data;
+﻿using Doctrina.Persistence;
+using Doctrina.Persistence.Entities;
 using System;
 using System.Linq;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public class AgentGroupMemberRepository : IAgentGroupMemberRepository
     {
-        private readonly DoctrinaContext context;
+        private readonly DoctrinaDbContext context;
 
-        public AgentGroupMemberRepository(DoctrinaContext context)
+        public AgentGroupMemberRepository(DoctrinaDbContext context)
         {
             this.context = context;
         }

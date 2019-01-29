@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public class AuthTokenRepository
     {
-        private readonly DoctrinaContext dbContext;
+        private readonly DoctrinaDbContext dbContext;
 
-        public AuthTokenRepository(DoctrinaContext dbContext)
+        public AuthTokenRepository(DoctrinaDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

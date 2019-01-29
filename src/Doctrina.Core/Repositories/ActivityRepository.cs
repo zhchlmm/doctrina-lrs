@@ -1,15 +1,15 @@
-﻿using Doctrina.Core.Data;
+﻿using Doctrina.Persistence.Entities;
 using Doctrina.xAPI;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public class ActivityRepository : IActivityRepository
     {
-        private readonly DoctrinaContext context;
+        private readonly DoctrinaDbContext context;
 
-        public ActivityRepository(DoctrinaContext context)
+        public ActivityRepository(DoctrinaDbContext context)
         {
             this.context = context;
         }
@@ -21,7 +21,7 @@ namespace Doctrina.Core.Repositories
 
         public ActivityEntity GetByActivityId(string activityId)
         {
-            return context.Activities.FirstOrDefault(x => x.ActivityId == activityId);
+            return context.Activities.FirstOrDefault(x => x.Id == activityId);
         }
 
         public ActivityEntity Create(ActivityEntity entity)

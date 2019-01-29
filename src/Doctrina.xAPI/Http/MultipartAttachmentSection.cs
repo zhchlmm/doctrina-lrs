@@ -15,7 +15,7 @@ namespace Doctrina.xAPI.Http
         {
             this.section = section;
 
-            if (!section.Headers.TryGetValue("Content-Transfer-Encoding", out StringValues cteValues))
+            if (section.Headers.TryGetValue("Content-Transfer-Encoding", out StringValues cteValues))
             {
                 string value = cteValues;
                 if (value != "binary")

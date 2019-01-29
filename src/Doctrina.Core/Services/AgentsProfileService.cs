@@ -1,12 +1,12 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Data.Documents;
-using Doctrina.Core.Repositories;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Entities.Documents;
+using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public class AgentProfileService : IAgentProfileService
     {
@@ -14,7 +14,7 @@ namespace Doctrina.Core.Services
         private readonly IDocumentService documentService;
         private readonly IAgentService agentService;
 
-        public AgentProfileService(DoctrinaContext dbContext, IAgentProfileRepository agentProfiles, IDocumentService documentService, IAgentService agentService)
+        public AgentProfileService(DoctrinaDbContext dbContext, IAgentProfileRepository agentProfiles, IDocumentService documentService, IAgentService agentService)
         {
             this.agentProfiles = agentProfiles;
             this.documentService = documentService;

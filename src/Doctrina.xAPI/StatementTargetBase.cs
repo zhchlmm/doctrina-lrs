@@ -1,18 +1,14 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using Doctrina.xAPI.Json.Converters;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Schema.Generation;
 
 namespace Doctrina.xAPI
 {
-    public abstract class StatementTargetBase : JsonModel, IStatementTarget
+    [JsonConverter(typeof(StatementTargetConverter))]
+    public class StatementTargetBase : JsonModel, IStatementTarget
     {
-        protected abstract ObjectType OBJECT_TYPE { get; }
+        protected virtual ObjectType OBJECT_TYPE { get; }
 
         [JsonProperty("objectType",
             Order = 1,

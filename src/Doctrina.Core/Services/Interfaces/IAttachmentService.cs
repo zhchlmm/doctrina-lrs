@@ -1,8 +1,8 @@
-﻿using Doctrina.Core.Data;
+﻿using Doctrina.Persistence.Entities;
 using Doctrina.xAPI;
 using System;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public interface IAttachmentService
     {

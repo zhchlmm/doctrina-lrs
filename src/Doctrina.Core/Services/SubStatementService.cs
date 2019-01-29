@@ -1,9 +1,10 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Repositories;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Repositories;
 using System;
 using Doctrina.xAPI;
+using Doctrina.xAPI.Exceptions;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public class SubStatementService : StatementBaseService<SubStatementEntity>, ISubStatementService
     {
@@ -11,7 +12,7 @@ namespace Doctrina.Core.Services
         private readonly IVerbService _verbService;
         private readonly IAgentService _agentService;
 
-        public SubStatementService(DoctrinaContext dbContext, ISubStatementRepository subStatementRepository, IStatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService)
+        public SubStatementService(DoctrinaDbContext dbContext, ISubStatementRepository subStatementRepository, IStatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService)
             : base(dbContext, statementRepository, agentService, activityService)
         {
             this.subStatements = subStatementRepository;
@@ -49,7 +50,7 @@ namespace Doctrina.Core.Services
             ObjectType objectType = target.ObjectType;
             if (objectType == ObjectType.SubStatement)
             {
-                throw new NotImplementedException("SubStatements are not allowed as objectType of an SubStatement.");
+                throw new RequirementException("SubStatements are not allowed as objectType of an SubStatement.");
             }
 
             base.MergeTarget(stmt, target);

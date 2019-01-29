@@ -52,13 +52,4 @@ namespace Doctrina.xAPI
             return !(account1 == account2);
         }
     }
-
-    public class AccountSchema : JSchemaGenerationProvider
-    {
-        public override JSchema GetSchema(JSchemaTypeGenerationContext context)
-        {
-            var schema = context.Generator.Generate(typeof(Account));
-            return schema;
-        }
-    }
 }

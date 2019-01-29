@@ -23,17 +23,26 @@ namespace Doctrina.xAPI.Json.Converters
             JObject jobj = JObject.Load(reader);
 
             ObjectType objType = ObjectType.Agent;
-            if (jobj["objectType"] != null)
+            var jobjectType = jobj["objectType"];
+            if (jobjectType != null)
             {
+                if (jobjectType.Type != JTokenType.String)
+                    throw new JsonSerializationException("objectType must be a string");
+
                 string strObjectType = jobj["objectType"].Value<string>();
-                
 
                 if (!Enum.TryParse(strObjectType, out objType))
                     throw new JsonSerializationException($"'{strObjectType}' is not valid. Path: '{reader.Path}'");
-            }else if (jobj["id"] != null)
+            }
+            else if (jobj["id"] != null)
             {
                 // If objectType is not defined, but id is, it's an activity
                 objType = ObjectType.Activity;
+            }
+            else
+            {
+                // Do not assume (Data.md#2.4.4.2.s1.b1)
+                throw new JsonSerializationException("Statements that use an Agent or Group as an Object MUST specify an 'objectType' property.");
             }
 
             // If Statement's SubStatement object
@@ -66,7 +75,8 @@ namespace Doctrina.xAPI.Json.Converters
                     throw new NullReferenceException($"objectType '{objType}' is not valid at path '{jobj.Path}'");
             }
 
-            return serializer.Deserialize(jobj.CreateReader(), target.GetType());
+            serializer.Populate(jobj.CreateReader(), target);
+            return target;
         }
 
         private object ReadSubStatementObject(Newtonsoft.Json.JsonSerializer serializer, JObject jobj, ObjectType objType)

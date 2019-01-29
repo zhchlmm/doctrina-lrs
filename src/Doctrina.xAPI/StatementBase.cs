@@ -1,5 +1,6 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -64,7 +65,7 @@ namespace Doctrina.xAPI
             Order = 9,
             Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
-        public Attachment[] Attachments { get; set; }
+        public AttachmentCollection Attachments { get; set; }
 
         public override bool Equals(object obj)
         {

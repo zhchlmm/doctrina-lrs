@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Specialized;
 
-namespace Doctrina.Core.Models
+namespace Doctrina.Persistence.Models
 {
     public class PagedStatementsQuery : StatementsQuery
     {

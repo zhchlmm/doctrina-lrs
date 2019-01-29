@@ -1,14 +1,14 @@
-﻿using Doctrina.Core.Data;
+﻿using Doctrina.Persistence.Entities;
 using Doctrina.xAPI;
 using System.Linq;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public class VerbRepository : IVerbRepository
     {
-        private readonly DoctrinaContext context;
+        private readonly DoctrinaDbContext context;
 
-        public VerbRepository(DoctrinaContext context)
+        public VerbRepository(DoctrinaDbContext context)
         {
             this.context = context;
         }

@@ -1,16 +1,17 @@
-﻿using Doctrina.Core.Data;
+﻿using Doctrina.Persistence.Entities;
 using Doctrina.xAPI;
+using Doctrina.xAPI.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public class AgentService : IAgentService
     {
-        private readonly DoctrinaContext _dbContext;
+        private readonly DoctrinaDbContext _dbContext;
 
-        public AgentService(DoctrinaContext dbContext)
+        public AgentService(DoctrinaDbContext dbContext)
         {
             this._dbContext = dbContext;
         }
@@ -45,7 +46,7 @@ namespace Doctrina.Core.Services
 
             if(!actor.IsAnonymous() && actor.GetIdentifiers().Count > 1)
             {
-                throw new Exception($"An Identified Group/Agent does not allow for multiple identifiers.");
+                throw new RequirementException($"An Identified Group/Agent does not allow for multiple identifiers.");
             }
 
             if (actor.ObjectType == ObjectType.Agent)
@@ -56,7 +57,7 @@ namespace Doctrina.Core.Services
                 return HandleGroup(actor as Group);
             }
 
-            throw new Exception($"Cannot create Agent/Group with objectType '{actor.ObjectType}'");
+            throw new RequirementException($"Cannot create Agent/Group with objectType '{actor.ObjectType}'");
         }
 
         private AgentEntity HandleGroup(Group group)
@@ -87,11 +88,11 @@ namespace Doctrina.Core.Services
         {
             if (agent.IsAnonymous())
             {
-                throw new Exception($"An Agent MUST be identified by one (1) of the four types of Inverse Functional Identifiers.");
+                throw new RequirementException($"An Agent MUST be identified by one (1) of the four types of Inverse Functional Identifiers.");
             }
             if(agent.GetIdentifiers().Count > 1)
             {
-                throw new Exception($"An Agent MUST NOT include more than one (1) Inverse Functional Identifier.");
+                throw new RequirementException($"An Agent MUST NOT include more than one (1) Inverse Functional Identifier.");
             }
 
             if (TryGetEntity(agent, out AgentEntity entity))
@@ -120,7 +121,7 @@ namespace Doctrina.Core.Services
         private void CreateGroupMembers(Group group, AgentEntity entity)
         {
             if (group.ObjectType != ObjectType.Group)
-                throw new Exception("Must have objectType Group");
+                throw new RequirementException("Must have objectType Group");
 
             foreach (var member in group.Member)
             {
@@ -141,7 +142,7 @@ namespace Doctrina.Core.Services
         private GroupMemberEntity CreateGroupMemberRelation(AgentEntity group, AgentEntity actor)
         {
             if (group.ObjectType != EntityObjectType.Group)
-                throw new Exception("A group must have objectType Group");
+                throw new RequirementException("A group must have objectType Group");
 
             // At this point, the group must exist
             if (group == null || group.Key == null)
@@ -172,12 +173,12 @@ namespace Doctrina.Core.Services
 
             if (group.Member == null)
             {
-                throw new NullReferenceException("An Anonymous Group MUST include a 'member' property listing constituent Agents.");
+                throw new RequirementException("An Anonymous Group MUST include a 'member' property listing constituent Agents.");
             }
 
             if(group.Member.Any(x=> x.ObjectType == ObjectType.Group))
             {
-                throw new Exception("An Anonymous Group MUST NOT contain Group Objects in the 'member' identifiers.");
+                throw new RequirementException("An Anonymous Group MUST NOT contain Group Objects in the 'member' identifiers.");
             }
 
             var entity = new AgentEntity()
@@ -234,7 +235,7 @@ namespace Doctrina.Core.Services
         {
             if(!(agent.ObjectType == ObjectType.Agent || agent.ObjectType == ObjectType.Group))
             {
-                throw new ArgumentException($"An actor must have objectType Agent or Group.", "agent");
+                throw new RequirementException($"An actor must have objectType Agent or Group.");
             }
 
             var entity = new AgentEntity()
@@ -264,7 +265,7 @@ namespace Doctrina.Core.Services
             else if(agent.ObjectType == ObjectType.Agent)
             {
                 // Agents can't be anonymous
-                throw new Exception("Cannot create agent without a provided Inverse Functional Indentifier");
+                throw new RequirementException("Cannot create agent without a provided Inverse Functional Indentifier");
             }
 
             return entity;
@@ -273,7 +274,7 @@ namespace Doctrina.Core.Services
         public Agent ConvertFrom(AgentEntity entity)
         {
             if (!(entity.ObjectType == EntityObjectType.Agent || entity.ObjectType == EntityObjectType.Group))
-                throw new ArgumentException($"An actor must have objectType Agent or Group.", "agent");
+                throw new RequirementException($"An actor must have objectType Agent or Group.");
 
             Agent agent = new Agent()
             {

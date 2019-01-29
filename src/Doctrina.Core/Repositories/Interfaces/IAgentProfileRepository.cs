@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Doctrina.Core.Data;
-using Doctrina.Core.Data.Documents;
+using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Entities.Documents;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public interface IAgentProfileRepository
     {

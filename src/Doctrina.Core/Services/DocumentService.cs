@@ -1,5 +1,5 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Data.Documents;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Entities.Documents;
 using Doctrina.xAPI;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
@@ -7,13 +7,13 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public sealed class DocumentService : IDocumentService
     {
-        private readonly DoctrinaContext dbContext;
+        private readonly DoctrinaDbContext dbContext;
 
-        public DocumentService(DoctrinaContext context)
+        public DocumentService(DoctrinaDbContext context)
         {
             this.dbContext = context;
         }

@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Doctrina.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Doctrina.xAPI;
+using Doctrina.Domain.Entities;
 
-namespace Doctrina.Core.Repositories
+namespace Doctrina.Persistence.Repositories
 {
     public class StatementRepository : IStatementRepository
     {
-        private readonly DoctrinaContext dbContext;
+        private readonly DoctrinaDbContext dbContext;
 
-        public StatementRepository(DoctrinaContext context)
+        public StatementRepository(DoctrinaDbContext context)
         {
             this.dbContext = context;
         }

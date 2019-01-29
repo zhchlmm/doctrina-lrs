@@ -1,12 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Doctrina.xAPI.InteractionTypes;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Doctrina.xAPI;
-using Doctrina.xAPI.InteractionTypes;
 using System.Runtime.Serialization;
 
 namespace Doctrina.xAPI.Json.Converters
@@ -18,26 +14,34 @@ namespace Doctrina.xAPI.Json.Converters
             return typeof(ActivityDefinition).IsAssignableFrom(objectType);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject jobj = JObject.Load(reader); // Crashed
             var target = new ActivityDefinition();
 
-            var jinteractionType = jobj["interactionType"];
-            if (jinteractionType != null)
+            JToken tokenInteractionType = jobj["interactionType"];
+            if (tokenInteractionType != null)
             {
-                string strInteractionType = jinteractionType.Value<string>();
-                if (strInteractionType.Any(x => Char.IsUpper(x)))
+                if(tokenInteractionType.Type != JTokenType.String)
+                {
+                    throw new JsonSerializationException($"interactionType must be a string");
+                }
+
+                string strInteractionType = tokenInteractionType.Value<string>();
+                if (strInteractionType.Any(x => char.IsUpper(x)))
                 {
                     throw new JsonSerializationException($"interactionType '{strInteractionType}' contains uppercase charactors, which is not allowed.");
                 }
 
-                InteractionType? interactionType = null;
+                InteractionType? enumInteractionType = null;
                 var members = typeof(InteractionType).GetEnumValues();
-                foreach (var enumValue in members)
+                foreach (var enumNameValue in members)
                 {
-                    var memberType = enumValue.GetType();
-                    var memberInfo = memberType.GetMember(enumValue.ToString());
+                    var memberType = enumNameValue.GetType();
+                    var memberInfo = memberType.GetMember(enumNameValue.ToString());
+                    if (memberInfo == null)
+                        continue;
+
                     var attribute = (EnumMemberAttribute)memberInfo[0].GetCustomAttributes(typeof(EnumMemberAttribute), false).FirstOrDefault();
                     if (attribute == null)
                         continue;
@@ -45,19 +49,17 @@ namespace Doctrina.xAPI.Json.Converters
                     if (attribute.Value == strInteractionType)
                     {
                         // Match
-                        interactionType = (InteractionType)enumValue;
+                        enumInteractionType = (InteractionType)enumNameValue;
                         break;
                     }
                 }
 
-                if (!interactionType.HasValue)
-                { }
+                if (!enumInteractionType.HasValue)
+                {
+                    throw new JsonSerializationException($"'{strInteractionType}' is not a valid interactionType. Path: '{tokenInteractionType.Path}'");
+                }
 
-
-
-                //if (Enum.TryParse(strInteractionType, true, out interactionType))
-                //{
-                switch (interactionType.Value)
+                switch (enumInteractionType.Value)
                 {
                     case InteractionType.TrueFalse:
                         target = new TrueFalse();
@@ -89,22 +91,17 @@ namespace Doctrina.xAPI.Json.Converters
                     case InteractionType.Other:
                         target = new Other();
                         break;
-                    default:
-                        throw new JsonSerializationException($"'{strInteractionType}' is not a valid interactionType. Path '{reader.Path}'");
                 }
 
                 serializer.Populate(jobj.CreateReader(), target);
                 return target;
-                //}
-
-                //throw new JsonSerializationException($"'{strInteractionType}' is not a valid interactionType. Path '{reader.Path}'");
             }
 
             serializer.Populate(jobj.CreateReader(), target);
             return target;
         }
 
-        public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }

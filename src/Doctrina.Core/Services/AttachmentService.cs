@@ -1,15 +1,15 @@
-﻿using Doctrina.Core.Data;
+﻿using Doctrina.Persistence.Entities;
 using Doctrina.xAPI;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public sealed class AttachmentService : IAttachmentService
     {
-        private readonly DoctrinaContext dbContext;
+        private readonly DoctrinaDbContext dbContext;
 
-        public AttachmentService(DoctrinaContext dbContext)
+        public AttachmentService(DoctrinaDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

@@ -1,12 +1,7 @@
-﻿using Doctrina.xAPI;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Json.Converters
 {
@@ -19,6 +14,11 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
+            if(reader.TokenType != JsonToken.String)
+            {
+                throw new JsonSerializationException("Must be a string.");
+            }
+
             var enumString = (string)reader.Value;
 
             ObjectType? enumObjectType = null;
@@ -39,10 +39,12 @@ namespace Doctrina.xAPI.Json.Converters
                 }
             }
 
-            if (enumObjectType.HasValue)
-                return enumObjectType.Value;
+            if (!enumObjectType.HasValue)
+            {
+                throw new JsonSerializationException($"'{enumString}' is not a valid objectType.");
+            }
 
-            return Enum.Parse(typeof(ObjectType), enumString, true);
+            return enumObjectType.HasValue;
         }
 
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)

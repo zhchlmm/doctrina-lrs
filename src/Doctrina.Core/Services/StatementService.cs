@@ -1,15 +1,17 @@
-﻿using Doctrina.Core.Data;
-using Doctrina.Core.Models;
-using Doctrina.Core.Repositories;
+﻿using Doctrina.Persistence.Entities;
+using Doctrina.Persistence.Models;
+using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
+using Doctrina.xAPI.Exceptions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public class StatementService : StatementBaseService<StatementEntity>, IStatementService
     {
@@ -19,8 +21,9 @@ namespace Doctrina.Core.Services
         private readonly IActivityService _activityService;
         private readonly ISubStatementService _subStatementService;
         private readonly IAttachmentService _attachmentService;
+        private static DateTimeOffset _consistentThroughDate;
 
-        public StatementService(DoctrinaContext dbContext, IStatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService, IAttachmentService attachmentService, ILogger<StatementService> logger)
+        public StatementService(DoctrinaDbContext dbContext, IStatementRepository statementRepository, IVerbService verbService, IAgentService agentService, IActivityService activityService, ISubStatementService subStatementService, IAttachmentService attachmentService, ILogger<StatementService> logger)
             : base(dbContext, agentService, activityService, subStatementService, logger)
         {
             _statements = statementRepository;
@@ -148,7 +151,7 @@ namespace Doctrina.Core.Services
                 // https://github.com/adlnet/ADL_LRS/blob/master/lrs/utils/retrieve_statement.py#L53
                 if (parameters.RelatedAgents.HasValue && parameters.RelatedAgents.Value)
                 {
-                    throw new NotImplementedException();
+                    throw new NotImplementedException("Query by Related Agents has not yet been implemented.");
                 }
             }
 
@@ -161,7 +164,7 @@ namespace Doctrina.Core.Services
             {
                 string strActivityId = parameters.ActivityId.ToString();
 
-                query.Where(x => x.ObjectActivity.ActivityId == strActivityId);
+                query.Where(x => x.ObjectActivity.Id == strActivityId);
 
                 if (parameters.RelatedActivities.GetValueOrDefault())
                 {
@@ -245,8 +248,18 @@ namespace Doctrina.Core.Services
             {
                 _dbContext.Statements.Add(statement);
             }
-
             await _dbContext.SaveChangesAsync();
+            _consistentThroughDate = DateTimeOffset.UtcNow;
+        }
+
+        public void Save(params StatementEntity[] statements)
+        {
+            foreach (var statement in statements)
+            {
+                _dbContext.Statements.Add(statement);
+            }
+            _dbContext.SaveChanges();
+            _consistentThroughDate = DateTimeOffset.UtcNow;
         }
 
         private void MergeAuthority(StatementEntity statement, Agent authority)
@@ -265,15 +278,15 @@ namespace Doctrina.Core.Services
             {
                 var group = authority as Group;
                 // The two Agents represent an application and user together.
-                if (group.Member.Count() != 2)
-                    throw new JsonSerializationException("Group must contains exactly two Agents.");
+                if (group.Member == null || group.Member.Count() != 2)
+                    throw new RequirementException("Authority as Group must contains exactly two Agents.");
 
                 if (group.IsIdentified())
-                    throw new JsonSerializationException("Identified group is not allowed");
+                    throw new RequirementException("Identified group is not allowed");
 
                 if (group.IsAnonymous())
                 {
-
+                    // TOOD: What should happend here??
                 }
 
                 var agent = this._agentService.MergeActor(group);
@@ -282,7 +295,7 @@ namespace Doctrina.Core.Services
             }
             else
             {
-                throw new JsonSerializationException($"'{objType}' is not allowed as authority.");
+                throw new RequirementException($"'{objType}' is not allowed as authority.");
             }
         }
 
@@ -293,12 +306,20 @@ namespace Doctrina.Core.Services
 
         public DateTimeOffset GetConsistentThroughDate()
         {
-            var date = _dbContext.Statements
-                .OrderByDescending(x => x.Stored)
-                .Select(x => x.Stored)
-                .FirstOrDefault();
+            if(_consistentThroughDate == null)
+            {
+                var date = _dbContext.Statements
+                    .OrderByDescending(x => x.Stored)
+                    .Select(x => x.Stored)
+                    .FirstOrDefault();
 
-            return date;
+                if (date == null)
+                    _consistentThroughDate = DateTimeOffset.Now;
+                else
+                    _consistentThroughDate = date;
+            }
+
+            return _consistentThroughDate;
         }
     }
 }

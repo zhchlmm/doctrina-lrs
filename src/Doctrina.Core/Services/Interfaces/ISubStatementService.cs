@@ -1,7 +1,7 @@
-﻿using Doctrina.Core.Data;
+﻿using Doctrina.Persistence.Entities;
 using Doctrina.xAPI;
 
-namespace Doctrina.Core.Services
+namespace Doctrina.Persistence.Services
 {
     public interface ISubStatementService
     {

@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI
 {
@@ -96,8 +92,12 @@ namespace Doctrina.xAPI
         {
             if(value is string)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 Irl iri = null;
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 if (Irl.TryParse(value as string, out iri))
+#pragma warning restore CS0618 // Type or member is obsolete
                 {
                     return iri;
                 }

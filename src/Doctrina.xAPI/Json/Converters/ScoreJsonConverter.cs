@@ -22,6 +22,11 @@ namespace Doctrina.xAPI.Json.Converters
             var score = new Score();
             serializer.Populate(reader, score);
 
+            if(score.Scaled < -1 || score.Scaled > 1)
+            {
+                throw new JsonSerializationException("A 'score' Object's 'scaled' property is a decimal number between -1 and 1, inclusive.");
+            }
+
             // TODO: This below is validation
             if (score.Raw < score.Min)
             {

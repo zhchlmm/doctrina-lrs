@@ -2,23 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace Doctrina.xAPI
 {
-    // TODO: Implement custom duration
     /// <summary>
     /// ISO 8601 Duration
     /// </summary>
     [TypeConverter(typeof(DurationTypeConverter))]
     public struct Duration
     {
-        private static string _regexPattern = @"^P((\d+(?:\.\d+)?Y)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?D)?(T(?=\d)(\d+(?:\.\d+)?H)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?S)?)?)$|^P(\d+(?:\.\d+)?W)?$";
+        //private static string _regexPattern = @"^P((\d+(?:\.\d+)?Y)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?D)?(T(?=\d)(\d+(?:\.\d+)?H)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?S)?)?)$|^P(\d+(?:\.\d+)?W)?$";
         private static char[] _dateDesignators = new char[] { 'Y', 'M', 'W', 'D' };
         private static char[] _timeDesignators = new char[] { 'T', 'H', 'M', 'S' };
 
@@ -158,8 +153,6 @@ namespace Doctrina.xAPI
             {
                 throw new ArgumentNullException(nameof(elements));
             }
-
-            string orderedDesignators = "PYMDTHMS";
 
             char periodOrTime = 'P';
             int prevIndexOf = -1; 
@@ -355,7 +348,7 @@ namespace Doctrina.xAPI
                 duration = new Duration(durationString);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
