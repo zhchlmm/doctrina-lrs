@@ -15,7 +15,7 @@ namespace Doctrina.Persistence.Configurations.Documents
         {
             builder.HasKey(e => e.Key);
             builder.Property(e => e.Key)
-                .ValueGeneratedOnAdd();
+                .ValueGeneratedOnAdd()
 
         }
     }
