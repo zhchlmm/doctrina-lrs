@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Doctrina.Domain.Entities.Documents
 {
@@ -12,11 +10,9 @@ namespace Doctrina.Domain.Entities.Documents
 
         public DateTime UpdateDate { get; set; }
 
-        public Guid ActivityKey { get; set; }
+        public string ActivityId { get; set; }
 
         public Guid? RegistrationId { get; set; }
-
-        public Guid DocumentId { get; set; }
 
         #region Navigation Properties
         public virtual ActivityEntity Activity { get; set; }

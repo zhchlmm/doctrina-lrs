@@ -1,12 +1,13 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Doctrina.Domain.Entities
 {
     public class ActivityEntity : IStatementObjectEntity
     {
-        public Guid Key { get; set; }
+        /// <summary>
+        /// SHA-1 of <see cref="Id"/>
+        /// </summary>
+        public string ActivityId { get; set; }
 
         public EntityObjectType ObjectType { get; } = EntityObjectType.Activity;
 

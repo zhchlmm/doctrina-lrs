@@ -40,13 +40,11 @@ namespace Doctrina.xAPI
         /// <summary>
         /// List of Statements. If the list returned has been limited (due to pagination), and there are more results, they will be located at the "statements" property within the container located at the IRL provided by the "more" property of this Statement result Object. Where no matching Statements are found, this property will contain an empty array.
         /// </summary>
-        [JsonProperty("statements")]
         public Statement[] Statements { get; set; }
 
         /// <summary>
         /// Relative IRL that can be used to fetch more results, including the full path and optionally a query string but excluding scheme, host, and port. Empty string if there are no more results to fetch.
         /// </summary>
-        [JsonProperty("more")]
         public Uri More { get; set; }
 
         /// <summary>
@@ -70,6 +68,7 @@ namespace Doctrina.xAPI
             }
             writer.WriteEndArray();
 
+            // "more": " ... "
             writer.WritePropertyName("more");
             writer.WriteValue(More);
 

@@ -90,7 +90,7 @@ namespace Doctrina.xAPI
         }
     }
 
-    internal class IRITypeConverter: TypeConverter
+    public class IRITypeConverter: TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    [JsonObject()]
+    [JsonObject]
     public class ActivityDefinition : JsonModel
     {
         [JsonProperty("name", 

@@ -7,7 +7,7 @@ namespace Doctrina.Domain.Entities
     {
         public string Id { get; set; }
 
-        public LanguageMapDataType Description { get; set; }
+        public LanguageMapCollection Description { get; set; }
     }
 
     public class InteractionComponentCollection : KeyedCollection<string, InteractionComponent>

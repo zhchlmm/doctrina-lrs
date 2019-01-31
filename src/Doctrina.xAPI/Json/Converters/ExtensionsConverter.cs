@@ -42,12 +42,19 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var extensions = value as Extensions;
+            writer.WriteStartObject();
+            foreach(var pair in extensions)
+            {
+                writer.WritePropertyName(pair.Key.ToString());
+                writer.WriteValue(pair.Value);
+            }
+            writer.WriteEndObject();
         }
 
         public override bool CanWrite
         {
-            get { return false; }
+            get { return true; }
         }
 
         public override bool CanRead

@@ -6,7 +6,7 @@ namespace Doctrina.xAPI
 {
     [JsonDictionary()]
     [JsonConverter(typeof(LanguageMapJsonConverter))]
-    public class LanguageMap : Dictionary<string, string>, ILanguageMap
+    public class LanguageMap : Dictionary<string, string>
     {
         public string ToJson(bool pretty = false) => JsonConvert.SerializeObject(this);
 

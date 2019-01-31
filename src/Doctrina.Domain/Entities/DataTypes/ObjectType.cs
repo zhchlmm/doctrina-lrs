@@ -6,7 +6,7 @@ namespace Doctrina.Domain.Entities
 {
     public enum EntityObjectType
     {
-        Agent, Group, Activity, SubStatement, StatementRef
+        Agent, Group, Activity, SubStatement, StatementRef, Statement
     }
 
     public class ObjectTypeTypeConverter: TypeConverter

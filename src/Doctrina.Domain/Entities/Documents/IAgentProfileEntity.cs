@@ -8,7 +8,7 @@ namespace Doctrina.Domain.Entities.Documents
         Guid AgentId { get; set; }
         string ContentType { get; set; }
         DocumentEntity Document { get; set; }
-        Guid DocumentId { get; set; }
+        //Guid DocumentId { get; set; }
         string ETag { get; set; }
         Guid AgentProfileId { get; set; }
         string ProfileId { get; set; }

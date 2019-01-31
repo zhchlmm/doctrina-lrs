@@ -8,6 +8,7 @@
     <Company>REM Solutions</Company>
     <Authors>Rasmus Møller</Authors>
     <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.html</PackageLicenseUrl>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
