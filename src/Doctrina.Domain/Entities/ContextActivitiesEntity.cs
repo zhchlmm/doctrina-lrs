@@ -1,48 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Doctrina.Domain.Entities
 {
     public class ContextActivitiesEntity
     {
+        public ContextActivitiesEntity()
+        {
+            Parent = new HashSet<ContextActivityTypeEntity>();
+
+            Grouping = new HashSet<ContextActivityTypeEntity>();
+
+            Category = new HashSet<ContextActivityTypeEntity>();
+
+            Other = new HashSet<ContextActivityTypeEntity>();
+        }
+
         public Guid ContextActivitiesId { get; set; }
 
-        public ICollection<ContextActivitiesParent> Parent { get; set; }
+        public ICollection<ContextActivityTypeEntity> Parent { get; set; }
 
-        public ICollection<ContextActivitiesGrouping> Grouping { get; set; }
+        public ICollection<ContextActivityTypeEntity> Grouping { get; set; }
 
-        public ICollection<ContextActivitiesCategory> Category { get; set; }
+        public ICollection<ContextActivityTypeEntity> Category { get; set; }
 
-        public ICollection<ContextActivitiesOther> Other { get; set; }
+        public ICollection<ContextActivityTypeEntity> Other { get; set; }
     }
 
-    public class ContextActivitiesParent
+    public class ContextActivityTypeEntity
     {
-        public Guid ContextId { get; set; }
+        /// <summary>
+        /// Activity IRL ID
+        /// </summary>
+        public string Id { get; set; }
 
-        public string ActivityId { get; set; }
-    }
-
-    public class ContextActivitiesGrouping
-    {
-        public Guid ContextId { get; set; }
-
-        public string ActivityId { get; set; }
-    }
-
-    public class ContextActivitiesCategory
-    {
-        public Guid ContextId { get; set; }
-
-        public string ActivityId { get; set; }
-    }
-
-    public class ContextActivitiesOther
-    {
-        public Guid ContextId { get; set; }
-
+        /// <summary>
+        /// Activity IRL SHA-1 hash
+        /// </summary>
         public string ActivityId { get; set; }
     }
 }

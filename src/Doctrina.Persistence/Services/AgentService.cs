@@ -211,7 +211,6 @@ namespace Doctrina.Persistence.Services
             AgentEntity entity = ConvertFrom(agent);
 
             this._dbContext.Agents.Add(entity);
-            this._dbContext.Entry(entity).State = EntityState.Added;
 
             return entity;
         }
@@ -226,18 +225,42 @@ namespace Doctrina.Persistence.Services
             AgentEntity entity = ConvertFrom(group);
 
             this._dbContext.Agents.Add(entity);
-            this._dbContext.Entry(entity).State = EntityState.Added;
-            //this.dbContext.SaveChanges();
 
             return entity;
         }
 
+        public AgentEntity GetAgentOrGroup(AgentEntity agent)
+        {
+            var query = _dbContext.Agents.Where(x => x.ObjectType == agent.ObjectType);
+
+            if (string.IsNullOrEmpty(agent.Mbox))
+            {
+                return query.FirstOrDefault(x => x.Mbox == agent.Mbox);
+            }
+
+            if (string.IsNullOrEmpty(agent.Mbox_SHA1SUM))
+            {
+                return query.FirstOrDefault(x => x.Mbox_SHA1SUM == agent.Mbox_SHA1SUM);
+            }
+
+            if (string.IsNullOrEmpty(agent.OpenId))
+            {
+                return query.FirstOrDefault(x => x.OpenId == agent.OpenId);
+            }
+
+            if (agent.Account != null)
+            {
+                return query.FirstOrDefault(x => x.Account.HomePage == agent.Account.HomePage && x.Account.Name == agent.Account.Name);
+            }
+            return null;
+        }
+
         public AgentEntity ConvertFrom(Agent agent)
         {
-            if(!(agent.ObjectType == ObjectType.Agent || agent.ObjectType == ObjectType.Group))
-            {
-                throw new RequirementException($"An actor must have objectType Agent or Group.");
-            }
+            //if (!(cmd.ObjectType == ObjectType.Agent || cmd.ObjectType == ObjectType.Group))
+            //{
+            //    throw new RequirementException($"An actor must have objectType Agent or Group.");
+            //}
 
             var entity = new AgentEntity()
             {
@@ -266,10 +289,10 @@ namespace Doctrina.Persistence.Services
                     Name = agent.Account.Name
                 };
             }
-            else if(agent.ObjectType == ObjectType.Agent)
+            else if (agent.ObjectType == ObjectType.Agent)
             {
                 // Agents can't be anonymous
-                throw new RequirementException("Cannot create agent without a provided Inverse Functional Indentifier");
+                //throw new RequirementException("Cannot create agent without a provided Inverse Functional Indentifier");
             }
 
             return entity;
@@ -277,15 +300,15 @@ namespace Doctrina.Persistence.Services
 
         public Agent ConvertFrom(AgentEntity entity)
         {
-            if (!(entity.ObjectType == EntityObjectType.Agent || entity.ObjectType == EntityObjectType.Group))
-                throw new RequirementException($"An actor must have objectType Agent or Group.");
+            //if (!(entity.ObjectType == EntityObjectType.Agent || entity.ObjectType == EntityObjectType.Group))
+            //    throw new RequirementException($"An actor must have objectType Agent or Group.");
 
             Agent agent = new Agent()
             {
                 Name = entity.Name
             };
 
-            if(entity.ObjectType == EntityObjectType.Group)
+            if (entity.ObjectType == EntityObjectType.Group)
             {
                 agent = new Group()
                 {
@@ -293,17 +316,20 @@ namespace Doctrina.Persistence.Services
                 };
             }
 
-            if(entity.Mbox != null)
+            if (entity.Mbox != null)
             {
                 agent.Mbox = new Mbox(entity.Mbox);
-            }else if (!string.IsNullOrWhiteSpace(entity.Mbox_SHA1SUM))
+            }
+            else if (!string.IsNullOrWhiteSpace(entity.Mbox_SHA1SUM))
             {
                 agent.MboxSHA1SUM = entity.Mbox_SHA1SUM;
-            }else if (!string.IsNullOrWhiteSpace(entity.OpenId))
+            }
+            else if (!string.IsNullOrWhiteSpace(entity.OpenId))
             {
                 agent.OpenId = new xAPI.Iri(entity.OpenId);
-            } else if(!string.IsNullOrWhiteSpace(entity.Account.HomePage) 
-                && !string.IsNullOrWhiteSpace(entity.Account.Name))
+            }
+            else if (!string.IsNullOrWhiteSpace(entity.Account.HomePage)
+              && !string.IsNullOrWhiteSpace(entity.Account.Name))
             {
                 agent.Account = new Account()
                 {
@@ -313,32 +339,6 @@ namespace Doctrina.Persistence.Services
             }
 
             return agent;
-        }
-
-        public AgentEntity GetAgentOrGroup(AgentEntity agent)
-        {
-            var query = _dbContext.Agents.Where(x => x.ObjectType == agent.ObjectType);
-
-            if (string.IsNullOrEmpty(agent.Mbox))
-            {
-                return query.FirstOrDefault(x => x.Mbox == agent.Mbox);
-            }
-
-            if (string.IsNullOrEmpty(agent.Mbox_SHA1SUM))
-            {
-                return query.FirstOrDefault(x => x.Mbox_SHA1SUM == agent.Mbox_SHA1SUM);
-            }
-
-            if (string.IsNullOrEmpty(agent.OpenId))
-            {
-                return query.FirstOrDefault(x => x.OpenId == agent.OpenId);
-            }
-
-            if (agent.Account != null)
-            {
-                return query.FirstOrDefault(x => x.Account.HomePage == agent.Account.HomePage && x.Account.Name == agent.Account.Name);
-            }
-            return null;
         }
 
         #region Events

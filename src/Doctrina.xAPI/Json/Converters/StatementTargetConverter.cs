@@ -1,19 +1,14 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Doctrina.xAPI;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class StatementTargetConverter : JsonConverter
+    public class StatementObjectConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsAssignableFrom(typeof(StatementTargetBase));
+            return objectType.IsAssignableFrom(typeof(StatementObjectBase));
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
@@ -51,7 +46,7 @@ namespace Doctrina.xAPI.Json.Converters
                 return ReadSubStatementObject(serializer, jobj, objType);
             }
 
-            StatementTargetBase target = null;
+            StatementObjectBase target = null;
 
             // If Statement Object
             switch (objType)
@@ -72,7 +67,7 @@ namespace Doctrina.xAPI.Json.Converters
                     target = new StatementRef();
                     break;
                 default:
-                    throw new NullReferenceException($"objectType '{objType}' is not valid at path '{jobj.Path}'");
+                    throw new NullReferenceException($"objectType '{objType}' is not valid. Path '{jobj.Path}'.");
             }
 
             serializer.Populate(jobj.CreateReader(), target);
@@ -81,7 +76,7 @@ namespace Doctrina.xAPI.Json.Converters
 
         private object ReadSubStatementObject(Newtonsoft.Json.JsonSerializer serializer, JObject jobj, ObjectType objType)
         {
-            StatementTargetBase target = null;
+            StatementObjectBase target = null;
 
             // If Statement Object
             switch (objType)

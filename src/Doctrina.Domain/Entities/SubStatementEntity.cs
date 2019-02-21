@@ -1,11 +1,16 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Doctrina.Domain.Entities
 {
     public class SubStatementEntity : StatementBaseEntity, IStatementObjectEntity
     {
+        public SubStatementEntity()
+        {
+            ObjectType = EntityObjectType.SubStatement;
+        }
+
+        public EntityObjectType ObjectType { get; private set; }
+
         public Guid SubStatementId { get; set; }
 
         /// <summary>

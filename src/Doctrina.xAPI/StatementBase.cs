@@ -31,8 +31,8 @@ namespace Doctrina.xAPI
         [JsonProperty("object",
             Order = 5,
             Required = Required.Always)]
-        [JsonConverter(typeof(StatementTargetConverter))]
-        public StatementTargetBase Object { get; set; }
+        [JsonConverter(typeof(StatementObjectConverter))]
+        public StatementObjectBase Object { get; set; }
 
         /// <summary>
         /// Result Object, further details representing a measured outcome.
@@ -74,7 +74,7 @@ namespace Doctrina.xAPI
                    base.Equals(obj) &&
                    EqualityComparer<Agent>.Default.Equals(Actor, @base.Actor) &&
                    EqualityComparer<Verb>.Default.Equals(Verb, @base.Verb) &&
-                   EqualityComparer<StatementTargetBase>.Default.Equals(Object, @base.Object) &&
+                   EqualityComparer<StatementObjectBase>.Default.Equals(Object, @base.Object) &&
                    EqualityComparer<Result>.Default.Equals(Result, @base.Result) &&
                    EqualityComparer<Context>.Default.Equals(Context, @base.Context);
         }
@@ -84,7 +84,7 @@ namespace Doctrina.xAPI
             var hashCode = -1199450156;
             hashCode = hashCode * -1521134295 + EqualityComparer<Agent>.Default.GetHashCode(Actor);
             hashCode = hashCode * -1521134295 + EqualityComparer<Verb>.Default.GetHashCode(Verb);
-            hashCode = hashCode * -1521134295 + EqualityComparer<StatementTargetBase>.Default.GetHashCode(Object);
+            hashCode = hashCode * -1521134295 + EqualityComparer<StatementObjectBase>.Default.GetHashCode(Object);
             hashCode = hashCode * -1521134295 + EqualityComparer<Result>.Default.GetHashCode(Result);
             hashCode = hashCode * -1521134295 + EqualityComparer<Context>.Default.GetHashCode(Context);
             return hashCode;

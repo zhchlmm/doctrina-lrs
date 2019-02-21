@@ -1,16 +1,18 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema.Generation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Doctrina.xAPI
 {
+    /// <summary>
+    /// An Agent (an individual) is a persona or system.
+    /// </summary>
     [JsonObject]
     [JsonConverter(typeof(AgentJsonConverter))]
-    public class Agent : StatementTargetBase, IInvenseFunctionalIdenfitier, IAgent
+    public class Agent : StatementObjectBase, IInvenseFunctionalIdenfitiers
     {
         protected override ObjectType OBJECT_TYPE => ObjectType.Agent; 
 

@@ -42,7 +42,7 @@ namespace Doctrina.Persistence.Services
             return entity;
         }
 
-        public override void MergeTarget(IStatementEntityBase stmt, StatementTargetBase target)
+        public override void MergeTarget(IStatementEntityBase stmt, StatementObjectBase target)
         {
             if (target == null)
                 return;

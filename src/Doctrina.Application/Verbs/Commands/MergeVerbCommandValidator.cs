@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
 namespace Doctrina.Application.Verbs.Commands
 {
-    public class MergeVerbCommandValidator
+    public class MergeVerbCommandValidator : AbstractValidator<MergeVerbCommand>
     {
-        
+        public MergeVerbCommandValidator()
+        {
+            RuleFor(x => x.Id).NotEmpty();
+            //TODO: RuleForEach(x => x.Display);
+        }
     }
 }

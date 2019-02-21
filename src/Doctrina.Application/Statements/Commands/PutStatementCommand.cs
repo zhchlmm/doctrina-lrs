@@ -26,7 +26,7 @@ namespace Doctrina.Application.Statements.Commands
             {
                 var entity = new StatementEntity
                 {
-                    ObjectType = EntityObjectType.Statement
+                    ObjectObjectType = 
                 };
 
                 _context.Statements.Add(entity);

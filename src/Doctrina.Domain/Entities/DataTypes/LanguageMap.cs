@@ -3,15 +3,15 @@ using System.Collections.ObjectModel;
 
 namespace Doctrina.Domain.Entities.DataTypes
 {
-    public class LanguageMapCollection : KeyedCollection<string, LanguageMap>
+    public class LanguageMapCollection : KeyedCollection<string, LanguageMapDataType>
     {
-        protected override string GetKeyForItem(LanguageMap item)
+        protected override string GetKeyForItem(LanguageMapDataType item)
         {
             return item.LanguageCode;
         }
     }
 
-    public class LanguageMap
+    public class LanguageMapDataType
     {
         public string LanguageCode { get; set; }
 

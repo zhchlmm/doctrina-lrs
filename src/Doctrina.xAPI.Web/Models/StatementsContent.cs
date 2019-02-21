@@ -1,5 +1,4 @@
 ﻿using Doctrina.xAPI.LRS.Mvc.ModelBinding;
-using Doctrina.xAPI;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 

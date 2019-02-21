@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Doctrina.xAPI
 {
     [JsonObject]
-    public class Activity : StatementTargetBase
+    public class Activity : StatementObjectBase
     {
         protected override ObjectType OBJECT_TYPE => ObjectType.Activity;
 

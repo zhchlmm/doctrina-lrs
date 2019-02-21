@@ -22,20 +22,43 @@ namespace Doctrina.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add AutoMapper
+            services.AddAutoMapper(new Assembly[] { typeof(AutoMapperProfile).GetTypeInfo().Assembly });
+
             // Add framework services.
-            //_logger.LogInformation("Configuring DB");
-            //services.AddDbContext<DoctrinaContext>(options =>
-            //        //options.UseSqlServer(Configuration.GetConnectionString("DoctrinaContext"))
-            //        options.UseInMemoryDatabase("Doctrina")
-            //    );
+            services.AddTransient<INotificationService, NotificationService>();
+            services.AddTransient<IDateTime, MachineDateTime>();
+
+            // Add MediatR
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
+            services.AddMediatR(typeof(GetProductQueryHandler).GetTypeInfo().Assembly);
+
+            // Add DbContext using SQL Server Provider
+            services.AddDbContext<NorthwindDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DoctrinaDatabase")));
 
             //services.AddIdentity<DoctrinaUser, IdentityRole>()
             //    .AddEntityFrameworkStores<DoctrinaContext>()
             //    .AddDefaultTokenProviders();
 
             services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            //services.AddHttpContextAccessor();
+                .AddMvc(options => options.Filters.Add(typeof(CustomExceptionFilterAttribute)))
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateCustomerCommandValidator>());
+
+            // Customise default API behavour
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
+            // In production, the Vue files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,18 +76,18 @@ namespace Doctrina.Web
             }
             else
             {
-                //app.UseHsts();
                 app.UseExceptionHandler("/error");
-                //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+                app.UseHsts();
             }
+
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             //loggerFactory.AddDebug();
 
             //app.UseHttpsRedirection();
-
-
-            // Return static files and end the pipeline.
-            app.UseStaticFiles();
 
             // Use Cookie Policy Middleware to conform to EU General Data 
             // Protection Regulation (GDPR) regulations.
@@ -82,6 +105,19 @@ namespace Doctrina.Web
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=home}/{action=index}/{id?}");
+            });
+
+            app.UseSpa(spa =>
+            {
+                // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                // see https://go.microsoft.com/fwlink/?linkid=864501
+
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+                }
             });
         }
     }

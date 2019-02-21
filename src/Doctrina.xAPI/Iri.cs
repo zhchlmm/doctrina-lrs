@@ -75,6 +75,16 @@ namespace Doctrina.xAPI
             return !(iri1 == iri2);
         }
 
+        //public static bool operator ==(Iri iri, string str)
+        //{
+        //    return iri.ToString() == str;
+        //}
+
+        //public static bool operator !=(Iri iri, string str)
+        //{
+        //    return iri.ToString() != str;
+        //}
+
         public static implicit operator Uri(Iri d)
         {
             return new Uri(d.ToString());

@@ -15,7 +15,7 @@ namespace Doctrina.Application.Statements.Commands
 
             public Handler(
                 DoctrinaDbContext context,
-                IMediator mediator)
+                IMediator mediator, IMapper mapper)
             {
                 _context = context;
                 _mediator = mediator;

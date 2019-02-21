@@ -18,28 +18,28 @@ namespace Doctrina.Persistence.Configurations
                 .HasConversion<string>();
 
             // Actor
-            builder.Property(e => e.ActorKey)
+            builder.Property(e => e.ActorId)
                 .IsRequired();
             builder.HasOne(e => e.Actor)
                 .WithMany()
-                .HasForeignKey(e => e.ActorKey);
+                .HasForeignKey(e => e.ActorId);
 
             // Verb
-            builder.Property(e => e.VerbKey)
+            builder.Property(e => e.VerbId)
                 .IsRequired();
             builder.HasOne(e => e.Verb)
                 .WithMany()
-                .HasForeignKey(e => e.VerbKey);
+                .HasForeignKey(e => e.VerbId);
 
             // Object Agent 
             builder.HasOne(r => r.ObjectAgent)
                 .WithMany()
-                .HasForeignKey(e=> e.ObjectAgentKey);
+                .HasForeignKey(e=> e.ObjectAgentId);
 
             // Object Activity 
             builder.HasOne(r => r.ObjectActivity)
                 .WithMany()
-                .HasForeignKey(e => e.ObjectActivityKey);
+                .HasForeignKey(e => e.ObjectActivityHash);
 
             // Object SubStatement 
             builder.HasOne(r => r.ObjectSubStatement)

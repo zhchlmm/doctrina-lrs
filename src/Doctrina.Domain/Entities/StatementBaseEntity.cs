@@ -5,19 +5,23 @@ namespace Doctrina.Domain.Entities
 {
     public class StatementBaseEntity
     {
-        public EntityObjectType ObjectType { get; set; }
+        public StatementBaseEntity()
+        {
+            Attachments = new HashSet<AttachmentEntity>();
+        }
 
-        public Guid? ObjectAgentKey { get; set; }
+        public EntityObjectType ObjectObjectType { get; set; }
 
-        public Guid? ObjectActivityKey { get; set; }
+        public Guid? ObjectAgentId { get; set; }
 
-        public Guid? ObjectSubStatementId { get; set; }
+        public string ObjectActivityId { get; set; }
+
 
         public Guid? ObjectStatementRefId { get; set; }
 
-        public Guid ActorKey { get; set; }
+        public Guid ActorId { get; set; }
 
-        public Guid VerbKey { get; set; }
+        public string VerbId { get; set; }
 
         public Guid? ResultId { get; set; }
 
@@ -32,9 +36,6 @@ namespace Doctrina.Domain.Entities
 
         public virtual ActivityEntity ObjectActivity { get; set; }
 
-        public virtual SubStatementEntity ObjectSubStatement { get; set; }
-
-        //public virtual StatementEntity ObjectStatementRef { get; set; }
 
         public virtual VerbEntity Verb { get; set; }
 
@@ -49,17 +50,17 @@ namespace Doctrina.Domain.Entities
         {
             get
             {
-                switch (ObjectType)
+                switch (ObjectObjectType)
                 {
                     case EntityObjectType.Agent:
                     case EntityObjectType.Group:
                         return ObjectAgent;
                     case EntityObjectType.Activity:
                         return ObjectActivity;
-                    case EntityObjectType.SubStatement:
-                        return ObjectSubStatement;
-                        //case EntityObjectType.StatementRef:
-                        //    return ObjectStatementRef;
+                    //case EntityObjectType.SubStatement:
+                    //    return ObjectSubStatement;
+                    //case EntityObjectType.StatementRef:
+                    //    return ObjectStatementRef;
                 }
 
                 return null;

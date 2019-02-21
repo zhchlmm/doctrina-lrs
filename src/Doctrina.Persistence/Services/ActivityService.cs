@@ -1,6 +1,7 @@
-﻿using Doctrina.Persistence.Entities;
+﻿using Doctrina.Domain.Entities;
 using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
+using Doctrina.xAPI.Helpers;
 using Newtonsoft.Json;
 using System;
 
@@ -38,12 +39,18 @@ namespace Doctrina.Persistence.Services
 
             var entity = new ActivityEntity()
             {
-                Key = Guid.NewGuid(),
-                ActivityId = activity.Id.ToString(),
+                Id = activity.Id.ToString(),
+                ActivityId = SHAHelper.ComputeHash(activity.Id.ToString()),
+                //Definition = new ActivityDefinition()
+                //{
+                //    Description = activity.Definition
+                //}
                 CanonicalData = activity.Definition?.ToJson(),
                 // TODO: Activity Authority
                 // Authority = ??
             };
+
+
 
             this.activities.Create(entity);
 

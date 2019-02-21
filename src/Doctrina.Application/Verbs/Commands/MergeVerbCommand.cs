@@ -1,10 +1,9 @@
 ﻿using Doctrina.Domain.Entities;
 using Doctrina.Domain.Entities.DataTypes;
 using Doctrina.Persistence;
+using Doctrina.xAPI;
 using Doctrina.xAPI.Helpers;
 using MediatR;
-using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,9 +11,9 @@ namespace Doctrina.Application.Verbs.Commands
 {
     public class MergeVerbCommand : IRequest<VerbEntity>
     {
-        public Iri Id { get; set; }
+        public xAPI.Iri Id { get; set; }
 
-        public LanguageMap Display { get; set; }
+        public xAPI.LanguageMap Display { get; set; }
 
         public class Handler : IRequestHandler<MergeVerbCommand, VerbEntity>
         {
@@ -33,26 +32,24 @@ namespace Doctrina.Application.Verbs.Commands
             {
                 string verbId = SHAHelper.ComputeHash(request.Id.ToString());
 
-                var curr = _context.Verbs.SingleOrDefault(x => x.VerbId == verbId);
-                if (curr != null)
+                var verb = await _context.Verbs.FindAsync(verbId);
+                if (verb != null)
                 {
-                    // Update canonical data
-                    //var jsonString = curr.Display;
-                    //var langMaps = JsonConvert.DeserializeObject<LanguageMap>(jsonString);
-                    // TODO: Update maps
+                    // TODO: Update verb Display language maps
                 }
                 else
                 {
-                    curr = new VerbEntity()
+                    verb = new VerbEntity()
                     {
                         VerbId = verbId,
                         Id = request.Id.ToString(),
-                        Display = request.Display.,
+                        //Display = request.Display.,
                     };
-                    _context.Verbs.Add(curr);
+
+                    _context.Verbs.Add(verb);
                 }
 
-                return curr;
+                return verb;
             }
         }
     }

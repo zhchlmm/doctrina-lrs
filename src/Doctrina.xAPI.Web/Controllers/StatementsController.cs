@@ -68,7 +68,7 @@ namespace Doctrina.xAPI.LRS.Controllers
                         if (attachment.Content != null)
                         {
                             var byteArrayContent = new ByteArrayContent(attachment.Content);
-                            byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(attachment.ContentType);
+                            byteArrayContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
                             byteArrayContent.Headers.Add(Headers.ContentTransferEncoding, "binary");
                             byteArrayContent.Headers.Add(Headers.XExperienceApiHash, attachment.SHA2);
                             multipart.Add(byteArrayContent);

@@ -1,4 +1,5 @@
-﻿using Doctrina.Persistence.Entities;
+﻿using Doctrina.Domain.Entities;
+using Doctrina.Persistence.Entities;
 using Doctrina.Persistence.Models;
 using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
@@ -78,9 +79,7 @@ namespace Doctrina.Persistence.Services
             var entity = new StatementEntity()
             {
                 StatementId = statement.Id.Value,
-                ActorKey = actor.Key,
                 Actor = actor,
-                VerbKey = verb.Key,
                 Verb = verb,
                 Stored = DateTime.UtcNow,
                 Timestamp = statement.Timestamp.Value,
@@ -169,10 +168,10 @@ namespace Doctrina.Persistence.Services
                 if (parameters.RelatedActivities.GetValueOrDefault())
                 {
                     query.Where(x =>
-                        x.Context.ContextActivities.Category.Any(ca => ca.ActivityId == strActivityId)
-                    || x.Context.ContextActivities.Parent.Any(parent => parent.ActivityId == strActivityId)
-                    || x.Context.ContextActivities.Grouping.Any(grouping => grouping.ActivityId == strActivityId)
-                    || x.Context.ContextActivities.Other.Any(other => other.ActivityId == strActivityId)
+                        x.Context.ContextActivities.Category.Any(ca => ca.Id == strActivityId)
+                    || x.Context.ContextActivities.Parent.Any(parent => parent.Id == strActivityId)
+                    || x.Context.ContextActivities.Grouping.Any(grouping => grouping.Id == strActivityId)
+                    || x.Context.ContextActivities.Other.Any(other => other.Id == strActivityId)
                     );
                 }
             }

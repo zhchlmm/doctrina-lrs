@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Doctrina.xAPI
 {
     [JsonObject]
-    public class StatementRef : StatementTargetBase
+    public class StatementRef : StatementObjectBase
     {
         protected override ObjectType OBJECT_TYPE => ObjectType.StatementRef;
 

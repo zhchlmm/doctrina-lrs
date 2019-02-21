@@ -6,20 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Validation\statements.schema.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Validation\statements.schema.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Mvc\Bindings\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.1" />
@@ -30,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Doctrina.Core\Doctrina.Persistence.csproj" />
     <ProjectReference Include="..\Doctrina.xAPI\Doctrina.xAPI.csproj" />
   </ItemGroup>
 

@@ -14,7 +14,7 @@ namespace Doctrina.xAPI
     /// </summary>
 
     [JsonObject]
-    public class SubStatement : StatementTargetBase
+    public class SubStatement : StatementObjectBase
     {
         protected override ObjectType OBJECT_TYPE => ObjectType.SubStatement;
 
@@ -43,8 +43,8 @@ namespace Doctrina.xAPI
         [JsonProperty("object",
             Order = 5,
             Required = Required.Always)]
-        [JsonConverter(typeof(StatementTargetConverter))]
-        public StatementTargetBase Target { get; set; }
+        [JsonConverter(typeof(StatementObjectConverter))]
+        public StatementObjectBase Target { get; set; }
 
         /// <summary>
         /// Result Object, further details representing a measured outcome.
@@ -87,7 +87,7 @@ namespace Doctrina.xAPI
                    base.Equals(obj) &&
                    EqualityComparer<Agent>.Default.Equals(Actor, statement.Actor) &&
                    EqualityComparer<Verb>.Default.Equals(Verb, statement.Verb) &&
-                   EqualityComparer<StatementTargetBase>.Default.Equals(Target, statement.Target) &&
+                   EqualityComparer<StatementObjectBase>.Default.Equals(Target, statement.Target) &&
                    EqualityComparer<Result>.Default.Equals(Result, statement.Result) &&
                    EqualityComparer<Context>.Default.Equals(Context, statement.Context) &&
                    EqualityComparer<Attachment[]>.Default.Equals(Attachments, statement.Attachments);
@@ -98,7 +98,7 @@ namespace Doctrina.xAPI
             var hashCode = 766597555;
             hashCode = hashCode * -1521134295 + EqualityComparer<Agent>.Default.GetHashCode(Actor);
             hashCode = hashCode * -1521134295 + EqualityComparer<Verb>.Default.GetHashCode(Verb);
-            hashCode = hashCode * -1521134295 + EqualityComparer<StatementTargetBase>.Default.GetHashCode(Target);
+            hashCode = hashCode * -1521134295 + EqualityComparer<StatementObjectBase>.Default.GetHashCode(Target);
             hashCode = hashCode * -1521134295 + EqualityComparer<Result>.Default.GetHashCode(Result);
             hashCode = hashCode * -1521134295 + EqualityComparer<Context>.Default.GetHashCode(Context);
             hashCode = hashCode * -1521134295 + EqualityComparer<Attachment[]>.Default.GetHashCode(Attachments);

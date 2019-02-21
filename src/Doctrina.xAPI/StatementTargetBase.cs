@@ -5,8 +5,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Doctrina.xAPI
 {
-    [JsonConverter(typeof(StatementTargetConverter))]
-    public class StatementTargetBase : JsonModel, IStatementTarget
+    [JsonConverter(typeof(StatementObjectConverter))]
+    public class StatementObjectBase : JsonModel, IStatementObject
     {
         protected virtual ObjectType OBJECT_TYPE { get; }
 
@@ -19,7 +19,7 @@ namespace Doctrina.xAPI
 
         public override bool Equals(object obj)
         {
-            var @base = obj as StatementTargetBase;
+            var @base = obj as StatementObjectBase;
             return @base != null &&
                    base.Equals(obj) &&
                    OBJECT_TYPE == @base.OBJECT_TYPE;
@@ -33,12 +33,12 @@ namespace Doctrina.xAPI
             return hashCode;
         }
 
-        public static bool operator ==(StatementTargetBase base1, StatementTargetBase base2)
+        public static bool operator ==(StatementObjectBase base1, StatementObjectBase base2)
         {
-            return EqualityComparer<StatementTargetBase>.Default.Equals(base1, base2);
+            return EqualityComparer<StatementObjectBase>.Default.Equals(base1, base2);
         }
 
-        public static bool operator !=(StatementTargetBase base1, StatementTargetBase base2)
+        public static bool operator !=(StatementObjectBase base1, StatementObjectBase base2)
         {
             return !(base1 == base2);
         }

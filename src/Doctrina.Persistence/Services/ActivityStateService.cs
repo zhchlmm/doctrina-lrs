@@ -1,5 +1,4 @@
-﻿using Doctrina.Persistence.Entities;
-using Doctrina.Persistence.Entities.Documents;
+﻿using Doctrina.Domain.Entities.Documents;
 using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
 using Microsoft.EntityFrameworkCore;
@@ -66,17 +65,17 @@ namespace Doctrina.Persistence.Services
             var activityState = new ActivityStateEntity()
             {
                 StateId = stateId,
-                ActivityKey = activityEntity.Key,
-                AgentId = agentEntity.Key,
+                Activity = activityEntity,
+                Agent = agentEntity,
                 RegistrationId = registration
             };
 
             var document = (DocumentEntity)_documentService.CreateDocument(contentType, content);
             activityState.Document = document;
-            activityState.DocumentId = document.Id;
+            //activityState.DocumentId = document.Id;
 
             _dbContext.ActivityStates.Add(activityState);
-            _dbContext.Entry(activityState).State = EntityState.Added;
+            //_dbContext.Entry(activityState).State = EntityState.Added;
             _dbContext.SaveChanges();
 
             return activityState.Document;

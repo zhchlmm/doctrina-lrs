@@ -6,6 +6,8 @@ namespace Doctrina.Domain.Entities
     {
         public Guid StatementId { get; set; }
 
+        public Guid? ObjectSubStatementId { get; set; }
+
         public DateTimeOffset Stored { get; set; }
 
         public bool Voided { get; set; } = false;
@@ -19,6 +21,7 @@ namespace Doctrina.Domain.Entities
         #region Navigation Properties
         public virtual AgentEntity Authority { get; set; }
 
+        public virtual SubStatementEntity ObjectSubStatement { get; set; }
         #endregion
 
         /// <summary>
@@ -28,7 +31,7 @@ namespace Doctrina.Domain.Entities
         {
             get
             {
-                switch (ObjectType)
+                switch (ObjectObjectType)
                 {
                     case EntityObjectType.Agent:
                     case EntityObjectType.Group:

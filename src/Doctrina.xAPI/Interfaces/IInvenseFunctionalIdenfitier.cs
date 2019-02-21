@@ -1,6 +1,6 @@
 ﻿namespace Doctrina.xAPI
 {
-    public interface IInvenseFunctionalIdenfitier
+    public interface IInvenseFunctionalIdenfitiers
     {
         Account Account { get; set; }
         Mbox Mbox { get; set; }

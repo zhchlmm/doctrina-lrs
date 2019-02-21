@@ -1,5 +1,5 @@
-﻿using System;
-using Doctrina.Persistence.Entities;
+﻿using Doctrina.Domain.Entities;
+using System;
 
 namespace Doctrina.Persistence.Repositories
 {
