@@ -1,4 +1,4 @@
-﻿using Doctrina.Domain.Entities.DataTypes;
+﻿using Doctrina.Domain.Entities.OwnedTypes;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 using System;
@@ -6,24 +6,24 @@ using System.Linq.Expressions;
 
 namespace Doctrina.Persistence.ValueConverters
 {
-    public class ExtensionsValueConverter : ValueConverter<ExtensionsDataType, string>
+    public class ExtensionsValueConverter : ValueConverter<ExtensionEntity, string>
     {
         public ExtensionsValueConverter(ConverterMappingHints mappingHints = null)
             : base(covertToProviderExpression, convertFromProviderExpression, mappingHints)
         {
         }
 
-        private static Expression<Func<ExtensionsDataType, string>> covertToProviderExpression = e => ToDataStore(e);
-        private static Expression<Func<string, ExtensionsDataType>> convertFromProviderExpression = e => FromDataStore(e);
+        private static Expression<Func<ExtensionEntity, string>> covertToProviderExpression = e => ToDataStore(e);
+        private static Expression<Func<string, ExtensionEntity>> convertFromProviderExpression = e => FromDataStore(e);
 
-        public static string ToDataStore(ExtensionsDataType extensions)
+        public static string ToDataStore(ExtensionEntity extensions)
         {
             return JsonConvert.SerializeObject(extensions);
         }
 
-        public static ExtensionsDataType FromDataStore(string strExtesions)
+        public static ExtensionEntity FromDataStore(string strExtesions)
         {
-            return JsonConvert.DeserializeObject<ExtensionsDataType>(strExtesions);
+            return JsonConvert.DeserializeObject<ExtensionEntity>(strExtesions);
         }
     }
 }

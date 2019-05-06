@@ -13,7 +13,7 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.xAPI.Tests", "Doctrina.xAPI.Tests\Doctrina.xAPI.Tests.csproj", "{32D23789-E19B-40D1-923C-10A959B1B8AC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.xAPI.LRS", "Doctrina.xAPI.Web\Doctrina.xAPI.LRS.csproj", "{49FD475F-B9AB-443A-83AD-029855301A20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.xAPI.LRS", "Doctrina.xAPI.LRS\Doctrina.xAPI.LRS.csproj", "{49FD475F-B9AB-443A-83AD-029855301A20}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.Domain", "Doctrina.Domain\Doctrina.Domain.csproj", "{FEBAC493-29F8-40A4-BB43-F47D22DC515C}"
 EndProject

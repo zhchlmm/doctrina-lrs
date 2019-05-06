@@ -18,8 +18,6 @@ namespace Doctrina.Persistence
 
         public DbSet<AgentEntity> Agents { get; set; }
 
-        public DbSet<GroupMemberEntity> GroupMembers { get; set; }
-
         public DbSet<StatementEntity> Statements { get; set; }
 
         public DbSet<SubStatementEntity> SubStatements { get; set; }

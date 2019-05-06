@@ -384,7 +384,7 @@ namespace Doctrina.xAPI.Http
             return JsonConvert.DeserializeObject<Guid[]>(strResponse);
         }
 
-        public async Task<StateDocument> GetState(string stateId, Iri activityId, Agent agent, Guid? registration = null)
+        public async Task<ActivityStateDocument> GetState(string stateId, Iri activityId, Agent agent, Guid? registration = null)
         {
             var builder = new UriBuilder(BaseAddress);
             builder.Path += "/activities/state";
@@ -403,7 +403,7 @@ namespace Doctrina.xAPI.Http
 
             response.EnsureSuccessStatusCode();
 
-            var state = new StateDocument();
+            var state = new ActivityStateDocument();
             state.Content = await response.Content.ReadAsByteArrayAsync();
             state.ContentType = response.Content.Headers.ContentType;
             state.Activity = new Activity() { Id = activityId };
@@ -413,7 +413,7 @@ namespace Doctrina.xAPI.Http
             return state;
         }
 
-        public async Task SaveState(StateDocument state, ETagMatch? matchType = null)
+        public async Task SaveState(ActivityStateDocument state, ETagMatch? matchType = null)
         {
             var builder = new UriBuilder(BaseAddress);
             builder.Path += "/activities/state";
@@ -456,7 +456,7 @@ namespace Doctrina.xAPI.Http
                 throw new HttpRequestException(response.ReasonPhrase);
         }
 
-        public async Task DeleteState(StateDocument state, ETagMatch? matchType = null)
+        public async Task DeleteState(ActivityStateDocument state, ETagMatch? matchType = null)
         {
             var builder = new UriBuilder(BaseAddress);
             builder.Path += "/activities/state";

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -32,6 +34,20 @@ namespace Doctrina.xAPI
             }
 
             this._iriString = iriString;
+        }
+
+        /// <summary>
+        /// Generates MD5 checksum
+        /// </summary>
+        /// <returns>MD5 Checksum</returns>
+        public string ComputeHash()
+        {
+            using (var md5 = MD5.Create())
+            {
+                byte[] iriBytes = Encoding.UTF8.GetBytes(_iriString);
+                byte[] hashValue = md5.ComputeHash(iriBytes);
+                return Encoding.UTF8.GetString(hashValue);
+            }
         }
 
         public override string ToString()

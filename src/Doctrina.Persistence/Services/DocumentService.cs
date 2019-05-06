@@ -28,7 +28,7 @@ namespace Doctrina.Persistence.Services
             {
                 ContentType = contentType,
                 Content = buffer,
-                Tag = ComputeHash(buffer),
+                Checksum = ComputeHash(buffer),
                 LastModified = DateTime.UtcNow
             };
             dbContext.Documents.Add(entity);
@@ -75,7 +75,7 @@ namespace Doctrina.Persistence.Services
             // Update etag as the last thing
             entity.ContentType = contentType;
             entity.LastModified = DateTime.UtcNow;
-            entity.Tag = ComputeHash(content);
+            entity.Checksum = ComputeHash(content);
 
             this.dbContext.Documents.Update((DocumentEntity)entity);
             dbContext.Entry((DocumentEntity)entity).State = EntityState.Modified;

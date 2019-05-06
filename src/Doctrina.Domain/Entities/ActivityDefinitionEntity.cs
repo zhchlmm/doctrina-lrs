@@ -1,17 +1,18 @@
-﻿using Doctrina.Domain.Entities.DataTypes;
+﻿using Doctrina.Domain.Entities.OwnedTypes;
+using System.Collections.Generic;
 
 namespace Doctrina.Domain.Entities
 {
     public class ActivityDefinitionEntity
     {
-        public LanguageMapCollection Name { get; set; }
+        public ICollection<LanguageMapEntity> Name { get; set; }
 
-        public LanguageMapCollection Description { get; set; }
+        public ICollection<LanguageMapEntity> Description { get; set; }
 
         public string Type { get; set; }
 
         public string MoreInfo { get; set; }
 
-        public ExtensionsDataType Extensions { get; set; }
+        public ICollection<ExtensionEntity> Extensions { get; set; }
     }
 }

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Doctrina.Persistence.Configurations
 {
-    public class AccountConfiguration : IEntityTypeConfiguration<AccountEntity>
+    public class AccountConfiguration : IEntityTypeConfiguration<Account>
     {
-        public void Configure(EntityTypeBuilder<AccountEntity> builder)
+        public void Configure(EntityTypeBuilder<Account> builder)
         {
             builder.Property(e => e.HomePage)
                 .HasMaxLength(Constants.MAX_URL_LENGTH);

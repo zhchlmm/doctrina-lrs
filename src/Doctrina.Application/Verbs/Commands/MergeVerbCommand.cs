@@ -1,5 +1,5 @@
 ﻿using Doctrina.Domain.Entities;
-using Doctrina.Domain.Entities.DataTypes;
+using Doctrina.Domain.Entities.OwnedTypes;
 using Doctrina.Persistence;
 using Doctrina.xAPI;
 using Doctrina.xAPI.Helpers;

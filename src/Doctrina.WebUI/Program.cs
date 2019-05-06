@@ -14,7 +14,7 @@ using Serilog.Events;
 using Serilog.Core;
 using Doctrina.xAPI.LRS;
 
-namespace Doctrina.Web
+namespace Doctrina.WebUI
 {
     public class Program
     {

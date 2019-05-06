@@ -6,7 +6,7 @@ namespace Doctrina.Domain.Entities.Documents
     {
         byte[] Content { get; set; }
         string ContentType { get; set; }
-        string Tag { get; set; }
-        DateTimeOffset LastModified { get; set; }
+        string Checksum { get; set; }
+        DateTimeOffset? LastModified { get; set; }
     }
 }

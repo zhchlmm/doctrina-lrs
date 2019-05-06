@@ -1,4 +1,4 @@
-﻿using Doctrina.Domain.Entities.DataTypes;
+﻿using Doctrina.Domain.Entities.OwnedTypes;
 
 namespace Doctrina.Domain.Entities
 {

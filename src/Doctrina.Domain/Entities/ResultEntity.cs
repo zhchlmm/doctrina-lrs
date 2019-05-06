@@ -25,7 +25,7 @@ namespace Doctrina.Domain.Entities
         /// <summary>
         /// Json structure of extensions data
         /// </summary>
-        public DataTypes.ExtensionsDataType Extensions {get;set; }
+        public OwnedTypes.ExtensionEntity Extensions {get;set; }
 
         public Guid? ScoreId { get; set; }
 

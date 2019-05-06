@@ -1,4 +1,4 @@
-﻿using Doctrina.Domain.Entities.DataTypes;
+﻿using Doctrina.Domain.Entities.OwnedTypes;
 using System.Collections.ObjectModel;
 
 namespace Doctrina.Domain.Entities

@@ -1,12 +1,26 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Doctrina.Application.Infrastructure;
+using Doctrina.Application.Infrastructure.AutoMapper;
+using Doctrina.Persistence;
+using MediatR;
+using MediatR.Pipeline;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
+using NSwag.AspNetCore;
+using Doctrina.xAPI.LRS.Builder;
+using AutoMapper;
+using Doctrina.Application.Statements.Queries;
+using Doctrina.WebUI.Filters;
+using FluentValidation.AspNetCore;
+using Doctrina.Application.Statements.Commands;
 
-namespace Doctrina.Web
+namespace Doctrina.WebUI
 {
     public class Startup
     {
@@ -26,27 +40,26 @@ namespace Doctrina.Web
             services.AddAutoMapper(new Assembly[] { typeof(AutoMapperProfile).GetTypeInfo().Assembly });
 
             // Add framework services.
-            services.AddTransient<INotificationService, NotificationService>();
-            services.AddTransient<IDateTime, MachineDateTime>();
+            //services.AddTransient<INotificationService, NotificationService>();
+            //services.AddTransient<IDateTime, MachineDateTime>();
 
             // Add MediatR
+            services.AddMediatR(typeof(GetStatementQueryHandler).GetTypeInfo().Assembly);
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
-            services.AddMediatR(typeof(GetProductQueryHandler).GetTypeInfo().Assembly);
 
             // Add DbContext using SQL Server Provider
-            services.AddDbContext<NorthwindDbContext>(options =>
+            services.AddDbContext<DoctrinaDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DoctrinaDatabase")));
 
             //services.AddIdentity<DoctrinaUser, IdentityRole>()
             //    .AddEntityFrameworkStores<DoctrinaContext>()
             //    .AddDefaultTokenProviders();
 
-            services.AddMvc()
-                .AddMvc(options => options.Filters.Add(typeof(CustomExceptionFilterAttribute)))
+            services.AddMvc(options => options.Filters.Add(typeof(CustomExceptionFilterAttribute)))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateCustomerCommandValidator>());
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateStatementsCommandValidator>());
 
             // Customise default API behavour
             services.Configure<ApiBehaviorOptions>(options =>
@@ -57,8 +70,10 @@ namespace Doctrina.Web
             // In production, the Vue files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/dist";
+                configuration.RootPath = "ClientApp/public";
             });
+
+            services.AddLearningRecordStore();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,7 +86,7 @@ namespace Doctrina.Web
             {
                 _logger.LogInformation("In Development environment");
                 app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
+                //app.UseBrowserLink();
                 app.UseDatabaseErrorPage();
             }
             else
@@ -85,9 +100,12 @@ namespace Doctrina.Web
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            //loggerFactory.AddDebug();
+            app.UseSwaggerUi3(settings =>
+            {
+                settings.Path = "/api";
+                settings.DocumentPath = "/api/specification.json";
+            });
 
-            //app.UseHttpsRedirection();
 
             // Use Cookie Policy Middleware to conform to EU General Data 
             // Protection Regulation (GDPR) regulations.
@@ -119,6 +137,8 @@ namespace Doctrina.Web
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
                 }
             });
+
+            app.UseLearningRecordStore();
         }
     }
 }

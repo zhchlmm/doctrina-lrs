@@ -1,4 +1,5 @@
-﻿using Doctrina.Persistence;
+﻿using AutoMapper;
+using Doctrina.Persistence;
 using MediatR;
 using System;
 using System.Threading;
@@ -12,6 +13,7 @@ namespace Doctrina.Application.Statements.Commands
         {
             private readonly DoctrinaDbContext _context;
             private readonly IMediator _mediator;
+            private readonly IMapper _mapper;
 
             public Handler(
                 DoctrinaDbContext context,
@@ -19,6 +21,7 @@ namespace Doctrina.Application.Statements.Commands
             {
                 _context = context;
                 _mediator = mediator;
+                _mapper = mapper;
             }
 
             public Task<Guid[]> Handle(CreateStatementsCommand request, CancellationToken cancellationToken)

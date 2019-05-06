@@ -18,9 +18,9 @@ namespace Doctrina.xAPI.Http
         Task<Statement> VoidStatement(Guid id, Agent agent);
 
         Task<Guid[]> GetStateIds(Iri activityId, Agent agent, Guid? registration = null);
-        Task<StateDocument> GetState(string id, Iri activityId, Agent agent, Guid? registration = null);
-        Task SaveState(StateDocument state, ETagMatch? matchType = null);
-        Task DeleteState(StateDocument state, ETagMatch? matchType = null);
+        Task<ActivityStateDocument> GetState(string id, Iri activityId, Agent agent, Guid? registration = null);
+        Task SaveState(ActivityStateDocument state, ETagMatch? matchType = null);
+        Task DeleteState(ActivityStateDocument state, ETagMatch? matchType = null);
         Task ClearState(Iri activityId, Agent agent, Guid? registration = null, ETagMatch? matchType = null);
 
         Task<Guid[]> GetActivityProfileIds(Iri activityId, DateTimeOffset? since = null);

@@ -31,7 +31,7 @@ namespace Doctrina.Persistence.Configurations.Documents
 
             builder.HasOne(e => e.Agent)
                 .WithMany()
-                .HasForeignKey(e => e.AgentId);
+                .HasForeignKey(e => e.AgentEntityId);
 
             builder.OwnsOne(e => e.Document);
         }

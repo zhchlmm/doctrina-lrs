@@ -8,9 +8,9 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<AgentEntity> builder)
         {
-            builder.HasKey(x => x.AgentId);
+            builder.HasKey(x => x.AgentEntityId);
 
-            builder.Property(e=> e.AgentId)
+            builder.Property(e=> e.AgentEntityId)
                 .ValueGeneratedOnAdd();
 
             builder.Property(e => e.ObjectType)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Doctrina.Domain.Entities
 {
@@ -6,9 +7,14 @@ namespace Doctrina.Domain.Entities
     {
         public GroupEntity()
         {
-            Members = new HashSet<GroupMemberEntity>();
+            Members = new HashSet<AgentEntity>();
         }
 
-        public virtual ICollection<GroupMemberEntity> Members { get; set; }
+        public virtual ICollection<AgentEntity> Members { get; set; }
+
+        public bool IsAnonymous()
+        {
+            return GetInverseFunctionalIdentifiers().Count == 0;
+        }
     }
 }

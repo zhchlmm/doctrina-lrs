@@ -8,19 +8,27 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ActivityDefinitionEntity> builder)
         {
-            builder.Property(e => e.Name)
-               .HasConversion<string>();
+            builder.OwnsMany(p => p.Name, a => {
+                a.HasForeignKey("ActivityDefinitionId");
+                a.Property<int>("Id");
+                a.HasKey("ActivityDefinitionId", "Id");
+            });
 
-            builder.Property(e => e.Description)
-                .HasConversion<string>();
+            builder.OwnsMany(p => p.Description, a => {
+                a.HasForeignKey("ActivityDefinitionId");
+                a.Property<int>("Id");
+                a.HasKey("ActivityDefinitionId", "Id");
+            });
 
             builder.Property(e => e.Type);
 
             builder.Property(e => e.MoreInfo);
 
-            builder.Property(e => e.Extensions)
-               .HasConversion<string>();
-
+            builder.OwnsMany(p => p.Extensions, a => {
+                a.HasForeignKey("ActivityDefinitionId");
+                a.Property<int>("Id");
+                a.HasKey("ActivityDefinitionId", "Id");
+            });
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Doctrina.Persistence.Repositories
 
             if (registration.HasValue)
             {
-                query.Where(x => x.RegistrationId == registration);
+                query.Where(x => x.Registration == registration);
             }
 
             return query.SingleOrDefault();
@@ -58,7 +58,7 @@ namespace Doctrina.Persistence.Repositories
 
             if (registration.HasValue)
             {
-                sql.Where(x => x.RegistrationId == registration);
+                sql.Where(x => x.Registration == registration);
             }
 
             sql.OrderByDescending(x => x.Document.LastModified);
@@ -94,7 +94,7 @@ namespace Doctrina.Persistence.Repositories
 
             if (registration.HasValue)
             {
-                sql.Where(x => x.RegistrationId == registration);
+                sql.Where(x => x.Registration == registration);
             }
 
             var entity = sql.FirstOrDefault();
@@ -132,7 +132,7 @@ namespace Doctrina.Persistence.Repositories
 
             if (registration.HasValue)
             {
-                sql.Where(x => x.RegistrationId == registration);
+                sql.Where(x => x.Registration == registration);
             }
 
             this.dbcontext.ActivityStates.RemoveRange(sql);
@@ -174,7 +174,7 @@ namespace Doctrina.Persistence.Repositories
 
             if (registration.HasValue)
             {
-                sql.Where(x => x.RegistrationId == registration);
+                sql.Where(x => x.Registration == registration);
             }
 
             if (since.HasValue)

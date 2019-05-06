@@ -13,5 +13,7 @@ namespace Doctrina.Persistence
         private const int MAX_PATH_LENGTH = 2048;
         private const int MAX_SCHEME_LENGTH = 32;
         public const int MAX_URL_LENGTH = MAX_PATH_LENGTH + MAX_SCHEME_LENGTH + 3;
+
+        public static int MD5_LENGTH = 32;
     }
 }

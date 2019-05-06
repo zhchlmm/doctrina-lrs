@@ -18,7 +18,7 @@ namespace Doctrina.Persistence.Configurations.Documents
 
             builder.Property(e => e.Content);
 
-            builder.Property(e => e.Tag)
+            builder.Property(e => e.Checksum)
                 .IsRequired()
                 .HasMaxLength(50);
 

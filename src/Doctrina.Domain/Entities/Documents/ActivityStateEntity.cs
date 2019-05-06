@@ -6,11 +6,11 @@ namespace Doctrina.Domain.Entities.Documents
     {
         public string StateId { get; set; }
 
-        public string ActivityId { get; set; }
+        public string ActivityEntityId { get; set; }
 
-        public Guid AgentId { get; set; }
+        public string AgentEntityId { get; set; }
 
-        public Guid? RegistrationId { get; set; }
+        public Guid? Registration { get; set; }
 
         #region Navigation Properties
         public virtual AgentEntity Agent { get; set; }

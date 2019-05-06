@@ -1,5 +1,4 @@
 ﻿using Doctrina.Domain.Entities;
-using Doctrina.Persistence.Entities;
 using Doctrina.Persistence.Models;
 using Doctrina.Persistence.Repositories;
 using Doctrina.xAPI;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -271,7 +269,7 @@ namespace Doctrina.Persistence.Services
             if (authority.ObjectType == ObjectType.Agent)
             {
                 var agent = this._agentService.MergeActor(authority);
-                statement.AuthorityId = agent.Key;
+                statement.AuthorityId = agent.AgentEntityId;
             }
             else if (authority.ObjectType == ObjectType.Group)
             {
@@ -289,7 +287,7 @@ namespace Doctrina.Persistence.Services
                 }
 
                 var agent = this._agentService.MergeActor(group);
-                statement.AuthorityId = agent.Key;
+                statement.AuthorityId = agent.AgentEntityId;
                 statement.Authority = agent;
             }
             else

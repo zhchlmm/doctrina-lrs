@@ -1,6 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Net.Http.Headers;
+﻿using System;
+using Microsoft.Net.Http.Headers;
 
 namespace Doctrina.xAPI.Documents
 {

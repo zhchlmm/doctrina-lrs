@@ -10,13 +10,13 @@ namespace Doctrina.Persistence.Configurations
         {
             builder.HasKey(e => e.ActivityId);
             builder.Property(e => e.ActivityId)
-                .HasMaxLength(32)
+                .HasMaxLength(Constants.MAX_URL_LENGTH)
                 .IsRequired();
 
-            builder.HasIndex(ac => ac.Id)
+            builder.HasIndex(ac => ac.ActivityEntityId)
                 .IsUnique();
-            builder.Property(e => e.Id)
-                .HasMaxLength(Constants.MAX_URL_LENGTH)
+            builder.Property(e => e.ActivityEntityId)
+                .HasMaxLength(Constants.MD5_LENGTH)
                 .IsRequired();
 
             builder.HasOne(x => x.Definition)

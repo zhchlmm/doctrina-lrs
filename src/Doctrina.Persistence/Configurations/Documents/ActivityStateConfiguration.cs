@@ -12,19 +12,19 @@ namespace Doctrina.Persistence.Configurations.Documents
                 .IsRequired()
                 .HasMaxLength(Constants.MAX_URL_LENGTH);
 
-            builder.Property(e => e.ActivityId);
+            builder.Property(e => e.ActivityEntityId);
 
             builder.HasOne(e => e.Activity)
                 .WithMany()
-                .HasForeignKey(e => e.ActivityId);
+                .HasForeignKey(e => e.ActivityEntityId);
 
             builder.HasOne(e => e.Agent)
                 .WithMany()
-                .HasForeignKey(e => e.AgentId);
+                .HasForeignKey(e => e.AgentEntityId);
 
             builder.OwnsOne(e => e.Document);
 
-            builder.HasIndex(e => new { e.StateId, e.AgentId, e.ActivityId, e.RegistrationId })
+            builder.HasIndex(e => new { e.StateId, e.AgentEntityId, e.ActivityEntityId, e.Registration })
                 .IsUnique();
         }
     }

@@ -67,7 +67,7 @@ namespace Doctrina.Persistence.Services
                 StateId = stateId,
                 Activity = activityEntity,
                 Agent = agentEntity,
-                RegistrationId = registration
+                Registration = registration
             };
 
             var document = (DocumentEntity)_documentService.CreateDocument(contentType, content);

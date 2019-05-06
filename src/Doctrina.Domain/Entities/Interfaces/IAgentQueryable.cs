@@ -8,7 +8,7 @@ namespace Doctrina.Domain.Entities
 {
     public interface IQueryableAgent
     {
-        Guid AgentId { get; set; }
+        string AgentEntityId { get; set; }
         AgentEntity Agent { get; }
     }
 }

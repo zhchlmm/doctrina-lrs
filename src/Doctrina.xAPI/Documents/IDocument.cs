@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Net.Http.Headers;
+using Microsoft.Net.Http.Headers;
 
 namespace Doctrina.xAPI.Documents
 {

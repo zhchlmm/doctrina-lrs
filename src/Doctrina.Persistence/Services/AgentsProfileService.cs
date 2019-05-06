@@ -49,7 +49,7 @@ namespace Doctrina.Persistence.Services
 
             var profile = new AgentProfileEntity()
             {
-                AgentId = agentEntity.Key,
+                AgentEntityId = agentEntity.Key,
                 ProfileId = profileId,
             };
 

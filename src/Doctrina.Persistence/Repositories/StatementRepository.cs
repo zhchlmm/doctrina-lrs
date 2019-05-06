@@ -81,7 +81,7 @@ namespace Doctrina.Persistence.Repositories
             var voidingStatement = (
                 from stmt in this.dbContext.Statements
                 where stmt.Verb.Id == Verbs.Voided
-                && stmt.ObjectType == EntityObjectType.StatementRef
+                && stmt.ObjectObjectType == EntityObjectType.StatementRef
                 && stmt.ObjectSubStatementId == voidedStatementId
                 select new {
                     Id = stmt.StatementId

@@ -16,7 +16,7 @@ namespace Doctrina.Domain.Entities.Documents
 
         public string ETag { get; set; }
 
-        public Guid AgentId { get; set; }
+        public Guid AgentEntityId { get; set; }
 
         //public Guid DocumentId { get; set; }
 

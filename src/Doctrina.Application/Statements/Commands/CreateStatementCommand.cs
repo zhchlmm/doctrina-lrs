@@ -53,7 +53,7 @@ namespace Doctrina.Application.Statements.Commands
                 var entity = new StatementEntity()
                 {
                     StatementId = request.Id.HasValue ? request.Id.Value : Guid.NewGuid(),
-                    ActorId = actor.AgentId,
+                    ActorId = actor.AgentEntityId,
                     Actor = actor,
                     VerbId = verb.VerbId,
                     Verb = verb,
@@ -62,7 +62,9 @@ namespace Doctrina.Application.Statements.Commands
                     // TODO: Implement which store
                 };
 
-                return request.Id;
+                _context.Statements.Add(entity);
+
+                return request.Id.Value;
             }
         }
     }
