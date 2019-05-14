@@ -1,0 +1,3 @@
+[submodule "lrs-conformance-test-suite"]
+	path = lrs-conformance-test-suite
+	url = https://github.com/adlnet/lrs-conformance-test-suite.git
