@@ -28,7 +28,7 @@ namespace Doctrina.Application.Agents.Commands
                 _mapper = mapper;
             }
 
-            public async Task<Person> Handle(GetPersonCommand request, CancellationToken cancellationToken)
+            public async Task<Person> HandleAsync(GetPersonCommand request, CancellationToken cancellationToken)
             {
                 var person = new Person();
                 person.Add(request.Agent);

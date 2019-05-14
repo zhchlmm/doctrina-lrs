@@ -1,10 +1,11 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    public class Verb : IVerb
+    public class Verb : JsonModel, IVerb
     {
         /// <summary>
         /// Corresponds to a Verb definition. (Required)
@@ -29,6 +30,16 @@ namespace Doctrina.xAPI
         public override int GetHashCode()
         {
             return 2108858624 + EqualityComparer<Iri>.Default.GetHashCode(Id);
+        }
+
+        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        {
+            var obj = new JObject
+            {
+                ["id"] = Id.ToString(),
+                ["display"] = Display.ToJObject(version, format)
+            };
+            return obj;
         }
 
         public static bool operator ==(Verb verb1, Verb verb2)

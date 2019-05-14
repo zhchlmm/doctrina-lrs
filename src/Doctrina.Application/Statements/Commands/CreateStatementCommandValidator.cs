@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Doctrina.xAPI.Validators;
+using FluentValidation;
 
 namespace Doctrina.Application.Statements.Commands
 {
@@ -6,6 +7,7 @@ namespace Doctrina.Application.Statements.Commands
     {
         public CreateStatementCommandValidator()
         {
+            RuleFor(x => x.Statement).SetValidator<StatementValidator>();
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI
 {
-    public enum ResultFormats
+    public enum ResultFormat
     {
         [EnumMember(Value = "ids")]
         Ids = 0,

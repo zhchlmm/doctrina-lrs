@@ -1,31 +1,27 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI
 {
-    [JsonObject]
-    public abstract class JsonModel
+    public abstract class JsonModel : JsonModel<JObject> { }
+
+    public abstract class JsonModel<TToken>
+        where TToken : JToken
     {
-        public string ToJson(bool pretty = false)
-        {
-            return JsonConvert.SerializeObject(this, pretty ? Formatting.Indented : Formatting.None);
+        public abstract TToken ToJToken(ApiVersion version, ResultFormat format);
+
+        public virtual string ToJson(ApiVersion version, ResultFormat format) {
+            return ToJToken(version, format).ToString();
         }
 
-        public string ToJson(ApiVersion version)
+        public virtual string ToJson(ResultFormat format = ResultFormat.Exact)
         {
-            return JsonConvert.SerializeObject(this);
+            return ToJson(ApiVersion.GetLatest(), format);
         }
 
-        public JObject ToJObject()
-        {
-            return JObject.Parse(this.ToJson());
-        }
+        //public static TModel Parse(string json);
+
+        //public static bool TryParse(string json, out TModel result);
 
         // Causes loop reference
         //public override string ToString()

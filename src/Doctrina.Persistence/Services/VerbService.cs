@@ -32,7 +32,7 @@ namespace Doctrina.Persistence.Services
             {
                 curr = new VerbEntity()
                 {
-                    VerbId = SHAHelper.ComputeHash(verb.Id.ToString()),
+                    Checksum = SHAHelper.ComputeHash(verb.Id.ToString()),
                     Display = verb.Display.Select(x=> new LanguageMap()),
                     Id = verb.Id.ToString()
                 };

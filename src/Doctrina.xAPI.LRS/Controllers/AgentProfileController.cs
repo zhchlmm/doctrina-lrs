@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MediatR;
+using Doctrina.Application.AgentProfiles.Commands;
+using System.Threading.Tasks;
+using Doctrina.Application.AgentProfiles.Queries;
 
 namespace Doctrina.xAPI.LRS.Controllers
 {
@@ -15,15 +19,15 @@ namespace Doctrina.xAPI.LRS.Controllers
     [Produces("application/json")]
     public class AgentProfileController : ApiControllerBase
     {
-        private IAgentProfileService agentProfileService;
+        private IMediator _mediator;
 
-        public AgentProfileController(IAgentProfileService agentProfileService)
+        public AgentProfileController(IMediator mediator)
         {
-            this.agentProfileService = agentProfileService;
+            _mediator = mediator;
         }
 
         [AcceptVerbs("GET", "HEAD", Order = 1)]
-        public ActionResult GetAgentProfile(string profileId, [FromQuery(Name = "agent")]string strAgent)
+        public async Task<ActionResult> GetAgentProfile(string profileId, [FromQuery(Name = "agent")]string strAgent)
         {
             try
             {
@@ -42,7 +46,12 @@ namespace Doctrina.xAPI.LRS.Controllers
 
                 Agent agent = Agent.Parse(strAgent);
 
-                var profile = agentProfileService.GetAgentProfile(agent, profileId);
+                var profile = await _mediator.Send(new GetAgentProfileQuery()
+                {
+                    ProfileId = profileId,
+                    Agent = agent
+                });
+
                 if (profile == null)
                     return NotFound();
 
@@ -72,7 +81,7 @@ namespace Doctrina.xAPI.LRS.Controllers
         //[AcceptVerbs("GET", "HEAD")]
         [HttpGet(Order = 2)]
         [Produces("application/json")]
-        public ActionResult GetAgentProfiles([FromQuery(Name = "agent")]string strAgent, DateTimeOffset? since = null)
+        public async Task<ActionResult> GetAgentProfilesAsync([FromQuery(Name = "agent")]string strAgent, DateTimeOffset? since = null)
         {
             try
             {
@@ -86,13 +95,15 @@ namespace Doctrina.xAPI.LRS.Controllers
 
                 Agent agent = Agent.Parse(strAgent);
 
-                var documents = agentProfileService.GetProfiles(agent, since);
-                if (documents == null)
+                var profiles = await _mediator.Send(new GetAgentProfilesQuery(agent, since));
+
+                if (profiles == null)
                     return Ok(new Guid[] { });
 
-                IEnumerable<Guid> ids = documents.Select(x => x.Id);
+                // TODO: Move this logic into a response model from command
+                IEnumerable<Guid> ids = profiles.Select(x => x.AgentProfileId).ToList();
                 // TODO: Check for null
-                string lastModified = documents.OrderByDescending(x => x.LastModified).FirstOrDefault().LastModified.ToString("o");
+                string lastModified = profiles.OrderByDescending(x => x.Document.LastModified).FirstOrDefault()?.Document.LastModified.ToString("o");
 
                 Response.Headers.Add("LastModified", lastModified);
                 return Ok(ids);
@@ -111,7 +122,7 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// <param name="document"></param>
         /// <returns></returns>
         [AcceptVerbs("PUT", "POST")]
-        public ActionResult SaveAgentProfile(string profileId, [FromQuery(Name = "agent")]string strAgent, [FromBody]byte[] content)
+        public async Task<ActionResult> SaveAgentProfileAsync(string profileId, [FromQuery(Name = "agent")]string strAgent, [FromBody]byte[] content)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -121,12 +132,15 @@ namespace Doctrina.xAPI.LRS.Controllers
                 string contentType = Request.ContentType;
                 Agent agent = Agent.Parse(strAgent);
 
-                var document = agentProfileService.MergeAgentProfile(
-                    agent,
-                    profileId,
-                    content,
-                    contentType
-                 );
+                var profile = await _mediator.Send(new MergeAgentProfileCommand()
+                {
+                    Agent = agent,
+                    ProfileId = profileId,
+                    Content = content,
+                    ContentType = contentType
+                });
+
+                var document = profile.Document;
 
                 Response.Headers.Add("ETag", $"\"{document.Checksum}\"");
                 Response.Headers.Add("LastModified", document.LastModified.ToString("o"));
@@ -140,7 +154,7 @@ namespace Doctrina.xAPI.LRS.Controllers
         }
 
         [HttpDelete]
-        public ActionResult DeleteProfile(string profileId, [FromQuery(Name = "agent")]string strAgent)
+        public async Task<ActionResult> DeleteProfileAsync(string profileId, [FromQuery(Name = "agent")]string strAgent)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -150,13 +164,16 @@ namespace Doctrina.xAPI.LRS.Controllers
                 string contentType = Request.ContentType;
                 Agent agent = Agent.Parse(strAgent);
 
-                var profile = agentProfileService.GetAgentProfile(agent, profileId);
+                var profile = await _mediator.Send(GetAgentProfileQuery.Create(agent, profileId));
                 if (profile == null)
                     return NotFound();
 
                 // TODO: Concurrency
 
-                agentProfileService.DeleteProfile(profile);
+                await _mediator.Send(new DeleteAgentProfileCommand() {
+                    ProfileId = profileId,
+                    Agent = agent
+                });
 
                 return NoContent();
             }

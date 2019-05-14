@@ -1,21 +1,63 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Doctrina.xAPI
 {
     [JsonConverter(typeof(StatementObjectConverter))]
-    public class StatementObjectBase : JsonModel, IStatementObject
+    public abstract class StatementObjectBase : JsonModel, IStatementTarget
     {
+        protected StatementObjectBase() { }
+        protected StatementObjectBase(JObject jobj, ApiVersion version)
+        {
+        }
+
         protected virtual ObjectType OBJECT_TYPE { get; }
 
-        [JsonProperty("objectType",
-            Order = 1,
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
-        [EnumDataType(typeof(ObjectType))]
         public ObjectType ObjectType { get { return this.OBJECT_TYPE; } }
+
+        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        {
+            return new JObject
+            {
+                ["objectType"] = (string)ObjectType
+            };
+        }
+
+        internal static IStatementTarget Parse(JObject jobj, ApiVersion version)
+        {
+            string strObjectType = jobj["objectType"].Value<string>();
+
+            if (strObjectType == ObjectType.StatementRef)
+            {
+                return new StatementRef(jobj, version);
+            }
+
+            if (strObjectType == ObjectType.SubStatement)
+            {
+                return new SubStatement(jobj, version);
+            }
+
+            if (strObjectType == ObjectType.Agent)
+            {
+                return new Agent(jobj, version);
+            }
+
+            if (strObjectType == ObjectType.Group)
+            {
+                return new Group(jobj, version);
+            }
+
+            if (strObjectType == ObjectType.Group)
+            {
+                return new Group(jobj, version);
+            }
+
+            return new Activity(jobj, version);
+        }
 
         public override bool Equals(object obj)
         {

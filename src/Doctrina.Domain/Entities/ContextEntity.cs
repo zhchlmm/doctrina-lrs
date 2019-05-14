@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Doctrina.Domain.Entities
 {
@@ -10,9 +8,9 @@ namespace Doctrina.Domain.Entities
 
         public Guid? Registration { get; set; }
 
-        public Guid? InstructorId { get; set; }
+        public AgentEntity Instructor { get; set; }
 
-        public Guid? TeamId { get; set; }
+        public AgentEntity Team { get; set; }
 
         public string Revision { get; set; }
 
@@ -24,14 +22,6 @@ namespace Doctrina.Domain.Entities
 
         public Guid? StatementId { get; set; }
 
-        public Guid? ContextActivitiesId { get; set; }
-
-        #region Navigation properties
-        public virtual AgentEntity Instructor { get; set; }
-
-        public virtual AgentEntity Team { get; set; }
-
-        public virtual ContextActivitiesEntity ContextActivities { get; set; }
-        #endregion
+        public ContextActivitiesEntity ContextActivities { get; set; }
     }
 }

@@ -22,6 +22,6 @@ namespace Doctrina.Domain.Entities
 
         public Guid StatementId { get; set; }
 
-        public virtual StatementEntity Statement { get; set; }
+        public StatementEntity Statement { get; set; }
     }
 }

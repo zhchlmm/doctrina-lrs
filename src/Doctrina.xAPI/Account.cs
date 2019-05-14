@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Schema.Generation;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +8,7 @@ namespace Doctrina.xAPI
     /// <summary>
     /// A user account on an existing system, such as a private system (LMS or intranet) or a public system (social networking site).
     /// </summary>
-    public class Account : JsonModel
+    public class Account : JsonModel<JObject>
     {
         /// <summary>
         /// The canonical home page for the system the account is on. This is based on FOAF's accountServiceHomePage.
@@ -40,6 +39,11 @@ namespace Doctrina.xAPI
             hashCode = hashCode * -1521134295 + EqualityComparer<Uri>.Default.GetHashCode(HomePage);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             return hashCode;
+        }
+
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool operator ==(Account account1, Account account2)

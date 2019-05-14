@@ -1,11 +1,13 @@
 ﻿using Doctrina.xAPI;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace Doctrina.Persistence.Models
+namespace Doctrina.Application.Statements.Queries
 {
-    public class PagedStatementsQuery : StatementsQuery
+    public class PagedStatementsQuery : StatementsQuery, IRequest<ICollection<Statement>>
     {
         [FromQuery(Name = "skip")]
         public int? Skip { get; set; }

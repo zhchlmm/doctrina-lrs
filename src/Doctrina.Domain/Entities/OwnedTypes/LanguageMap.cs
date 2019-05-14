@@ -2,6 +2,8 @@
 
 namespace Doctrina.Domain.Entities.OwnedTypes
 {
+
+    // TODO: Find a way to rollback if statement is voided
     [Owned]
     public class LanguageMapEntity
     {

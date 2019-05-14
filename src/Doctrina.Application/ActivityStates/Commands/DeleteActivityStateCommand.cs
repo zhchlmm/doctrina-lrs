@@ -15,14 +15,15 @@ namespace Doctrina.Application.ActivityStates.Commands
 {
     public class DeleteActivityStateCommand : IRequest
     {
+        public string StateId { get; set; }
         public Iri ActivityId { get; set; }
         public Agent Agent { get; set; }
         public Guid? Registration { get; set; }
 
         public class Handler : IRequestHandler<DeleteActivityStateCommand>
         {
-            private DoctrinaDbContext _context;
-            private IMapper _mapper;
+            private readonly DoctrinaDbContext _context;
+            private readonly IMapper _mapper;
 
             public Handler(DoctrinaDbContext context, IMapper mapper)
             {
@@ -32,7 +33,6 @@ namespace Doctrina.Application.ActivityStates.Commands
 
             public async Task<Unit> Handle(DeleteActivityStateCommand request, CancellationToken cancellationToken)
             {
-
                 string activityHash = request.ActivityId.ComputeHash();
                 AgentEntity agent = _mapper.Map<AgentEntity>(request.Agent);
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Doctrina.Domain.Entities
 {
-    public class StatementBaseEntity
+    public abstract class StatementBaseEntity
     {
         public StatementBaseEntity()
         {
@@ -11,41 +11,26 @@ namespace Doctrina.Domain.Entities
         }
 
         public EntityObjectType ObjectObjectType { get; set; }
-
-        public Guid? ObjectAgentId { get; set; }
-
-        public string ObjectActivityId { get; set; }
-
+        public AgentEntity Actor { get; set; }
+        public VerbEntity Verb { get; set; }
 
         public Guid? ObjectStatementRefId { get; set; }
 
-        public Guid ActorId { get; set; }
-
-        public string VerbId { get; set; }
-
-        public Guid? ResultId { get; set; }
-
-        public Guid? ContextId { get; set; }
-
         public DateTimeOffset Timestamp { get; set; }
 
-        #region Navigation properties
-        public virtual AgentEntity Actor { get; set; }
+        public AgentEntity ObjectAgent { get; set; }
 
-        public virtual AgentEntity ObjectAgent { get; set; }
+        public ActivityEntity ObjectActivity { get; set; }
 
-        public virtual ActivityEntity ObjectActivity { get; set; }
+        public ResultEntity Result { get; set; }
 
+        public ContextEntity Context { get; set; }
 
-        public virtual VerbEntity Verb { get; set; }
+        public ICollection<AttachmentEntity> Attachments { get; set; }
 
-        public virtual ResultEntity Result { get; set; }
-
-        public virtual ContextEntity Context { get; set; }
-
-        public virtual ICollection<AttachmentEntity> Attachments { get; set; }
-        #endregion
-
+        /// <summary>
+        /// Gets the object of the current statement
+        /// </summary>
         public virtual IStatementObjectEntity Object
         {
             get

@@ -13,8 +13,8 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<VerbEntity> builder)
         {
-            builder.HasKey(e => e.VerbId);
-            builder.Property(e => e.VerbId)
+            builder.HasKey(e => e.Checksum);
+            builder.Property(e => e.Checksum)
                 .IsRequired()
                 .HasMaxLength(32);
 

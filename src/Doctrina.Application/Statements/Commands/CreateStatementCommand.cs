@@ -3,6 +3,7 @@ using Doctrina.Application.Agents.Commands;
 using Doctrina.Application.Verbs.Commands;
 using Doctrina.Domain.Entities;
 using Doctrina.Persistence;
+using Doctrina.xAPI;
 using MediatR;
 using System;
 using System.Threading;
@@ -12,60 +13,55 @@ namespace Doctrina.Application.Statements.Commands
 {
     public class CreateStatementCommand : IRequest<Guid>
     {
-        public Guid? Id { get; set; }
+        public Statement Statement { get; set; }
 
-        public xAPI.Verb Verb { get; set; }
+        //public class Handler : IRequestHandler<CreateStatementCommand, Guid>
+        //{
+        //    private readonly DoctrinaDbContext _context;
+        //    private readonly IMediator _mediator;
+        //    private readonly IMapper _mapper;
 
-        public DateTimeOffset? Timestamp { get; set; }
+        //    public Handler(DoctrinaDbContext context, IMediator mediator, IMapper mapper){
+        //        _context = context;
+        //        _mediator = mediator;
+        //        _mapper = mapper;
+        //    }
 
-        public class Handler : IRequestHandler<CreateStatementCommand, Guid>
+        //    public async Task<Guid> Handle(CreateStatementCommand request, CancellationToken cancellationToken)
+        //    {
+        //        StatementEntity statement = _mapper.Map<StatementEntity>(request.Statement);
+
+        //        // Prevent conflic
+        //        if (statement.StatementId != null)
+        //        {
+        //            // TODO: Statement Comparision Requirements
+        //            /// https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#statement-comparision-requirements
+        //            var exist = _context.Statements.Find(statement.StatementId);
+        //            if (exist != null)
+        //                return exist.StatementId;
+        //        }
+        //        else
+        //        {
+        //            statement.StatementId = Guid.NewGuid();
+        //            statement.Timestamp = DateTimeOffset.UtcNow;
+        //            statement.Stored = DateTimeOffset.UtcNow;
+        //        }
+
+        //        statement.Verb = await _mediator.Send(MergeVerbCommand.Create(statement.Verb));
+        //        statement.Actor = await _mediator.Send(MergeActorCommand.Create(statement.Actor));
+
+        //        _context.Statements.Add(statement);
+
+        //        return statement.StatementId;
+        //    }
+        //}
+
+        public static CreateStatementCommand Create(Statement statement)
         {
-            private readonly DoctrinaDbContext _context;
-            private readonly IMediator _mediator;
-            private readonly IMapper _mapper;
-
-            public Handler(DoctrinaDbContext context, IMediator mediator, IMapper mapper){
-                _context = context;
-                _mediator = mediator;
-                _mapper = mapper;
-            }
-
-            public async Task<Guid> Handle(CreateStatementCommand request, CancellationToken cancellationToken)
+            return new CreateStatementCommand()
             {
-                // Prevent conflic
-                if (request.Id.HasValue)
-                {
-                    // TODO: Statement Comparision Requirements
-                    /// https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#statement-comparision-requirements
-                    var exist = _context.Statements.Find(request.Id.Value);
-                    if (exist != null)
-                        return exist.StatementId;
-                }
-
-                VerbEntity verb = await _mediator.Send(new MergeVerbCommand() {
-                    Id = request.Verb.Id,
-                    Display = request.Verb.Display
-                });
-
-                
-                AgentEntity actor = await _mediator.Send(_mapper.Map<MergeActorCommand>(request.Verb));
-
-                var entity = new StatementEntity()
-                {
-                    StatementId = request.Id.HasValue ? request.Id.Value : Guid.NewGuid(),
-                    ActorId = actor.AgentEntityId,
-                    Actor = actor,
-                    VerbId = verb.VerbId,
-                    Verb = verb,
-                    Stored = DateTime.UtcNow,
-                    Timestamp = request.Timestamp.Value,
-                    // TODO: Implement which store
-                };
-
-                _context.Statements.Add(entity);
-
-                return request.Id.Value;
-            }
+                Statement = statement
+            };
         }
     }
 }

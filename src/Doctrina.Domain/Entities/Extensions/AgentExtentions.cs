@@ -33,29 +33,29 @@ namespace Doctrina.Domain.Entities.Extensions
             return null;
         }
 
-        //public static IQueryable<T> Where<T>(this IQueryable<T> profiles, Expression<Func<AgentEntity, AgentEntity>> agentSelector, AgentEntity agent)
-        //{
-        //    if (string.IsNullOrEmpty(agent.Mbox))
-        //    {
-        //        return profiles.Where(agentSelector.Mbox == agent.Mbox);
-        //    }
+        public static IQueryable<T> WhereAgent<T>(this IQueryable<T> profiles, Func<T, AgentEntity> agentSelector, AgentEntity agent)
+        {
+            if (string.IsNullOrEmpty(agent.Mbox))
+            {
+                return profiles.Where(p => agentSelector(p).Mbox == agent.Mbox);
+            }
 
-        //    if (string.IsNullOrEmpty(agent.Mbox_SHA1SUM))
-        //    {
-        //        return profiles.Where(agentSelector.Mbox_SHA1SUM == agent.Mbox_SHA1SUM);
-        //    }
+            if (string.IsNullOrEmpty(agent.Mbox_SHA1SUM))
+            {
+                return profiles.Where(p=> agentSelector(p).Mbox_SHA1SUM == agent.Mbox_SHA1SUM);
+            }
 
-        //    if (string.IsNullOrEmpty(agent.OpenId))
-        //    {
-        //        return profiles.Where(agentSelector.OpenId == agent.OpenId);
-        //    }
+            if (string.IsNullOrEmpty(agent.OpenId))
+            {
+                return profiles.Where(p => agentSelector(p).OpenId == agent.OpenId);
+            }
 
-        //    if (string.IsNullOrEmpty(agent.Account.HomePage))
-        //    {
-        //        return profiles.Where(agentSelector.Account.HomePage == agent.Account.HomePage && agentSelector.Account.Name == agent.Account.Name);
-        //    }
+            if (string.IsNullOrEmpty(agent.Account.HomePage))
+            {
+                return profiles.Where(p => agentSelector(p).Account.HomePage == agent.Account.HomePage && agentSelector(p).Account.Name == agent.Account.Name);
+            }
 
-        //    return profiles;
-        //}
+            return profiles;
+        }
     }
 }

@@ -76,7 +76,7 @@ namespace Doctrina.xAPI
         {
             // This thing calls typeconveter
             //return JsonConvert.DeserializeObject<Agent>(jsonAgent);
-            return JObject.Parse(jsonAgent).ToObject<Agent>();
+            return JToken.Parse(jsonAgent).ToObject<Agent>();
         }
 
         public static bool TryParse(string value, out Agent agent)

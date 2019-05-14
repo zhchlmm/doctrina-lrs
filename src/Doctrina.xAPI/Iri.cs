@@ -42,12 +42,7 @@ namespace Doctrina.xAPI
         /// <returns>MD5 Checksum</returns>
         public string ComputeHash()
         {
-            using (var md5 = MD5.Create())
-            {
-                byte[] iriBytes = Encoding.UTF8.GetBytes(_iriString);
-                byte[] hashValue = md5.ComputeHash(iriBytes);
-                return Encoding.UTF8.GetString(hashValue);
-            }
+            return ComputeHash(_iriString);
         }
 
         public override string ToString()
@@ -55,17 +50,32 @@ namespace Doctrina.xAPI
             return _iriString;
         }
 
+        public static Iri Parse(string iriString)
+        {
+            return new Iri(iriString);
+        }
+
         public static bool TryParse(string iriString, out Iri iri)
         {
             iri = null;
             try
             {
-                iri = new Iri(iriString);
+                iri = Parse(iriString);
                 return true;
             }
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        public static string ComputeHash(string s)
+        {
+            using (var md5 = MD5.Create())
+            {
+                byte[] iriBytes = Encoding.UTF8.GetBytes(s);
+                byte[] hashValue = md5.ComputeHash(iriBytes);
+                return Encoding.UTF8.GetString(hashValue);
             }
         }
 

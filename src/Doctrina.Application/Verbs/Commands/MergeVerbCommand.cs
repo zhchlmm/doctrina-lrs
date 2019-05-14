@@ -1,8 +1,6 @@
 ﻿using Doctrina.Domain.Entities;
-using Doctrina.Domain.Entities.OwnedTypes;
 using Doctrina.Persistence;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Helpers;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,9 +9,7 @@ namespace Doctrina.Application.Verbs.Commands
 {
     public class MergeVerbCommand : IRequest<VerbEntity>
     {
-        public xAPI.Iri Id { get; set; }
-
-        public xAPI.LanguageMap Display { get; set; }
+        public VerbEntity Verb { get; set; }
 
         public class Handler : IRequestHandler<MergeVerbCommand, VerbEntity>
         {
@@ -30,27 +26,35 @@ namespace Doctrina.Application.Verbs.Commands
 
             public async Task<VerbEntity> Handle(MergeVerbCommand request, CancellationToken cancellationToken)
             {
-                string verbId = SHAHelper.ComputeHash(request.Id.ToString());
+                string verbChecksum = Iri.ComputeHash(request.Verb.Id);
 
-                var verb = await _context.Verbs.FindAsync(verbId);
+                var verb = await _context.Verbs.FindAsync(verbChecksum);
                 if (verb != null)
                 {
                     // TODO: Update verb Display language maps
+                    foreach(var dis in request.Verb.Display)
+                    {
+                        verb.Display.Add(dis);
+                    }
                 }
                 else
                 {
-                    verb = new VerbEntity()
-                    {
-                        VerbId = verbId,
-                        Id = request.Id.ToString(),
-                        //Display = request.Display.,
-                    };
+                    verb = request.Verb;
+                    verb.Checksum = verbChecksum;
 
                     _context.Verbs.Add(verb);
                 }
 
                 return verb;
             }
+        }
+
+        internal static MergeVerbCommand Create(VerbEntity verb)
+        {
+            return new MergeVerbCommand()
+            {
+                Verb = verb
+            };
         }
     }
 }

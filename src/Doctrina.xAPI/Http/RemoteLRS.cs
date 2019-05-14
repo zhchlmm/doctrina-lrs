@@ -215,7 +215,7 @@ namespace Doctrina.xAPI.Http
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<Statement> GetStatement(Guid id, bool attachments = false, ResultFormats format = ResultFormats.Exact)
+        public async Task<Statement> GetStatement(Guid id, bool attachments = false, ResultFormat format = ResultFormat.Exact)
         {
             var uriBuilder = new UriBuilder(BaseAddress);
             uriBuilder.Path += "/statements";
@@ -224,8 +224,8 @@ namespace Doctrina.xAPI.Http
             if (attachments == true)
                 query.Add("attachments", "true");
 
-            if (format != ResultFormats.Exact)
-                query.Add("format", ResultFormats.Exact.ToString());
+            if (format != ResultFormat.Exact)
+                query.Add("format", ResultFormat.Exact.ToString());
 
             uriBuilder.Query = query.ToString();
 
@@ -278,7 +278,7 @@ namespace Doctrina.xAPI.Http
         /// </summary>
         /// <param name="id">Id of the voided statement</param>
         /// <returns>A voided statement</returns>
-        public async Task<Statement> GetVoidedStatement(Guid id, bool attachments = false, ResultFormats format = ResultFormats.Exact)
+        public async Task<Statement> GetVoidedStatement(Guid id, bool attachments = false, ResultFormat format = ResultFormat.Exact)
         {
             var uriBuilder = new UriBuilder(BaseAddress);
             uriBuilder.Path += "/statements";
@@ -287,8 +287,8 @@ namespace Doctrina.xAPI.Http
             if (attachments == true)
                 query.Add("attachments", "true");
 
-            if (format != ResultFormats.Exact)
-                query.Add("format", ResultFormats.Exact.ToString());
+            if (format != ResultFormat.Exact)
+                query.Add("format", ResultFormat.Exact.ToString());
 
             var response = await client.GetAsync(uriBuilder.Uri);
 

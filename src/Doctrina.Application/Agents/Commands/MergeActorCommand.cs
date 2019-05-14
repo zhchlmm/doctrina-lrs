@@ -12,26 +12,9 @@ using System.Threading.Tasks;
 
 namespace Doctrina.Application.Agents.Commands
 {
-    public class MergeActorCommand : IRequest<AgentEntity>, IHaveCustomMapping
+    public class MergeActorCommand : IRequest<AgentEntity>
     {
-        public MergeActorCommand()
-        {
-            Member = new HashSet<Agent>();
-        }
-
-        public ObjectType ObjectType { get; set; }
-
-        public string Name { get; set; }
-
-        public Mbox Mbox { get; set; }
-
-        public string MboxSHA1SUM { get; set; }
-
-        public Iri OpenId { get; set; }
-
-        public xAPI.Account Account { get; set; }
-
-        public ICollection<Agent> Member { get; set; }
+        public AgentEntity Actor { get; private set; }
 
         public class Handler : IRequestHandler<MergeActorCommand, AgentEntity>
         {
@@ -48,7 +31,7 @@ namespace Doctrina.Application.Agents.Commands
 
             public async Task<AgentEntity> Handle(MergeActorCommand request, CancellationToken cancellationToken)
             {
-                var agent = _mapper.Map<AgentEntity>(request);
+                var agent = request.Actor;
                 
                 MergeActor(agent);
 
@@ -140,9 +123,14 @@ namespace Doctrina.Application.Agents.Commands
             }
         }
 
-        public void CreateMappings(Profile configuration)
+        public static MergeActorCommand Create(AgentEntity actor)
         {
-            configuration.CreateMap<Agent, MergeActorCommand>();
+            var cmd = new MergeActorCommand()
+            {
+                Actor = actor
+            };
+
+            return cmd;
         }
     }
 }

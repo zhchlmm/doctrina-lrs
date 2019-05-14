@@ -9,7 +9,7 @@ namespace Doctrina.Application.Statements.Queries
     {
         public class Handler : IRequestHandler<GetConsistentThroughQuery, DateTime>
         {
-            public Task<DateTime> Handle(GetConsistentThroughQuery request, CancellationToken cancellationToken)
+            public Task<DateTime> HandleAsync(GetConsistentThroughQuery request, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();
             }

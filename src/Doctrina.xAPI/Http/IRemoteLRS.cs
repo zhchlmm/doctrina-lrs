@@ -11,8 +11,8 @@ namespace Doctrina.xAPI.Http
         Task<Statement> SaveStatement(Statement statement);
         Task PutStatement(Statement statement);
         Task<Statement[]> SaveStatements(Statement[] statement);
-        Task<Statement> GetStatement(Guid id, bool attachments, ResultFormats format);
-        Task<Statement> GetVoidedStatement(Guid id, bool attachments, ResultFormats format);
+        Task<Statement> GetStatement(Guid id, bool attachments, ResultFormat format);
+        Task<Statement> GetVoidedStatement(Guid id, bool attachments, ResultFormat format);
         Task<StatementsResult> QueryStatements(StatementsQuery query);
         Task<StatementsResult> MoreStatements(StatementsResult result);
         Task<Statement> VoidStatement(Guid id, Agent agent);

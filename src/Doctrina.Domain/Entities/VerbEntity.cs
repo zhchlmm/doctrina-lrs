@@ -1,4 +1,5 @@
 ﻿using Doctrina.Domain.Entities.OwnedTypes;
+using System.Collections.Generic;
 
 namespace Doctrina.Domain.Entities
 {
@@ -7,13 +8,13 @@ namespace Doctrina.Domain.Entities
         /// <summary>
         /// SHA-1 of <see cref="Id"/>
         /// </summary>
-        public string VerbId { get; set; }
+        public string Checksum { get; set; }
 
         /// <summary>
         /// Corresponds to a Verb definition. (IRI)
         /// </summary>
         public string Id { get; set; }
 
-        public LanguageMapCollection Display { get; set; }
+        public ICollection<LanguageMapEntity> Display { get; set; }
     }
 }

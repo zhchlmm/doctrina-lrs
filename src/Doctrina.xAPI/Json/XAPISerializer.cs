@@ -7,14 +7,14 @@ namespace Doctrina.xAPI.Json
     public class ApiJsonSerializer : Newtonsoft.Json.JsonSerializer
     {
         public ApiVersion Version { get; }
-        public ResultFormats ResultFormat { get; }
+        public ResultFormat ResultFormat { get; }
 
         public ApiJsonSerializer(ApiVersion version)
-            : this(version, ResultFormats.Exact)
+            : this(version, ResultFormat.Exact)
         {
         }
 
-        public ApiJsonSerializer(ApiVersion version, ResultFormats format)
+        public ApiJsonSerializer(ApiVersion version, ResultFormat format)
         {
             Version = version;
             ResultFormat = format;

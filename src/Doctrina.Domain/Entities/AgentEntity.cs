@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Doctrina.Domain.Entities
 {
-    public class AgentEntity : IStatementObjectEntity
+    public class AgentEntity : ObjectBase, IStatementObjectEntity
     {
         /// <summary>
         /// MD5 hash of agent identifier
@@ -60,10 +60,10 @@ namespace Doctrina.Domain.Entities
                 ids.Add(OpenId);
             }
 
-            if (!string.IsNullOrWhiteSpace(OauthIdentifier))
-            {
-                ids.Add(OauthIdentifier);
-            }
+            //if (!string.IsNullOrWhiteSpace(OauthIdentifier))
+            //{
+            //    ids.Add(OauthIdentifier);
+            //}
 
             if (Account != null)
             {

@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MediatR;
+using Doctrina.Application.ActivityProfiles.Queries;
+using System.Threading.Tasks;
+using Doctrina.Application.ActivityProfiles.Commands;
 
 namespace Doctrina.xAPI.LRS.Controllers
 {
@@ -15,11 +19,11 @@ namespace Doctrina.xAPI.LRS.Controllers
     [Produces("application/json")]
     public class ActivityProfileController : ApiControllerBase
     {
-        private readonly IActivityProfileService profileService;
+        private readonly IMediator _mediator;
 
-        public ActivityProfileController(IActivityProfileService activityProfileService)
+        public ActivityProfileController(IMediator mediator)
         {
-            this.profileService = activityProfileService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -29,30 +33,29 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// <param name="profileId">The profile id associated with this Profile document.</param>
         /// <returns>200 OK, the Profile document</returns>
         [AcceptVerbs("GET", "HEAD", Order = 1)]
-        public IActionResult GetProfile([BindRequired]string profileId, [BindRequired]Iri activityId)
+        public async Task<IActionResult> GetProfile([BindRequired]string profileId, [BindRequired]Iri activityId, Guid? registration = null)
         {
-            try
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var profile = await _mediator.Send(new GetActivityProfileQuery()
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+                ProfileId = profileId,
+                ActivityId = activityId,
+                Registration = registration
+            });
 
-                var profile = this.profileService.GetActivityProfile(profileId, activityId);
-                if (profile == null)
-                    return NotFound();
+            if (profile == null)
+                return NotFound();
 
-                var document = profile.Document;
-                string lastModified = document.LastModified.ToString("o");
-                // TODO: Implement concurrency
+            var document = profile.Document;
+            string lastModified = document.LastModified.ToString("o");
+            // TODO: Implement concurrency
 
-                Response.ContentType = document.ContentType;
-                Response.Headers.Add("LastModified", lastModified);
-                Response.StatusCode = (int)System.Net.HttpStatusCode.OK;
-                return new FileContentResult(document.Content, document.ContentType);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
+            Response.ContentType = document.ContentType;
+            Response.Headers.Add("LastModified", lastModified);
+            Response.StatusCode = (int)System.Net.HttpStatusCode.OK;
+            return new FileContentResult(document.Content, document.ContentType);
         }
 
         /// <summary>
@@ -62,29 +65,28 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// <param name="since">Only ids of Profile documents stored since the specified Timestamp (exclusive) are returned.</param>
         /// <returns>200 OK, Array of Profile id(s)</returns>
         [AcceptVerbs("GET", "HEAD", Order = 2)]
-        public ActionResult<Guid[]> GetProfiles(Iri activityId, DateTimeOffset? since = null)
+        public async Task<ActionResult<Guid[]>> GetProfiles(Iri activityId, DateTimeOffset? since = null)
         {
-            try
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var profiles = await _mediator.Send(new GetActivityProfilesQuery()
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+                ActivityId = activityId,
+                Since = since
+            });
 
-                var documents = this.profileService.GetActivityProfileDocuments(activityId, since);
-                if (documents == null)
-                    return Ok(new Guid[] { });
+            if (profiles == null)
+                return Ok(new Guid[0]);
 
-                IEnumerable<Guid> ids = documents.Select(x => x.Id);
-                string lastModified = documents.OrderByDescending(x => x.LastModified)
-                    .FirstOrDefault()
-                    .LastModified.ToString("o");
+            IEnumerable<Guid> ids = profiles.Select(x => x.Key);
+            string lastModified = profiles.OrderByDescending(x => x.Document.LastModified)
+                .FirstOrDefault()
+                .Document
+                .LastModified.ToString("o");
 
-                Response.Headers.Add("LastModified", lastModified);
-                return Ok(ids);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
+            Response.Headers.Add("LastModified", lastModified);
+            return Ok(ids);
         }
 
         /// <summary>
@@ -95,32 +97,25 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// <param name="document">The document to be stored or updated.</param>
         /// <returns>204 No Content</returns>
         [AcceptVerbs("PUT", "POST")]
-        public IActionResult SaveProfile(string profileId, Iri activityId, [FromBody]byte[] document, Guid? registration = null)
+        public async Task<IActionResult> SaveProfile(string profileId, Iri activityId, [FromBody]byte[] document, Guid? registration = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             string contentType = Request.ContentType;
 
-            try
+            var profile = await _mediator.Send(new CreateActivityProfileCommand()
             {
-                var profile = profileService.CreateActivityProfile(
-                    profileId,
-                    activityId,
-                    registration,
-                    document,
-                    contentType
-                 );
+                ProfileId = profileId,
+                ActivityId = activityId,
+                Content = document,
+                ContentType = contentType,
+                Registration = registration
+            });
 
-                Response.Headers["ETag"] = profile.Document.Checksum;
+            Response.Headers["ETag"] = profile.Document.Checksum;
 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                // TODO: If exception is by ETagMatchException
-                return BadRequest(ex.Message);
-            }
+            return NoContent();
         }
 
         /// <summary>
@@ -130,15 +125,26 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// <param name="profileId">The profile id associated with this Profile document.</param>
         /// <returns>204 No Content</returns>
         [HttpDelete]
-        public IActionResult DeleteProfile(string profileId, Iri activityId)
+        public async Task<IActionResult> DeleteProfileAsync(string profileId, Iri activityId, Guid? registration = null)
         {
             try
             {
-                var profile = this.profileService.GetActivityProfile(profileId, activityId);
+                var profile = _mediator.Send(new GetActivityProfileQuery()
+                {
+                    ProfileId = profileId,
+                    ActivityId = activityId,
+                    Registration = registration
+                });
+
                 if (profile == null)
                     return NotFound();
 
-                this.profileService.DeleteProfile(profile);
+                await _mediator.Send(new DeleteActivityProfileCommand()
+                {
+                    ProfileId = profileId,
+                    ActivityId = activityId,
+                    Registration = registration
+                });
 
                 return NoContent();
             }

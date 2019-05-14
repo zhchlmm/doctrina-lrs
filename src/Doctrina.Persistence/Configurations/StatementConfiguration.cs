@@ -31,6 +31,11 @@ namespace Doctrina.Persistence.Configurations
             builder.Property(e => e.Voided)
                 .IsRequired()
                 .HasDefaultValue(false);
+
+            // Object SubStatement 
+            builder.HasOne(r => r.ObjectSubStatement)
+                .WithOne()
+                .HasForeignKey<StatementEntity>(e => e.ObjectSubStatementId);
         }
     }
 }

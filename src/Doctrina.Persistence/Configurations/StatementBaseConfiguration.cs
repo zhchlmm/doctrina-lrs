@@ -12,43 +12,38 @@ namespace Doctrina.Persistence.Configurations
             //builder.Property(e => e.StatementBaseId)
             //    .ValueGeneratedOnAdd();
 
-            builder.Property(e => e.ObjectType)
+            builder.Property(e => e.ObjectObjectType)
                 .HasColumnType("nvarchar(12)")
                 .IsRequired()
                 .HasConversion<string>();
 
             // Actor
-            builder.Property(e => e.ActorId)
+            builder.Property(e => e.Actor)
                 .IsRequired();
             builder.HasOne(e => e.Actor)
-                .WithMany()
-                .HasForeignKey(e => e.ActorId);
+                .WithMany();
 
             // Verb
-            builder.Property(e => e.VerbId)
+            builder.Property(e => e.Verb)
                 .IsRequired();
             builder.HasOne(e => e.Verb)
-                .WithMany()
-                .HasForeignKey(e => e.VerbId);
+                .WithMany();
 
             // Object Agent 
             builder.HasOne(r => r.ObjectAgent)
-                .WithMany()
-                .HasForeignKey(e=> e.ObjectAgentId);
+                .WithMany();
 
             // Object Activity 
             builder.HasOne(r => r.ObjectActivity)
-                .WithMany()
-                .HasForeignKey(e => e.ObjectActivityHash);
+                .WithMany();
 
             // Object SubStatement 
-            builder.HasOne(r => r.ObjectSubStatement)
-                .WithOne()
-                .HasForeignKey<StatementEntity>(e => e.ObjectSubStatementId);
+            //builder.HasOne(r => r.ObjectSubStatement)
+            //    .WithOne()
+            //    .HasForeignKey<StatementEntity>(e => e.ObjectSubStatementId);
 
             builder.HasOne(e => e.Result)
-                .WithOne()
-                .HasForeignKey<StatementEntity>(e=> e.ResultId);
+                .WithOne();
 
             builder.Property(e => e.Timestamp)
                 .IsRequired();

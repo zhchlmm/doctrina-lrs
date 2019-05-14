@@ -1,12 +1,40 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    [JsonObject]
     public class ActivityDefinition : JsonModel
     {
+        public ActivityDefinition()
+        {
+        }
+        public ActivityDefinition(string jsonString) :
+            this(JObject.Parse(jsonString), ApiVersion.GetLatest())
+        {
+        }
+
+        public ActivityDefinition(JObject obj, ApiVersion version)
+        {
+            if (obj["type"] != null)
+            {
+                Type = obj["type"].Value<Iri>();
+            }
+
+            if (obj["moreInfo"] != null)
+            {
+                MoreInfo = obj["moreInfo"].Value<Uri>();
+            }
+
+            if (obj["description"] != null)
+            {
+                Description = obj.Value<JObject>("description");
+            }
+        }
+
+        
+
         [JsonProperty("name", 
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
@@ -35,6 +63,39 @@ namespace Doctrina.xAPI
             Required = Required.Default)]
         public Extensions Extentions { get; set; }
 
+        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        {
+            var obj = new JObject();
+
+            if(Type != null)
+            {
+                obj["type"] = Type.ToString();
+            }
+
+            if(Name != null)
+            {
+                obj["name"] = Name.ToJObject(version, format);
+            }
+
+            if(Description != null)
+            {
+                obj["description"] = Description.ToJObject(version, format);
+            }
+
+            if(MoreInfo != null)
+            {
+                obj["moreInfo"] = MoreInfo.ToString();
+            }
+
+            obj["extentions"] = Extentions?.ToJObject(version, format);
+
+            return obj;
+        }
+
+        internal static ActivityDefinition Parse(JObject jObject, ApiVersion version)
+        {
+            throw new NotImplementedException();
+        }
         public override bool Equals(object obj)
         {
             var definition = obj as ActivityDefinition;
@@ -45,7 +106,6 @@ namespace Doctrina.xAPI
                    EqualityComparer<Iri>.Default.Equals(Type, definition.Type) &&
                    EqualityComparer<Uri>.Default.Equals(MoreInfo, definition.MoreInfo);
         }
-
         public override int GetHashCode()
         {
             var hashCode = -1346148704;
@@ -54,6 +114,11 @@ namespace Doctrina.xAPI
             hashCode = hashCode * -1521134295 + EqualityComparer<Iri>.Default.GetHashCode(Type);
             hashCode = hashCode * -1521134295 + EqualityComparer<Uri>.Default.GetHashCode(MoreInfo);
             return hashCode;
+        }
+
+        public static implicit operator ActivityDefinition(JObject jobj)
+        {
+            return new ActivityDefinition(jobj);
         }
 
         public static bool operator ==(ActivityDefinition definition1, ActivityDefinition definition2)

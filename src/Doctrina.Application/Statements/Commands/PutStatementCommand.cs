@@ -1,40 +1,21 @@
-﻿using Doctrina.Domain.Entities;
-using Doctrina.Persistence;
+﻿using Doctrina.xAPI;
 using MediatR;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Doctrina.Application.Statements.Commands
 {
-    public class PutStatementCommand : IRequest<Guid>
+    public class PutStatementCommand : IRequest
     {
-        public class Handler : IRequestHandler<PutStatementCommand, Guid>
+        public Guid StatementId { get; private set; }
+        public Statement Statement { get; private set; }
+
+        public static PutStatementCommand Create(Guid statementId, Statement statement)
         {
-            private readonly DoctrinaDbContext _context;
-            private readonly IMediator _mediator;
-
-            public Handler(
-                DoctrinaDbContext context,
-                IMediator mediator)
+            return new PutStatementCommand()
             {
-                _context = context;
-                _mediator = mediator;
-            }
-
-            public async Task<Guid> Handle(PutStatementCommand request, CancellationToken cancellationToken)
-            {
-                var entity = new StatementEntity
-                {
-                    ObjectObjectType = 
-                };
-
-                _context.Statements.Add(entity);
-
-                await _context.SaveChangesAsync(cancellationToken);
-
-                return entity.StatementId;
-            }
+                StatementId = statementId,
+                Statement = statement
+            };
         }
     }
 }

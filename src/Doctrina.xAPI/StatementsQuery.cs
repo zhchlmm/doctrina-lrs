@@ -69,7 +69,7 @@ namespace Doctrina.xAPI
         public int? Limit { get; set; }
 
         [FromQuery(Name = "format")]
-        public ResultFormats? Format { get; set; }
+        public ResultFormat? Format { get; set; }
 
         [FromQuery(Name = "ascending")]
         public bool? Ascending { get; set; }
@@ -124,7 +124,7 @@ namespace Doctrina.xAPI
             }
             if (Format.HasValue)
             {
-                result.Add("format", Enum.GetName(typeof(ResultFormats), Format.Value));
+                result.Add("format", Enum.GetName(typeof(ResultFormat), Format.Value));
             }
             if (Attachments != null)
             {

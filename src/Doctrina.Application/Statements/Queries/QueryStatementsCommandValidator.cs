@@ -2,7 +2,7 @@
 
 namespace Doctrina.Application.Statements.Queries
 {
-    public class QueryStatementsCommandValidator : AbstractValidator<QueryStatementsCommand>
+    public class QueryStatementsCommandValidator : AbstractValidator<GetStatementsQuery>
     {
         public QueryStatementsCommandValidator()
         {

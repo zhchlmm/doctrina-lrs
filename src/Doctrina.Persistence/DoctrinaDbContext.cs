@@ -32,8 +32,6 @@ namespace Doctrina.Persistence
 
         public DbSet<ActivityStateEntity> ActivityStates { get; set; }
 
-        public DbSet<DocumentEntity> Documents { get; set; }
-
         public DbSet<ResultEntity> Results { get; set; }
 
         public DbSet<AttachmentEntity> Attachments { get; set; }

@@ -10,7 +10,7 @@ namespace Doctrina.Application.About.Queries
     {
         public class Handler : IRequestHandler<GetAboutQuery, xAPI.About>
         {
-            public Task<xAPI.About> Handle(GetAboutQuery request, CancellationToken cancellationToken)
+            public Task<xAPI.About> HandleAsync(GetAboutQuery request, CancellationToken cancellationToken)
             {
                 var about = new xAPI.About()
                 {

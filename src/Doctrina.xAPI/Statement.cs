@@ -1,5 +1,6 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -77,6 +78,56 @@ namespace Doctrina.xAPI
             //hashCode = hashCode * -1521134295 + EqualityComparer<Agent>.Default.GetHashCode(Authority);
             //hashCode = hashCode * -1521134295 + EqualityComparer<XAPIVersion>.Default.GetHashCode(Version);
             return hashCode;
+        }
+
+        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        {
+            var obj = base.ToJObject(version, format);
+            obj["id"] = Id;
+            obj["stored"] = Stored;
+            obj["authority"] = Authority.ToJObject(version, format);
+            obj["version"] = Version.ToString();
+            return obj;
+        }
+
+        /// <summary>
+        /// Convert the Statement to json using statement version
+        /// </summary>
+        /// <param name="format"></param>
+        /// <returns>Statement as json</returns>
+        public override string ToJson(ResultFormat format = ResultFormat.Exact)
+        {
+            // Override default version
+            return base.ToJson(Version, format);
+        }
+
+        public static Statement Parse(string jsonString)
+        {
+            var obj = JObject.Parse(jsonString);
+
+            var statement = new Statement();
+
+            if (obj["id"] != null)
+            {
+                statement.Id = obj["id"].Value<Guid>();
+            }
+
+            if (obj["stored"] != null)
+            {
+                statement.Stored = obj["stored"].Value<DateTimeOffset?>();
+            }
+
+            if(obj["authority"] != null)
+            {
+                statement.Authority = Agent.Parse(obj["authority"].ToString());
+            }
+
+            if(obj["version"] != null)
+            {
+                statement.Version = obj["version"].Value<string>();
+            }
+
+            return statement;
         }
 
         public static bool operator ==(Statement statement1, Statement statement2)

@@ -1,33 +1,30 @@
 ﻿using AutoMapper;
 using Doctrina.Persistence;
+using Doctrina.xAPI;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Doctrina.Application.Statements.Commands
 {
-    public class CreateStatementsCommand : IRequest<Guid[]>
+    public class CreateStatementsCommand : IRequest<ICollection<Guid>>
     {
-        public class Handler : IRequestHandler<CreateStatementsCommand, Guid[]>
+        public CreateStatementsCommand()
         {
-            private readonly DoctrinaDbContext _context;
-            private readonly IMediator _mediator;
-            private readonly IMapper _mapper;
+            Statements = new HashSet<Statement>();
+        }
 
-            public Handler(
-                DoctrinaDbContext context,
-                IMediator mediator, IMapper mapper)
-            {
-                _context = context;
-                _mediator = mediator;
-                _mapper = mapper;
-            }
+        public ICollection<Statement> Statements { get; internal set; }
 
-            public Task<Guid[]> Handle(CreateStatementsCommand request, CancellationToken cancellationToken)
+        public static CreateStatementsCommand Create(params Statement[] statements)
+        {
+            return new CreateStatementsCommand()
             {
-                throw new NotImplementedException();
-            }
+                Statements = statements
+            };
         }
     }
 }

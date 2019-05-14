@@ -1,9 +1,7 @@
-﻿using Doctrina.Persistence.Services;
+﻿using Doctrina.Application.Activities.Queries;
 using Doctrina.xAPI.LRS.Mvc.Filters;
-using Doctrina.xAPI;
-using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using Doctrina.Application.Activities.Queries;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.LRS.Controllers
@@ -25,6 +23,7 @@ namespace Doctrina.xAPI.LRS.Controllers
         public async Task<ActionResult> GetActivityDocumentAsync(GetActivityQuery command)
         {
             Activity activity = await _mediator.Send(command);
+
             if (activity == null)
                 return Ok(new Activity());
 

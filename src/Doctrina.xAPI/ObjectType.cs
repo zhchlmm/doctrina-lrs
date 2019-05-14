@@ -1,25 +1,46 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Linq;
 
 namespace Doctrina.xAPI
 {
-    [JsonConverter(typeof(ObjectTypeConverter))]
-    public enum ObjectType
+    public class ObjectType
     {
-        [EnumMember(Value = "Agent")]
-        Agent,
+        private static readonly ICollection<ObjectType> _types = new HashSet<ObjectType>();
 
-        [EnumMember(Value = "Group")]
-        Group,
+        public static ObjectType Agent = new ObjectType("Agent");
+        public static ObjectType Group = new ObjectType("Group");
+        public static ObjectType Activity = new ObjectType("Activity");
+        public static ObjectType SubStatement = new ObjectType("SubStatement");
+        public static ObjectType StatementRef = new ObjectType("StatementRef");
 
-        [EnumMember(Value = "Activity")]
-        Activity,
+        private readonly string _type;
+        private ObjectType(string type)
+        {
+            _type = type;
+            _types.Add(this);
+        }
 
-        [EnumMember(Value = "SubStatement")]
-        SubStatement,
+        public static implicit operator ObjectType(string type)
+        {
+            if (_types.Any(x=>x._type == type))
+            {
+                return new ObjectType(type);
+            }
 
-        [EnumMember(Value = "StatementRef")]
-        StatementRef
+            throw new KeyNotFoundException();
+        }
+
+        public override string ToString()
+        {
+            return _type;
+        }
+
+        public static implicit operator string(ObjectType type)
+        {
+            return type.ToString();
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +9,7 @@ namespace Doctrina.xAPI
 {
     //[JsonConverter(typeof(ContextConverter))]
     [JsonObject]
-    public class Context
+    public class Context : JsonModel
     {
         [JsonProperty("registration", 
             NullValueHandling = NullValueHandling.Ignore,
@@ -118,6 +119,11 @@ namespace Doctrina.xAPI
             hashCode = hashCode * -1521134295 + EqualityComparer<StatementRef>.Default.GetHashCode(Statement);
             hashCode = hashCode * -1521134295 + EqualityComparer<Extensions>.Default.GetHashCode(Extensions);
             return hashCode;
+        }
+
+        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool operator ==(Context context1, Context context2)

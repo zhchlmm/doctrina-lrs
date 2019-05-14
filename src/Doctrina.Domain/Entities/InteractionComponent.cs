@@ -1,4 +1,5 @@
 ﻿using Doctrina.Domain.Entities.OwnedTypes;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Doctrina.Domain.Entities
@@ -7,7 +8,7 @@ namespace Doctrina.Domain.Entities
     {
         public string Id { get; set; }
 
-        public LanguageMapCollection Description { get; set; }
+        public ICollection<LanguageMapEntity> Description { get; set; }
     }
 
     public class InteractionComponentCollection : KeyedCollection<string, InteractionComponent>

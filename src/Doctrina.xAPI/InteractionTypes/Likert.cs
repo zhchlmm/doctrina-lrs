@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Doctrina.xAPI.InteractionTypes
 {
@@ -8,5 +9,12 @@ namespace Doctrina.xAPI.InteractionTypes
 
         [JsonProperty("scale")]
         public InteractionComponent[] Scale { get; set; }
+
+        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        {
+            var jobj = base.ToJObject(version, format);
+
+            return jobj;
+        }
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -53,7 +52,7 @@ namespace Doctrina.xAPI.Http
                         }
 
                         string jsonString = await section.ReadAsStringAsync();
-                        result = new StatementsResult(jsonString);
+                        result = StatementsResult.Parse(jsonString);
                     }
                     else
                     {

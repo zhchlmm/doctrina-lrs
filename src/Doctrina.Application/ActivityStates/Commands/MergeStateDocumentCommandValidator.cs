@@ -6,6 +6,7 @@ namespace Doctrina.Application.ActivityStates.Commands
     {
         public MergeStateDocumentCommandValidator()
         {
+            // TODO: Validate MergeStateDocumentCommand
         }
     }
 }

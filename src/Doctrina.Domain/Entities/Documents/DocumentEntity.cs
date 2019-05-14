@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -7,6 +8,7 @@ namespace Doctrina.Domain.Entities.Documents
     /// <summary>
     /// Represents a stored document
     /// </summary>
+    [Owned]
     public class DocumentEntity : IDocumentEntity
     {
         /// <summary>
@@ -27,11 +29,15 @@ namespace Doctrina.Domain.Entities.Documents
         /// <summary>
         /// UTC Date when the document was last modified
         /// </summary>
-        public DateTimeOffset? LastModified { get; set; }
+        public DateTimeOffset LastModified { get; set; }
 
+        /// <summary>
+        /// UTC Date when the document was created
+        /// </summary>
         public DateTimeOffset CreateDate { get; set; }
 
-        public void GenerateChecksum()
+        // Methods:
+        private void GenerateChecksum()
         {
             using (var md5 = MD5.Create())
             {
@@ -40,18 +46,28 @@ namespace Doctrina.Domain.Entities.Documents
             }
         }
 
+        // Factories:
         public static DocumentEntity Create(byte[] content, string contentType)
         {
             var doc = new DocumentEntity()
             {
                 Content = content,
                 ContentType = contentType,
+                LastModified = DateTimeOffset.UtcNow,
                 CreateDate = DateTimeOffset.UtcNow,
             };
 
             doc.GenerateChecksum();
 
             return doc;
+        }
+
+        public void Update(byte[] content, string contentType)
+        {
+            this.Content = content;
+            this.ContentType = contentType;
+            this.LastModified = DateTime.UtcNow;
+            this.GenerateChecksum();
         }
     }
 }

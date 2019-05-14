@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Doctrina.Domain.Entities;
+using MediatR;
 
 namespace Doctrina.Application.Statements.Commands
 {
-    public class VoidStatementCommand
+    public class VoidStatementCommand : IRequest
     {
-        
+        public StatementBaseEntity Statement { get; set; }
     }
 }

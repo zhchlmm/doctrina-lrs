@@ -4,8 +4,6 @@ using Doctrina.Persistence;
 using Doctrina.xAPI;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,19 +12,17 @@ namespace Doctrina.Application.Statements.Queries
     public class GetStatementQueryHandler : IRequestHandler<GetStatementQuery, Statement>
     {
         private readonly DoctrinaDbContext _context;
-        private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public GetStatementQueryHandler(DoctrinaDbContext context, IMediator mediator, IMapper mapper)
+        public GetStatementQueryHandler(DoctrinaDbContext context, IMapper mapper)
         {
             _context = context;
-            _mediator = mediator;
             _mapper = mapper;
         }
 
         public async Task<Statement> Handle(GetStatementQuery request, CancellationToken cancellationToken)
         {
-            var entity = new StatementEntity();
+            StatementEntity entity = null;
             if (request.IncludeAttachments)
             {
                 entity = await _context.Statements
@@ -44,7 +40,7 @@ namespace Doctrina.Application.Statements.Queries
                 return null;
             }
 
-            return Mapper.Map(entity, new Statement());
+            return _mapper.Map<Statement>(entity);
         }
     }
 }

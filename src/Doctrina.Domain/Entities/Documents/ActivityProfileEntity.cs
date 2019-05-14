@@ -10,14 +10,18 @@ namespace Doctrina.Domain.Entities.Documents
 
         public DateTime UpdateDate { get; set; }
 
-        public string ActivityId { get; set; }
+        /// <summary>
+        /// MD5 checksum of Iri
+        /// </summary>
+        public string ActivityEntityId { get; set; }
 
         public Guid? RegistrationId { get; set; }
 
+        public DocumentEntity Document { get; set; }
+
+
         #region Navigation Properties
         public virtual ActivityEntity Activity { get; set; }
-
-        public virtual DocumentEntity Document { get; set; }
         #endregion
     }
 }
