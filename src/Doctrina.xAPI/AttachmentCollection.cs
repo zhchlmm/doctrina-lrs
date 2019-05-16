@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +73,7 @@ namespace Doctrina.xAPI
 
         public bool Contains(Attachment item)
         {
-            return Attachments.Any(x=> x.SHA2 == item.SHA2);
+            return Attachments.Any(x => x.SHA2 == item.SHA2);
         }
 
         public void CopyTo(Attachment[] array, int arrayIndex)

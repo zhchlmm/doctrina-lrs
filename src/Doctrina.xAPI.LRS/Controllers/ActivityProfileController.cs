@@ -1,15 +1,14 @@
-﻿using Doctrina.Persistence.Services;
+﻿using Doctrina.Application.ActivityProfiles.Commands;
+using Doctrina.Application.ActivityProfiles.Queries;
+using Doctrina.xAPI.Documents;
 using Doctrina.xAPI.LRS.Mvc.Filters;
-using Doctrina.xAPI;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MediatR;
-using Doctrina.Application.ActivityProfiles.Queries;
 using System.Threading.Tasks;
-using Doctrina.Application.ActivityProfiles.Commands;
 
 namespace Doctrina.xAPI.LRS.Controllers
 {
@@ -38,7 +37,7 @@ namespace Doctrina.xAPI.LRS.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var profile = await _mediator.Send(new GetActivityProfileQuery()
+            ActivityProfileDocument profile = await _mediator.Send(new GetActivityProfileQuery()
             {
                 ProfileId = profileId,
                 ActivityId = activityId,
@@ -48,14 +47,13 @@ namespace Doctrina.xAPI.LRS.Controllers
             if (profile == null)
                 return NotFound();
 
-            var document = profile.Document;
-            string lastModified = document.LastModified.ToString("o");
-            // TODO: Implement concurrency
+            var result = new FileContentResult(profile.Content, profile.ContentType)
+            {
+                EntityTag = new Microsoft.Net.Http.Headers.EntityTagHeaderValue(profile.Tag),
+                LastModified = profile.LastModified
+            };
 
-            Response.ContentType = document.ContentType;
-            Response.Headers.Add("LastModified", lastModified);
-            Response.StatusCode = (int)System.Net.HttpStatusCode.OK;
-            return new FileContentResult(document.Content, document.ContentType);
+            return Ok(result);
         }
 
         /// <summary>
@@ -65,25 +63,24 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// <param name="since">Only ids of Profile documents stored since the specified Timestamp (exclusive) are returned.</param>
         /// <returns>200 OK, Array of Profile id(s)</returns>
         [AcceptVerbs("GET", "HEAD", Order = 2)]
-        public async Task<ActionResult<Guid[]>> GetProfiles(Iri activityId, DateTimeOffset? since = null)
+        public async Task<ActionResult<string[]>> GetProfiles(Iri activityId, DateTimeOffset? since = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var profiles = await _mediator.Send(new GetActivityProfilesQuery()
+            ICollection<ActivityProfileDocument> profiles = await _mediator.Send(new GetActivityProfilesQuery()
             {
                 ActivityId = activityId,
                 Since = since
             });
 
             if (profiles == null)
-                return Ok(new Guid[0]);
+                return Ok(new string[0]);
 
-            IEnumerable<Guid> ids = profiles.Select(x => x.Key);
-            string lastModified = profiles.OrderByDescending(x => x.Document.LastModified)
-                .FirstOrDefault()
-                .Document
-                .LastModified.ToString("o");
+            IEnumerable<string> ids = profiles.Select(x => x.ProfileId);
+            string lastModified = profiles.OrderByDescending(x => x.LastModified)
+                .FirstOrDefault()?
+                .LastModified?.ToString("o");
 
             Response.Headers.Add("LastModified", lastModified);
             return Ok(ids);
@@ -104,7 +101,7 @@ namespace Doctrina.xAPI.LRS.Controllers
 
             string contentType = Request.ContentType;
 
-            var profile = await _mediator.Send(new CreateActivityProfileCommand()
+            ActivityProfileDocument profile = await _mediator.Send(new CreateActivityProfileCommand()
             {
                 ProfileId = profileId,
                 ActivityId = activityId,
@@ -113,7 +110,7 @@ namespace Doctrina.xAPI.LRS.Controllers
                 Registration = registration
             });
 
-            Response.Headers["ETag"] = profile.Document.Checksum;
+            Response.Headers["ETag"] = profile.Tag;
 
             return NoContent();
         }
@@ -129,7 +126,7 @@ namespace Doctrina.xAPI.LRS.Controllers
         {
             try
             {
-                var profile = _mediator.Send(new GetActivityProfileQuery()
+                ActivityProfileDocument profile = await _mediator.Send(new GetActivityProfileQuery()
                 {
                     ProfileId = profileId,
                     ActivityId = activityId,

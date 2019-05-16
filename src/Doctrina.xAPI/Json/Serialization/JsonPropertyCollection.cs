@@ -5,7 +5,7 @@ namespace Doctrina.xAPI.Json.Serialization
 {
     public class CaseSensitiveJsonPropertyCollection : JsonPropertyCollection
     {
-        public CaseSensitiveJsonPropertyCollection(Type type) 
+        public CaseSensitiveJsonPropertyCollection(Type type)
             : base(type)
         {
         }

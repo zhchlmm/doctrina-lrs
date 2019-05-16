@@ -1,6 +1,4 @@
 ﻿using Doctrina.xAPI.Json.Converters;
-using Doctrina.xAPI.Json.Serialization;
-using Newtonsoft.Json.Serialization;
 
 namespace Doctrina.xAPI.Json
 {

@@ -23,10 +23,10 @@ namespace Doctrina.xAPI.LRS.Routing
             // TODO: https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#user-content-2.1.3.s2.b5
             if (!headers.ContainsKey(headerKey))
             {
-                DateTime date = await mediator.Send(new GetConsistentThroughQuery());
+                DateTimeOffset? date = await mediator.Send(new GetConsistentThroughQuery());
                 if (!headers.ContainsKey(headerKey))
                 {
-                    headers.Add(headerKey, date.ToString("o"));
+                    headers.Add(headerKey, date?.ToString("o"));
                 }
             }
 

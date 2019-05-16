@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI
 {
@@ -79,7 +76,7 @@ namespace Doctrina.xAPI
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
-            if(sourceType == typeof(string))
+            if (sourceType == typeof(string))
             {
                 return true;
             }
@@ -88,7 +85,7 @@ namespace Doctrina.xAPI
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            if(value is string)
+            if (value is string)
             {
                 Mbox mbox = null;
                 if (Mbox.TryParse(value as string, out mbox))
@@ -101,7 +98,7 @@ namespace Doctrina.xAPI
 
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
-            if(destinationType == typeof(string))
+            if (destinationType == typeof(string))
             {
                 return value.ToString();
             }

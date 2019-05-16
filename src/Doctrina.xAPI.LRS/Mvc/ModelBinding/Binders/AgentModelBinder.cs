@@ -7,17 +7,18 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
     {
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            var valueProviderResult = 
+            var valueProviderResult =
                 bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
             if (valueProviderResult == ValueProviderResult.None)
                 return Task.CompletedTask;
 
-            if(Agent.TryParse(valueProviderResult.FirstValue, out Agent agent))
+            try
             {
+                var agent = new Agent(valueProviderResult.FirstValue);
                 bindingContext.Result = ModelBindingResult.Success(agent);
             }
-            else
+            catch (System.Exception)
             {
                 bindingContext.Result = ModelBindingResult.Failed();
             }

@@ -5,7 +5,7 @@ namespace Doctrina.Domain.Entities.Documents
     public interface IAgentProfileEntity
     {
         AgentEntity Agent { get; set; }
-        string AgentEntityId { get; set; }
+        string AgentHash { get; set; }
         string ContentType { get; set; }
         DocumentEntity Document { get; set; }
         //Guid DocumentId { get; set; }

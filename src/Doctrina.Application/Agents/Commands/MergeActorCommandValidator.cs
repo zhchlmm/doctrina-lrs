@@ -1,6 +1,4 @@
-﻿using Doctrina.xAPI;
-using FluentValidation;
-using System.Linq;
+﻿using FluentValidation;
 
 namespace Doctrina.Application.Agents.Commands
 {

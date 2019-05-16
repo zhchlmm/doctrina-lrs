@@ -1,11 +1,11 @@
-﻿using Doctrina.Domain.Entities.Documents;
-using Doctrina.xAPI;
+﻿using Doctrina.xAPI;
+using Doctrina.xAPI.Documents;
 using MediatR;
 using System;
 
 namespace Doctrina.Application.ActivityProfiles.Commands
 {
-    public class CreateActivityProfileCommand : IRequest<ActivityProfileEntity>
+    public class CreateActivityProfileCommand : IRequest<ActivityProfileDocument>
     {
         public Iri ActivityId { get; set; }
         public string ProfileId { get; set; }

@@ -40,7 +40,8 @@ namespace Doctrina.xAPI.Http
             }
         }
 
-        public async Task<byte[]> ReadAsByteArrayAsync(){
+        public async Task<byte[]> ReadAsByteArrayAsync()
+        {
             var stringPayload = await section.ReadAsStringAsync();
             byte[] payloadBytes = Encoding.UTF8.GetBytes(stringPayload);
 

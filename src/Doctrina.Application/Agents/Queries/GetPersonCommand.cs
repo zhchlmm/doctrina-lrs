@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Doctrina.Application.Interfaces;
 using Doctrina.Domain.Entities;
-using Doctrina.Persistence;
 using Doctrina.xAPI;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +15,10 @@ namespace Doctrina.Application.Agents.Queries
 
         public class Handler : IRequestHandler<GetPersonCommand, Person>
         {
-            private readonly DoctrinaDbContext _context;
+            private readonly IDoctrinaDbContext _context;
             private readonly IMapper _mapper;
 
-            public Handler(DoctrinaDbContext context, IMapper mapper)
+            public Handler(IDoctrinaDbContext context, IMapper mapper)
             {
                 _context = context;
                 _mapper = mapper;
@@ -31,7 +31,7 @@ namespace Doctrina.Application.Agents.Queries
 
                 var agentEntity = _mapper.Map<AgentEntity>(request.Agent);
 
-                agentEntity = await _context.Agents.FirstOrDefaultAsync(x => x.AgentHash == agentEntity.AgentHash);
+                agentEntity = await _context.Agents.FirstOrDefaultAsync(x => x.AgentHash == agentEntity.AgentHash, cancellationToken);
 
                 if (agentEntity != null)
                 {
@@ -40,6 +40,14 @@ namespace Doctrina.Application.Agents.Queries
 
                 return person;
             }
+        }
+
+        public static GetPersonCommand Create(Agent agent)
+        {
+            return new GetPersonCommand()
+            {
+                Agent = agent
+            };
         }
     }
 }

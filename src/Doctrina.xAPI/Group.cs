@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Schema.Generation;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +19,7 @@ namespace Doctrina.xAPI
                 Member = new HashSet<Agent>();
 
                 var members = jobj["member"].Value<JArray>();
-                foreach(var member in members)
+                foreach (var member in members)
                 {
                     var memberJobj = member.ToObject<JObject>();
 

@@ -1,9 +1,10 @@
-﻿using Doctrina.Persistence.Services;
+﻿using Doctrina.Application.Agents.Queries;
 using Doctrina.xAPI.LRS.Mvc.Filters;
-using Doctrina.xAPI;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.LRS.Controllers
 {
@@ -13,24 +14,24 @@ namespace Doctrina.xAPI.LRS.Controllers
     [Produces("application/json")]
     public class AgentsController : ApiControllerBase
     {
-        private IAgentService _agentService;
+        private IMediator _mediator;
 
-        public AgentsController(IAgentService agentService)
+        public AgentsController(IMediator mediator)
         {
-            _agentService = agentService;
+            _mediator = mediator;
         }
 
         [AcceptVerbs("GET", "HEAD")]
-        public ActionResult GetAgentProfile([FromQuery(Name = "agent")]string strAgent)
+        public async Task<IActionResult> GetAgentProfile([FromQuery(Name = "agent")]string strAgent)
         {
             try
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                Agent agent = Agent.Parse(strAgent);
+                Agent agent = new Agent(strAgent);
 
-                var person = _agentService.GetPerson(agent);
+                var person = await _mediator.Send(GetPersonCommand.Create(agent));
                 if (person == null)
                     return NotFound();
 

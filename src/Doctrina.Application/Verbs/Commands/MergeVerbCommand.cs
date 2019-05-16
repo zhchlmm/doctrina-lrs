@@ -1,5 +1,5 @@
-﻿using Doctrina.Domain.Entities;
-using Doctrina.Persistence;
+﻿using Doctrina.Application.Interfaces;
+using Doctrina.Domain.Entities;
 using Doctrina.xAPI;
 using MediatR;
 using System.Threading;
@@ -13,12 +13,10 @@ namespace Doctrina.Application.Verbs.Commands
 
         public class Handler : IRequestHandler<MergeVerbCommand, VerbEntity>
         {
-            private readonly DoctrinaDbContext _context;
+            private readonly IDoctrinaDbContext _context;
             private readonly IMediator _mediator;
 
-            public Handler(
-                DoctrinaDbContext context,
-                IMediator mediator)
+            public Handler(IDoctrinaDbContext context, IMediator mediator)
             {
                 _context = context;
                 _mediator = mediator;
@@ -26,13 +24,13 @@ namespace Doctrina.Application.Verbs.Commands
 
             public async Task<VerbEntity> Handle(MergeVerbCommand request, CancellationToken cancellationToken)
             {
-                string verbChecksum = Iri.ComputeHash(request.Verb.Id);
+                string verbHash = Iri.ComputeHash(request.Verb.Id);
 
-                var verb = await _context.Verbs.FindAsync(verbChecksum);
+                var verb = await _context.Verbs.FindAsync(request.Verb.Id);
                 if (verb != null)
                 {
                     // TODO: Update verb Display language maps
-                    foreach(var dis in request.Verb.Display)
+                    foreach (var dis in request.Verb.Display)
                     {
                         verb.Display.Add(dis);
                     }
@@ -40,7 +38,7 @@ namespace Doctrina.Application.Verbs.Commands
                 else
                 {
                     verb = request.Verb;
-                    verb.Checksum = verbChecksum;
+                    verb.VerbHash = verbHash;
 
                     _context.Verbs.Add(verb);
                 }

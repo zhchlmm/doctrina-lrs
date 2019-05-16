@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IO;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.LRS.Routing
@@ -37,12 +36,12 @@ namespace Doctrina.xAPI.LRS.Routing
         private async Task LogRequestAsync(HttpRequest request)
         {
             request.EnableRewind();
-            
-                _logger.LogInformation($"{request.Method} " +
-                                       $"{request.Scheme}://" +
-                                       $"{request.Host}" +
-                                       $"{request.Path}" +
-                                       $"{request.QueryString}");
+
+            _logger.LogInformation($"{request.Method} " +
+                                   $"{request.Scheme}://" +
+                                   $"{request.Host}" +
+                                   $"{request.Path}" +
+                                   $"{request.QueryString}");
             //using (var requestStream = _recyclableMemoryStreamManager.GetStream())
             //{
             //    request.Body.CopyTo(requestStream);
@@ -83,26 +82,26 @@ namespace Doctrina.xAPI.LRS.Routing
             await Task.FromResult(0);
         }
 
-        private static string ReadStreamInChunks(Stream stream)
-        {
-            stream.Seek(0, SeekOrigin.Begin);
-            string result;
-            using (var textWriter = new StringWriter())
-            using (var reader = new StreamReader(stream))
-            {
-                var readChunk = new char[ReadChunkBufferLength];
-                int readChunkLength;
-                //do while: is useful for the last iteration in case readChunkLength < chunkLength
-                do
-                {
-                    readChunkLength = reader.ReadBlock(readChunk, 0, ReadChunkBufferLength);
-                    textWriter.Write(readChunk, 0, readChunkLength);
-                } while (readChunkLength > 0);
+        //private static string ReadStreamInChunks(Stream stream)
+        //{
+        //    stream.Seek(0, SeekOrigin.Begin);
+        //    string result;
+        //    using (var textWriter = new StringWriter())
+        //    using (var reader = new StreamReader(stream))
+        //    {
+        //        var readChunk = new char[ReadChunkBufferLength];
+        //        int readChunkLength;
+        //        //do while: is useful for the last iteration in case readChunkLength < chunkLength
+        //        do
+        //        {
+        //            readChunkLength = reader.ReadBlock(readChunk, 0, ReadChunkBufferLength);
+        //            textWriter.Write(readChunk, 0, readChunkLength);
+        //        } while (readChunkLength > 0);
 
-                result = textWriter.ToString();
-            }
+        //        result = textWriter.ToString();
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
     }
 }

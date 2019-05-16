@@ -1,10 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace Doctrina.xAPI.InteractionTypes
 {
@@ -28,7 +24,7 @@ namespace Doctrina.xAPI.InteractionTypes
 
         public InteractionComponentCollection(JArray jarr, ApiVersion version)
         {
-            foreach(var item in jarr)
+            foreach (var item in jarr)
             {
                 Add(new InteractionComponent(item.Value<JObject>(), version));
             }
@@ -71,7 +67,7 @@ namespace Doctrina.xAPI.InteractionTypes
         public override JArray ToJToken(ApiVersion version, ResultFormat format)
         {
             var jarr = new JArray();
-            foreach(var component in Components)
+            foreach (var component in Components)
             {
                 jarr.Add(component.ToJToken(version, format));
             }

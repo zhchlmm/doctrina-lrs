@@ -123,7 +123,7 @@ namespace Doctrina.xAPI
                 jobj["min"] = Min;
             }
 
-            if(Max.HasValue)
+            if (Max.HasValue)
             {
                 jobj["max"] = Max;
             }

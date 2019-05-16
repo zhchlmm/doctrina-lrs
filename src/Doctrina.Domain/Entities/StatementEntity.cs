@@ -40,8 +40,8 @@ namespace Doctrina.Domain.Entities
                         return ObjectActivity;
                     case EntityObjectType.SubStatement:
                         return ObjectSubStatement;
-                    //case EntityObjectType.StatementRef:
-                    //    return ObjectStatementRef;
+                        //case EntityObjectType.StatementRef:
+                        //    return ObjectStatementRef;
                 }
 
                 return null;

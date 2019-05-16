@@ -19,9 +19,9 @@ namespace Doctrina.xAPI
         public Statement(string jsonString) : this(JObject.Parse(jsonString)) { }
         public Statement(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Statement(JObject jobj, ApiVersion version)
-            :base(jobj, version)
+            : base(jobj, version)
         {
-            if(jobj["id"] != null)
+            if (jobj["id"] != null)
             {
                 Id = jobj.Value<Guid?>("id");
             }
@@ -90,10 +90,10 @@ namespace Doctrina.xAPI
             var statement = obj as Statement;
             return statement != null &&
                    base.Equals(obj);
-                   //&&
-                   //EqualityComparer<Guid?>.Default.Equals(Id, statement.Id) &&
-                   //EqualityComparer<Agent>.Default.Equals(Authority, statement.Authority) &&
-                   //EqualityComparer<XAPIVersion>.Default.Equals(Version, statement.Version);
+            //&&
+            //EqualityComparer<Guid?>.Default.Equals(Id, statement.Id) &&
+            //EqualityComparer<Agent>.Default.Equals(Authority, statement.Authority) &&
+            //EqualityComparer<XAPIVersion>.Default.Equals(Version, statement.Version);
         }
 
         public override int GetHashCode()
@@ -124,35 +124,6 @@ namespace Doctrina.xAPI
         {
             // Override default version
             return base.ToJson(Version, format);
-        }
-
-        public static Statement Parse(string jsonString)
-        {
-            var obj = JObject.Parse(jsonString);
-
-            var statement = new Statement();
-
-            if (obj["id"] != null)
-            {
-                statement.Id = obj["id"].Value<Guid>();
-            }
-
-            if (obj["stored"] != null)
-            {
-                statement.Stored = obj["stored"].Value<DateTimeOffset?>();
-            }
-
-            if(obj["authority"] != null)
-            {
-                statement.Authority = Agent.Parse(obj["authority"].ToString());
-            }
-
-            if(obj["version"] != null)
-            {
-                statement.Version = obj["version"].Value<string>();
-            }
-
-            return statement;
         }
 
         public static bool operator ==(Statement statement1, Statement statement2)

@@ -1,12 +1,5 @@
-﻿using Doctrina.xAPI;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace Doctrina.xAPI.Json.Converters
 {
@@ -22,7 +15,7 @@ namespace Doctrina.xAPI.Json.Converters
             var score = new Score();
             serializer.Populate(reader, score);
 
-            if(score.Scaled < -1 || score.Scaled > 1)
+            if (score.Scaled < -1 || score.Scaled > 1)
             {
                 throw new JsonSerializationException("A 'score' Object's 'scaled' property is a decimal number between -1 and 1, inclusive.");
             }

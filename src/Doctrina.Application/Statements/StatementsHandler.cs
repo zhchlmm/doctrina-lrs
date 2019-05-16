@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Doctrina.Application.Agents.Commands;
+using Doctrina.Application.Interfaces;
 using Doctrina.Application.Statements.Commands;
 using Doctrina.Application.Statements.Queries;
 using Doctrina.Application.Verbs.Commands;
 using Doctrina.Domain.Entities;
-using Doctrina.Persistence;
 using Doctrina.xAPI;
 using FluentValidation;
 using FluentValidation.Results;
@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,18 +21,18 @@ namespace Doctrina.Application.Statements
     public class StatementsHandler :
         IRequestHandler<GetStatementsQuery, ICollection<Statement>>,
         IRequestHandler<GetStatementQuery, Statement>,
-        IRequestHandler<GetConsistentThroughQuery, DateTimeOffset>,
+        IRequestHandler<GetConsistentThroughQuery, DateTimeOffset?>,
         IRequestHandler<GetVoidedStatemetQuery, Statement>,
         IRequestHandler<CreateStatementCommand, Guid>,
         IRequestHandler<CreateStatementsCommand, ICollection<Guid>>,
         IRequestHandler<PutStatementCommand>,
         IRequestHandler<VoidStatementCommand>
     {
-        private readonly DoctrinaDbContext _context;
+        private readonly IDoctrinaDbContext _context;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public StatementsHandler(DoctrinaDbContext context, IMediator mediator, IMapper mapper)
+        public StatementsHandler(IDoctrinaDbContext context, IMediator mediator, IMapper mapper)
         {
             _context = context;
             _mediator = mediator;
@@ -45,14 +44,34 @@ namespace Doctrina.Application.Statements
             throw new NotImplementedException();
         }
 
-        public Task<Statement> Handle(GetStatementQuery request, CancellationToken cancellationToken)
+        public async Task<Statement> Handle(GetStatementQuery request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            StatementEntity entity = null;
+            if (request.IncludeAttachments)
+            {
+                entity = await _context.Statements
+                    .Include(x => x.Attachments)
+                    .FirstOrDefaultAsync(x => x.StatementId == request.StatementId && x.Voided == false, cancellationToken);
+            }
+            else
+            {
+                entity = await _context.Statements
+                    .FirstOrDefaultAsync(x => x.StatementId == request.StatementId && x.Voided == false, cancellationToken);
+            }
+
+            if (entity == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<Statement>(entity);
         }
 
-        public Task<DateTimeOffset> Handle(GetConsistentThroughQuery request, CancellationToken cancellationToken)
+        public async Task<DateTimeOffset?> Handle(GetConsistentThroughQuery request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var first = await _context.Statements.OrderByDescending(x => x.Stored)
+                .FirstOrDefaultAsync(cancellationToken);
+            return first?.Stored;
         }
 
         public Task<Statement> Handle(GetVoidedStatemetQuery request, CancellationToken cancellationToken)
@@ -99,7 +118,7 @@ namespace Doctrina.Application.Statements
         public async Task<ICollection<Guid>> Handle(CreateStatementsCommand request, CancellationToken cancellationToken)
         {
             var ids = new HashSet<Guid>();
-            foreach(var statement in request.Statements)
+            foreach (var statement in request.Statements)
             {
                 ids.Add(await Handle(CreateStatementCommand.Create(statement), cancellationToken));
             }
@@ -112,7 +131,7 @@ namespace Doctrina.Application.Statements
 
             request.Statement.Id = request.StatementId;
 
-            if(savedStatement != null && 
+            if (savedStatement != null &&
                 !savedStatement.Equals(request.Statement))
             {
                 throw new ValidationException(new List<ValidationFailure>() {
@@ -133,7 +152,6 @@ namespace Doctrina.Application.Statements
 
             var statementRefId = voidingStatement.ObjectStatementRefId.Value;
             var voidedStatement = _context.Statements
-                .Include(x => x.Verb)
                 .FirstOrDefault(x => x.StatementId == statementRefId);
 
             // Upon receiving a Statement that voids another, the LRS SHOULD NOT* reject the request on the grounds of the Object of that voiding Statement not being present.
@@ -150,8 +168,7 @@ namespace Doctrina.Application.Statements
 
             voidedStatement.Voided = true;
 
-            this._context.Entry(voidedStatement).State = EntityState.Modified;
-            this._context.Statements.Update(voidedStatement);
+            _context.Statements.Update(voidedStatement);
 
             return await Unit.Task;
         }

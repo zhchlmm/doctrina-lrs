@@ -11,12 +11,12 @@ namespace Doctrina.xAPI.InteractionTypes
         }
         public Choice(JObject jobj, ApiVersion version) : base(jobj, version)
         {
-            if(jobj["choices"] != null)
+            if (jobj["choices"] != null)
             {
                 Choices = new InteractionComponentCollection(jobj.Value<JArray>("choices"), version);
             }
         }
-        
+
 
         [JsonProperty("choices")]
         public InteractionComponentCollection Choices { get; set; }

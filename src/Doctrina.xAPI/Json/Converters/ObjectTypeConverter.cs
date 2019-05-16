@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Linq;
-using System.Runtime.Serialization;
 
 namespace Doctrina.xAPI.Json.Converters
 {
@@ -14,7 +12,7 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
-            if(reader.TokenType != JsonToken.String)
+            if (reader.TokenType != JsonToken.String)
             {
                 throw new JsonSerializationException("Must be a string.");
             }
@@ -34,19 +32,8 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
-            var memberType = value.GetType();
-            var memberInfo = memberType.GetMember(value.ToString());
-            var enumMemberAttributes = memberInfo[0].GetCustomAttributes(typeof(EnumMemberAttribute), false);
-
-            if (enumMemberAttributes.Any())
-            {
-                var attribute = (EnumMemberAttribute)enumMemberAttributes[0];
-                writer.WriteValue(attribute.Value);
-            }
-            else
-            {
-                writer.WriteValue(nameof(value));
-            }
+            ObjectType objType = (ObjectType)value;
+            writer.WriteValue(objType.ToString());
         }
 
         public override bool CanRead => true;

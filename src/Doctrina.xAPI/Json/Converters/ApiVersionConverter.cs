@@ -33,6 +33,6 @@ namespace Doctrina.xAPI.Json.Converters
         }
 
         public override bool CanWrite => true;
-        public override bool CanRead => true; 
+        public override bool CanRead => true;
     }
 }

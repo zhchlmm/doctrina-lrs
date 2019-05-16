@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Json.Converters
 {
@@ -21,7 +17,7 @@ namespace Doctrina.xAPI.Json.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
             string uriString = reader.Value as string;
-            if(Uri.IsWellFormedUriString(uriString, UriKind.RelativeOrAbsolute))
+            if (Uri.IsWellFormedUriString(uriString, UriKind.RelativeOrAbsolute))
             {
                 return new Uri(uriString);
             }

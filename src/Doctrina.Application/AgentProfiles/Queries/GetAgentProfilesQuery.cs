@@ -1,15 +1,12 @@
-﻿using Doctrina.Domain.Entities.Documents;
-using Doctrina.xAPI;
+﻿using Doctrina.xAPI;
+using Doctrina.xAPI.Documents;
 using MediatR;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.Application.AgentProfiles.Queries
 {
-    public class GetAgentProfilesQuery : IRequest<ICollection<AgentProfileEntity>>
+    public class GetAgentProfilesQuery : IRequest<ICollection<AgentProfileDocument>>
     {
         public Agent Agent { get; set; }
         public DateTimeOffset? Since { get; set; }

@@ -8,7 +8,7 @@ namespace Doctrina.Domain.Entities
         /// <summary>
         /// SHA-1 of <see cref="Id"/>
         /// </summary>
-        public string Checksum { get; set; }
+        public string VerbHash { get; set; }
 
         /// <summary>
         /// Corresponds to a Verb definition. (IRI)

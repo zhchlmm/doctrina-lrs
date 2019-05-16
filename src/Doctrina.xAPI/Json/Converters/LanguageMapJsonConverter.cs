@@ -14,7 +14,7 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
-            if(reader.TokenType == JsonToken.StartObject)
+            if (reader.TokenType == JsonToken.StartObject)
             {
                 JObject jobj = JObject.Load(reader);
 
@@ -35,7 +35,7 @@ namespace Doctrina.xAPI.Json.Converters
 
                     try
                     {
-                        if(property.Name == "und")
+                        if (property.Name == "und")
                         {
                             // Undetermined
                         }
@@ -79,7 +79,8 @@ namespace Doctrina.xAPI.Json.Converters
             //writer.WriteEndObject();
 
             var jobj = new JObject();
-            foreach(var lang in langMap){
+            foreach (var lang in langMap)
+            {
                 jobj.Add(lang.Key, lang.Value);
             }
             jobj.WriteTo(writer);

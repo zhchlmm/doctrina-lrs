@@ -1,7 +1,5 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
@@ -47,7 +45,7 @@ namespace Doctrina.xAPI
         public static implicit operator SubStatement(JObject jobj)
         {
             return new SubStatement(jobj);
-        } 
+        }
 
         public static bool operator ==(SubStatement statement1, SubStatement statement2)
         {

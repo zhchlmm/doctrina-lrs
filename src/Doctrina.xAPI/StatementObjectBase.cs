@@ -1,21 +1,19 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Doctrina.xAPI
 {
     [JsonConverter(typeof(StatementObjectConverter))]
-    public abstract class StatementObjectBase : JsonModel, IObjectType
+    public abstract class StatementObjectBase : JsonModel
     {
         protected StatementObjectBase() { }
         protected StatementObjectBase(JObject jobj, ApiVersion version)
         {
         }
 
-        protected virtual ObjectType OBJECT_TYPE { get; }
+        protected abstract ObjectType OBJECT_TYPE { get; }
 
         public ObjectType ObjectType { get { return this.OBJECT_TYPE; } }
 
@@ -29,29 +27,15 @@ namespace Doctrina.xAPI
 
         internal static IObjectType Parse(JObject jobj, ApiVersion version)
         {
-            string strObjectType = jobj["objectType"].Value<string>();
-
-            if (strObjectType == ObjectType.StatementRef)
+            if (jobj["objectType"] != null)
             {
-                return new StatementRef(jobj, version);
+                ObjectType strObjectType = jobj.Value<string>("objectType");
+
+                return strObjectType.CreateInstance(jobj, version);
             }
 
-            if (strObjectType == ObjectType.SubStatement)
-            {
-                return new SubStatement(jobj, version);
-            }
-
-            if (strObjectType == ObjectType.Agent)
-            {
-                return new Agent(jobj, version);
-            }
-
-            if (strObjectType == ObjectType.Group)
-            {
-                return new Group(jobj, version);
-            }
-
-            return new Activity(jobj, version);
+            // Assume activity
+            return ObjectType.Activity.CreateInstance(jobj, version);
         }
 
         public override bool Equals(object obj)

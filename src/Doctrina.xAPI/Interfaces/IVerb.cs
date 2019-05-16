@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Doctrina.xAPI
+﻿namespace Doctrina.xAPI
 {
     public interface IVerb
     {

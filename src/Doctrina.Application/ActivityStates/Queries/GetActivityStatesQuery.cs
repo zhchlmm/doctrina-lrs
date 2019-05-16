@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Doctrina.xAPI;
+﻿using Doctrina.xAPI;
 using Doctrina.xAPI.Documents;
 using MediatR;
+using System;
+using System.Collections.Generic;
 
 namespace Doctrina.Application.ActivityStates.Queries
 {

@@ -18,7 +18,7 @@ namespace Doctrina.xAPI.Json.Converters
 
             serializer.Populate(jobj.CreateReader(), target);
 
-            if(target.Context != null)
+            if (target.Context != null)
             {
                 if (!string.IsNullOrWhiteSpace(target.Context.Revision)
                 && target.Object.ObjectType != ObjectType.Activity)
@@ -43,6 +43,6 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override bool CanRead => true;
 
-        public override bool CanWrite => false; 
+        public override bool CanWrite => false;
     }
 }

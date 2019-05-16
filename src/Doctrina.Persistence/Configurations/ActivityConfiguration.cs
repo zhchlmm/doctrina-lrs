@@ -8,8 +8,9 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ActivityEntity> builder)
         {
-            builder.HasKey(e => e.ActivityHash);
-            builder.Property(e => e.ActivityHash)
+            builder.HasKey(x => x.ActivityHash);
+
+            builder.Property(x => x.ActivityHash)
                 .HasMaxLength(Constants.HASH_LENGTH)
                 .IsRequired();
 

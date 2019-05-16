@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -24,19 +25,20 @@ namespace Doctrina.Domain.Entities
 
         public Account Account { get; set; }
 
-        public string GenerateIdentifierHash()
+        public string ComputeHash()
         {
-            ICollection<string> ids = GetInverseFunctionalIdentifiers();
-
-            ids.Add(Enum.GetName(typeof(EntityObjectType), ObjectType));
-
             using (var md5 = MD5.Create())
             {
-                string key = string.Join("|", ids);
+                string key = GetInverseFunctionalIndentifier();
                 byte[] bytes = Encoding.UTF8.GetBytes(key);
                 byte[] hash = md5.ComputeHash(bytes);
                 return Encoding.UTF8.GetString(hash);
             }
+        }
+
+        public string GetInverseFunctionalIndentifier()
+        {
+            return GetInverseFunctionalIdentifiers().FirstOrDefault();
         }
 
         public ICollection<string> GetInverseFunctionalIdentifiers()
@@ -58,19 +60,16 @@ namespace Doctrina.Domain.Entities
                 ids.Add(OpenId);
             }
 
-            //if (!string.IsNullOrWhiteSpace(OauthIdentifier))
-            //{
-            //    ids.Add(OauthIdentifier);
-            //}
-
             if (Account != null)
             {
-                ids.Add(Account.HomePage + "|" + Account.Name);
+                var uriBuilder = new UriBuilder(Account.HomePage);
+                uriBuilder.UserName = Account.Name;
+                ids.Add(uriBuilder.ToString());
             }
 
-            // Is anonymous group?
             if (ids.Count == 0 && ObjectType == EntityObjectType.Group)
             {
+                // Is anonymous group, generate unique id
                 ids.Add(Guid.NewGuid().ToString());
             }
 

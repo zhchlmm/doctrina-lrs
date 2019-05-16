@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Reflection;
-
-namespace Doctrina.Persistence.Extensions
+﻿namespace Doctrina.Persistence.Extensions
 {
     //public static class ModelBuilderExtensions
     //{

@@ -1,5 +1,4 @@
 ﻿using System;
-using Doctrina.xAPI;
 
 namespace Doctrina.xAPI.Documents
 {

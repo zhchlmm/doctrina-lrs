@@ -1,20 +1,15 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI
 {
     [JsonObject]
-    public class StatementRef : StatementObjectBase
+    public class StatementRef : StatementObjectBase, IObjectType
     {
         public StatementRef() { }
-        public StatementRef(string jsonString) : this(JObject.Parse(jsonString)){ }
+        public StatementRef(string jsonString) : this(JObject.Parse(jsonString)) { }
         public StatementRef(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public StatementRef(JObject jobj, ApiVersion version)
         {

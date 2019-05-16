@@ -1,9 +1,5 @@
-﻿using Doctrina.xAPI;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -34,7 +30,7 @@ namespace Doctrina.xAPI.Http
             var jsonString = JsonConvert.SerializeObject(_statement, Formatting.None);
             var bytes = Encoding.UTF8.GetBytes(jsonString);
 
-            using(var ms = new MemoryStream(bytes))
+            using (var ms = new MemoryStream(bytes))
             {
                 await ms.CopyToAsync(stream);
             }

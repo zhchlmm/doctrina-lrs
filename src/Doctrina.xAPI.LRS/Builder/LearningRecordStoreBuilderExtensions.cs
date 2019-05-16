@@ -53,7 +53,8 @@ namespace Doctrina.xAPI.LRS.Builder
             builder.UseMiddleware<ConsistentThroughMiddleware>();
             builder.UseMiddleware<UnrecognizedParametersMiddleware>();
 
-            builder.UseMvc(routes => {
+            builder.UseMvc(routes =>
+            {
                 routes.MapRoute(
                     name: "xapi",
                     template: "xapi/{controller}"

@@ -21,7 +21,7 @@ namespace Doctrina.xAPI.Json.Converters
         {
             JToken token = JToken.Load(reader);
 
-            if(token.Type != JTokenType.Date || token.Type != JTokenType.String)
+            if (token.Type != JTokenType.Date || token.Type != JTokenType.String)
             {
 
             }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace Doctrina.xAPI.LRS.Routing
         private readonly string[] allowedMethodNames = new string[] { "POST", "GET", "PUT", "DELETE" };
         private readonly string[] formHttpHeaders = new string[] { "Authorization", "X-Experience-API-Version", "Content-Type", "Content-Length", "If-Match", "If-None-Match" };
         // TODO: This might work in most chases but is not really valid.
-        private readonly Regex unsafeUrlRegex =new Regex(@"^-\]_.~!*'();:@&=+$,/?%#[A-z0-9]");
+        private readonly Regex unsafeUrlRegex = new Regex(@"^-\]_.~!*'();:@&=+$,/?%#[A-z0-9]");
 
         public AlternateRequestMiddleware(RequestDelegate next)
         {
@@ -126,15 +125,6 @@ namespace Doctrina.xAPI.LRS.Routing
                     request.QueryString = new QueryString();
                 }
             }
-        }
-    }
-
-    public static class AlternateRequestMiddlewareExtensions
-    {
-        public static IApplicationBuilder UseAlternateRequestSyntax(
-            this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<AlternateRequestMiddleware>();
         }
     }
 }

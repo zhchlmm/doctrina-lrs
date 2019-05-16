@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Doctrina.xAPI
@@ -18,7 +17,7 @@ namespace Doctrina.xAPI
            : this(JObject.Parse(jsonString))
         {
         }
-        public StatementsResult(JObject jobj): this(jobj, ApiVersion.GetLatest()) { }
+        public StatementsResult(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public StatementsResult(JObject jobj, ApiVersion version)
         {
             if (jobj["statements"] != null)
@@ -26,7 +25,7 @@ namespace Doctrina.xAPI
                 Statements = new StatementCollection(jobj.Value<JArray>("statements"), version);
             }
 
-            if(jobj["more"] != null)
+            if (jobj["more"] != null)
             {
                 More = jobj.Value<Uri>("more");
             }
@@ -129,6 +128,6 @@ namespace Doctrina.xAPI
             return obj;
         }
 
-        
+
     }
 }

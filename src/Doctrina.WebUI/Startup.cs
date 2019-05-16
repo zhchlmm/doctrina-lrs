@@ -1,6 +1,13 @@
-﻿using Doctrina.Application.Infrastructure;
+﻿using AutoMapper;
+using Doctrina.Application.Infrastructure;
 using Doctrina.Application.Infrastructure.AutoMapper;
+using Doctrina.Application.Interfaces;
+using Doctrina.Application.Statements;
+using Doctrina.Application.Statements.Commands;
 using Doctrina.Persistence;
+using Doctrina.WebUI.Filters;
+using Doctrina.xAPI.LRS.Builder;
+using FluentValidation.AspNetCore;
 using MediatR;
 using MediatR.Pipeline;
 using Microsoft.AspNetCore.Builder;
@@ -11,14 +18,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using NSwag.AspNetCore;
-using Doctrina.xAPI.LRS.Builder;
-using AutoMapper;
-using Doctrina.Application.Statements.Queries;
-using Doctrina.WebUI.Filters;
-using FluentValidation.AspNetCore;
-using Doctrina.Application.Statements.Commands;
+using System.Reflection;
 
 namespace Doctrina.WebUI
 {
@@ -44,13 +45,13 @@ namespace Doctrina.WebUI
             //services.AddTransient<IDateTime, MachineDateTime>();
 
             // Add MediatR
-            services.AddMediatR(typeof(GetStatementQueryHandler).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(StatementsHandler).GetTypeInfo().Assembly);
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
 
             // Add DbContext using SQL Server Provider
-            services.AddDbContext<DoctrinaDbContext>(options =>
+            services.AddDbContext<IDoctrinaDbContext, DoctrinaDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DoctrinaDatabase")));
 
             //services.AddIdentity<DoctrinaUser, IdentityRole>()

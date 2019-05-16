@@ -7,7 +7,7 @@ namespace Doctrina.xAPI.Json.Serialization
     {
         public static void IsString(JToken token)
         {
-            if(token.Type != JTokenType.String)
+            if (token.Type != JTokenType.String)
             {
                 throw new JsonSerializationException("Is not a valid string.");
             }

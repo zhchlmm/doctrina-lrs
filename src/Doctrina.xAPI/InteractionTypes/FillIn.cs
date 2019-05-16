@@ -20,6 +20,6 @@ namespace Doctrina.xAPI.InteractionTypes
         public FillIn(JObject jobj, ApiVersion version) : base(jobj, version)
         {
         }
-       
+
     }
 }

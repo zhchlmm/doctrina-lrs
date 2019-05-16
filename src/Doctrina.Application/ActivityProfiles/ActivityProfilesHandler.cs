@@ -1,8 +1,11 @@
-﻿using Doctrina.Application.Activities.Commands;
+﻿using AutoMapper;
+using Doctrina.Application.Activities.Commands;
 using Doctrina.Application.ActivityProfiles.Commands;
 using Doctrina.Application.ActivityProfiles.Queries;
+using Doctrina.Application.Interfaces;
 using Doctrina.Domain.Entities.Documents;
-using Doctrina.Persistence;
+using Doctrina.xAPI;
+using Doctrina.xAPI.Documents;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,39 +17,37 @@ using System.Threading.Tasks;
 namespace Doctrina.Application.ActivityProfiles
 {
     public class ActivityProfilesHandler :
-        IRequestHandler<CreateActivityProfileCommand, ActivityProfileEntity>,
+        IRequestHandler<CreateActivityProfileCommand, ActivityProfileDocument>,
         IRequestHandler<UpdateActivityProfileCommand>,
-        IRequestHandler<GetActivityProfileQuery, ActivityProfileEntity>,
-        IRequestHandler<GetActivityProfilesQuery, ICollection<ActivityProfileEntity>>,
+        IRequestHandler<GetActivityProfileQuery, ActivityProfileDocument>,
+        IRequestHandler<GetActivityProfilesQuery, ICollection<ActivityProfileDocument>>,
         IRequestHandler<DeleteActivityProfileCommand>
     {
-        private readonly DoctrinaDbContext _context;
+        private readonly IDoctrinaDbContext _context;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public ActivityProfilesHandler(DoctrinaDbContext context, IMediator mediator)
+        public ActivityProfilesHandler(IDoctrinaDbContext context, IMediator mediator, IMapper mapper)
         {
             _context = context;
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         public async Task<Unit> Handle(UpdateActivityProfileCommand request, CancellationToken cancellationToken)
         {
-            ActivityProfileEntity profile = await Handle(new GetActivityProfileQuery()
-            {
-                ActivityId = request.ActivityId,
-                ProfileId = request.ProfileId,
-                Registration = request.Registration
-            }, cancellationToken);
+            ActivityProfileEntity profile = await GetProfile(request.ActivityId, request.ProfileId, request.Registration, cancellationToken);
 
             profile.UpdateDate = DateTime.UtcNow;
             profile.Document.Update(request.Content, request.ContentType);
 
             _context.ActivityProfiles.Update(profile);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return await Unit.Task;
         }
 
-        public async Task<ActivityProfileEntity> Handle(CreateActivityProfileCommand request, CancellationToken cancellationToken)
+        public async Task<ActivityProfileDocument> Handle(CreateActivityProfileCommand request, CancellationToken cancellationToken)
         {
             var activity = await _mediator.Send(new MergeActivityIriCommand()
             {
@@ -56,55 +57,57 @@ namespace Doctrina.Application.ActivityProfiles
             var profile = new ActivityProfileEntity()
             {
                 Key = Guid.NewGuid(),
-                ActivityEntityId = activity.ActivityHash,
+                ActivityHash = activity.ActivityHash,
                 ProfileId = request.ProfileId,
                 RegistrationId = request.Registration,
                 Document = DocumentEntity.Create(request.Content, request.ContentType)
             };
 
             _context.ActivityProfiles.Add(profile);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync(cancellationToken);
 
             //return profile;
-            return profile;
+            return _mapper.Map<ActivityProfileDocument>(profile);
         }
 
-        public async Task<ActivityProfileEntity> Handle(GetActivityProfileQuery request, CancellationToken cancellationToken)
+        public async Task<ActivityProfileDocument> Handle(GetActivityProfileQuery request, CancellationToken cancellationToken)
         {
-            string activityHash = request.ActivityId.ComputeHash();
-            ActivityProfileEntity profile = await _context.ActivityProfiles.FirstOrDefaultAsync(x => 
-                x.ActivityEntityId == activityHash && 
-                x.ProfileId == request.ProfileId &&
-                x.RegistrationId == request.Registration
-            );
+            ActivityProfileEntity profile = await GetProfile(request.ActivityId, request.ProfileId, request.Registration, cancellationToken);
 
-            return profile;
+            return _mapper.Map<ActivityProfileDocument>(profile);
         }
 
-        public async Task<ICollection<ActivityProfileEntity>> Handle(GetActivityProfilesQuery request, CancellationToken cancellationToken)
+        public async Task<ICollection<ActivityProfileDocument>> Handle(GetActivityProfilesQuery request, CancellationToken cancellationToken)
         {
             var activityHash = request.ActivityId.ComputeHash();
-            var query = _context.ActivityProfiles.Where(x => x.ActivityEntityId == activityHash);
+            var query = _context.ActivityProfiles.Where(x => x.ActivityHash == activityHash);
             if (request.Since.HasValue)
             {
                 query = query.Where(x => x.UpdateDate >= request.Since);
             }
             query = query.OrderByDescending(x => x.UpdateDate);
-            return await query.ToListAsync();
+            return _mapper.Map<ICollection<ActivityProfileDocument>>(await query.ToListAsync(cancellationToken));
         }
 
         public async Task<Unit> Handle(DeleteActivityProfileCommand request, CancellationToken cancellationToken)
         {
-            var profile = await Handle(new GetActivityProfileQuery()
-            {
-                ActivityId = request.ActivityId,
-                ProfileId = request.ProfileId,
-                Registration = request.Registration
-            }, cancellationToken);
+            var profile = await GetProfile(request.ActivityId, request.ProfileId, request.Registration, cancellationToken);
 
             _context.ActivityProfiles.Remove(profile);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return await Unit.Task;
+        }
+
+        private async Task<ActivityProfileEntity> GetProfile(Iri activityId, string profileId, Guid? registration, CancellationToken cancellationToken)
+        {
+            string activityHash = activityId.ComputeHash();
+            ActivityProfileEntity profile = await _context.ActivityProfiles.FirstOrDefaultAsync(x =>
+                x.ActivityHash == activityHash &&
+                x.ProfileId == profileId &&
+                x.RegistrationId == registration,
+                cancellationToken);
+            return profile;
         }
     }
 }

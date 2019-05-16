@@ -1,8 +1,4 @@
-﻿using Doctrina.Domain.Entities.OwnedTypes;
-using System.Collections;
-using System.Collections.Generic;
-
-namespace Doctrina.Domain.Entities
+﻿namespace Doctrina.Domain.Entities
 {
     public class InteractionActivity : ActivityDefinitionEntity
     {

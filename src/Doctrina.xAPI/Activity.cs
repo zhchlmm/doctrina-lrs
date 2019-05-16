@@ -1,19 +1,16 @@
 ﻿using Doctrina.xAPI.InteractionTypes;
-using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    [JsonObject]
     public class Activity : StatementObjectBase, IObjectType
     {
         public Activity() { }
 
         public Activity(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Activity(JObject jobj, ApiVersion version)
+            : base(jobj, version)
         {
             if (jobj["id"] != null)
             {
@@ -25,7 +22,7 @@ namespace Doctrina.xAPI
                 var jdefinition = jobj.Value<JObject>("definition");
 
                 JToken tokenInteractionType = jdefinition["interactionType"];
-                if(tokenInteractionType != null)
+                if (tokenInteractionType != null)
                 {
                     InteractionType interactionType = tokenInteractionType.Value<string>();
                     Definition = interactionType.CreateInstance(jdefinition, version);

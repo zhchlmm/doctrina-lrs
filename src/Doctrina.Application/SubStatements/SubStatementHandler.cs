@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Doctrina.Application.Agents.Commands;
+using Doctrina.Application.Interfaces;
 using Doctrina.Application.SubStatements.Commands;
 using Doctrina.Application.Verbs.Commands;
 using Doctrina.Domain.Entities;
-using Doctrina.Persistence;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,11 +12,11 @@ namespace Doctrina.Application.SubStatements
 {
     public class SubStatementHandler : IRequestHandler<CreateSubStatementCommand, SubStatementEntity>
     {
-        private readonly DoctrinaDbContext _context;
+        private readonly IDoctrinaDbContext _context;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public SubStatementHandler(DoctrinaDbContext context, IMediator mediator, IMapper mapper)
+        public SubStatementHandler(IDoctrinaDbContext context, IMediator mediator, IMapper mapper)
         {
             _context = context;
             _mediator = mediator;

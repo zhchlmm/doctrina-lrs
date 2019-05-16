@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace Doctrina.xAPI
 {
@@ -10,7 +9,8 @@ namespace Doctrina.xAPI
     {
         public abstract TToken ToJToken(ApiVersion version, ResultFormat format);
 
-        public virtual string ToJson(ApiVersion version, ResultFormat format = ResultFormat.Exact) {
+        public virtual string ToJson(ApiVersion version, ResultFormat format = ResultFormat.Exact)
+        {
             return ToJToken(version, format).ToString();
         }
 

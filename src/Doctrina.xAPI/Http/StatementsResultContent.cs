@@ -1,7 +1,6 @@
 ﻿using Doctrina.xAPI.Exceptions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -22,7 +21,7 @@ namespace Doctrina.xAPI.Http
         {
             get
             {
-                if(_stream == null)
+                if (_stream == null)
                 {
                     _stream = CreateContentReadStreamAsync().Result;
                 }
@@ -38,7 +37,7 @@ namespace Doctrina.xAPI.Http
         /// </summary>
         #endregion
 
-        public StatementsResultContent() 
+        public StatementsResultContent()
             : base()
         {
         }
@@ -83,7 +82,7 @@ namespace Doctrina.xAPI.Http
                 return new StatementsResult(jsonString);
             }
         }
-        
+
         public async Task<StatementsResult> ReadAsMultipartAsync()
         {
             var multipartReader = new MultipartReader(GetBoundary(), ReadStream);
@@ -171,7 +170,7 @@ namespace Doctrina.xAPI.Http
             string jsonString = JsonConvert.SerializeObject(StatementsResultObject);
             var jsonContent = new StringContent(jsonString, Encoding.UTF8, MediaTypes.Application.Json);
 
-            if(Headers.ContentType.MediaType == MediaTypes.Multipart.Mixed)
+            if (Headers.ContentType.MediaType == MediaTypes.Multipart.Mixed)
             {
                 //string boundary = GetBoundary(Headers.ContentType);
                 var multipart = new MultipartContent
@@ -183,7 +182,7 @@ namespace Doctrina.xAPI.Http
                 var attachments = StatementsResultObject.Statements.SelectMany(x => x.Attachments);
 
                 // Add attachments
-                foreach(var attachment in attachments)
+                foreach (var attachment in attachments)
                 {
                     multipart.Add(new AttachmentContent(attachment));
                 }

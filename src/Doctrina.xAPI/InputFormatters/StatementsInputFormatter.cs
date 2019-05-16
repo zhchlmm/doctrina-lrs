@@ -3,8 +3,8 @@
     /// <summary>
     /// Used to deserialize request/response HttpClient and WebApi
     /// </summary>
-    public class StatementsInputFormatter 
+    public class StatementsInputFormatter
     {
-        
+
     }
 }

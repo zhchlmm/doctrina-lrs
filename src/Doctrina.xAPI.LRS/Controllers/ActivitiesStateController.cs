@@ -55,7 +55,7 @@ namespace Doctrina.xAPI.LRS.Controllers
 
                 var content = new FileContentResult(stateDocument.Content, stateDocument.ContentType.ToString());
                 content.LastModified = stateDocument.LastModified;
-                content.EntityTag = new Microsoft.Net.Http.Headers.EntityTagHeaderValue(stateDocument.ETag.Tag);
+                content.EntityTag = new Microsoft.Net.Http.Headers.EntityTagHeaderValue(stateDocument.Tag);
                 return content;
             }
             catch (Exception ex)
@@ -116,7 +116,8 @@ namespace Doctrina.xAPI.LRS.Controllers
                     return NotFound();
                 }
 
-                await _mediator.Send(new DeleteActivityStateCommand() {
+                await _mediator.Send(new DeleteActivityStateCommand()
+                {
                     StateId = model.StateId,
                     ActivityId = model.ActivityId,
                     Agent = model.Agent,
@@ -133,14 +134,14 @@ namespace Doctrina.xAPI.LRS.Controllers
 
         // DELETE xapi/activities/state
         [HttpDelete]
-        public async Task<IActionResult> DeleteStatesAsync([FromQuery]Iri activityId, [FromQuery(Name ="agent")]string strAgent, [FromQuery]Guid? registration = null)
+        public async Task<IActionResult> DeleteStatesAsync([FromQuery]Iri activityId, [FromQuery(Name = "agent")]string strAgent, [FromQuery]Guid? registration = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                Agent agent = Agent.Parse(strAgent);
+                Agent agent = new Agent(strAgent);
 
                 await _mediator.Send(new DeleteActivityStatesCommand()
                 {
@@ -173,8 +174,7 @@ namespace Doctrina.xAPI.LRS.Controllers
 
             try
             {
-                // TODO: Parsing should happend at parameter level
-                Agent agent = Agent.Parse(strAgent);
+                Agent agent = new Agent(strAgent);
 
                 ICollection<ActivityStateDocument> states = await _mediator.Send(new GetActivityStatesQuery()
                 {
@@ -184,12 +184,12 @@ namespace Doctrina.xAPI.LRS.Controllers
                     Since = since
                 });
 
-                if(states.Count <= 0)
+                if (states.Count <= 0)
                 {
                     return Ok(new string[0]);
                 }
 
-                IEnumerable<string> ids = states.Select(x => x.Id);
+                IEnumerable<string> ids = states.Select(x => x.StateId);
                 string lastModified = states.OrderByDescending(x => x.LastModified)
                     .FirstOrDefault()?
                     .LastModified?.ToString("o");

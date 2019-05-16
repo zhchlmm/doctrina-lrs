@@ -1,6 +1,4 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +8,7 @@ namespace Doctrina.xAPI
     {
         public StatementBase() { }
 
-        public StatementBase(JObject jobj) :this(jobj, ApiVersion.GetLatest()) { }
+        public StatementBase(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public StatementBase(JObject jobj, ApiVersion version)
         {
             if (jobj["actor"] != null)
@@ -53,7 +51,7 @@ namespace Doctrina.xAPI
             if (jobj["attachment"] != null)
             {
                 Attachments = new AttachmentCollection(jobj.Value<JObject>("attachment"), version);
-                
+
             }
         }
 
@@ -116,12 +114,12 @@ namespace Doctrina.xAPI
         {
             var jobj = new JObject();
 
-            if(Actor != null)
+            if (Actor != null)
             {
                 jobj["actor"] = Actor.ToJToken(version, format);
             }
 
-            if(Verb != null)
+            if (Verb != null)
             {
                 jobj["verb"] = Verb.ToJToken(version, format);
             }
@@ -131,7 +129,7 @@ namespace Doctrina.xAPI
                 jobj["object"] = Object.ToJToken(version, format);
             }
 
-            if(Result != null)
+            if (Result != null)
             {
                 jobj["result"] = Result.ToJToken(version, format);
             }
@@ -146,7 +144,7 @@ namespace Doctrina.xAPI
                 jobj["timestamp"] = Timestamp?.ToString("o");
             }
 
-            if(Attachments != null)
+            if (Attachments != null)
             {
                 jobj["attachments"] = Attachments.ToJToken(version, format);
             }

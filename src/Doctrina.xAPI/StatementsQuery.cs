@@ -1,5 +1,4 @@
-﻿using Doctrina.xAPI;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Specialized;
 using System.Web;
@@ -29,13 +28,13 @@ namespace Doctrina.xAPI
         /// <summary>
         /// Filter, only return Statements matching the specified Verb id.	
         /// </summary>
-        [FromQuery(Name ="verb")]
+        [FromQuery(Name = "verb")]
         public Uri VerbId { get; set; }
 
         /// <summary>
         /// Filter, only return Statements for which the Object of the Statement is an Activity with the specified id.	
         /// </summary>
-        [FromQuery(Name ="activity")]
+        [FromQuery(Name = "activity")]
         public Iri ActivityId { get; set; }
 
         /// <summary>

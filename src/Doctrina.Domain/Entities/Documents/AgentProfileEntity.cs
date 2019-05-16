@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Doctrina.Domain.Entities.Documents
 {
@@ -16,11 +14,9 @@ namespace Doctrina.Domain.Entities.Documents
 
         public string ETag { get; set; }
 
-        public string AgentEntityId { get; set; }
+        public string AgentHash { get; set; }
 
-        //public Guid DocumentId { get; set; }
-
-        public virtual AgentEntity Agent {get;set;}
+        public virtual AgentEntity Agent { get; set; }
 
         public virtual DocumentEntity Document { get; set; }
     }

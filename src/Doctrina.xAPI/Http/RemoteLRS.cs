@@ -403,13 +403,16 @@ namespace Doctrina.xAPI.Http
 
             response.EnsureSuccessStatusCode();
 
-            var state = new ActivityStateDocument();
-            state.Content = await response.Content.ReadAsByteArrayAsync();
-            state.ContentType = response.Content.Headers.ContentType;
-            state.Activity = new Activity() { Id = activityId };
-            state.Agent = agent;
-            state.ETag = response.Headers.ETag;
-            state.LastModified = response.Content.Headers.LastModified;
+            var state = new ActivityStateDocument
+            {
+                Content = await response.Content.ReadAsByteArrayAsync(),
+                ContentType = response.Content.Headers.ContentType.ToString(),
+                Activity = new Activity() { Id = activityId },
+                Agent = agent,
+                Tag = response.Headers.ETag.Tag,
+                LastModified = response.Content.Headers.LastModified
+            };
+
             return state;
         }
 
@@ -419,7 +422,7 @@ namespace Doctrina.xAPI.Http
             builder.Path += "/activities/state";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("stateId", state.Id);
+            query.Add("stateId", state.StateId);
             query.Add("activityId", state.Activity.Id.ToString());
             query.Add("agent", state.Agent.ToString());
 
@@ -433,22 +436,22 @@ namespace Doctrina.xAPI.Http
             // TOOD: Concurrency
             if (matchType.HasValue)
             {
-                if (state.ETag == null)
+                if (state.Tag == null)
                     throw new NullReferenceException("ETag");
 
                 switch (matchType.Value)
                 {
                     case ETagMatch.IfMatch:
-                        request.Headers.IfMatch.Add(state.ETag);
+                        request.Headers.IfMatch.Add(new EntityTagHeaderValue(state.Tag));
                         break;
                     case ETagMatch.IfNoneMatch:
-                        request.Headers.IfNoneMatch.Add(state.ETag);
+                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(state.Tag));
                         break;
                 }
             }
 
             request.Content = new ByteArrayContent(state.Content);
-            request.Content.Headers.ContentType = state.ContentType;
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(state.ContentType);
 
             var response = await client.SendAsync(request);
 
@@ -462,7 +465,7 @@ namespace Doctrina.xAPI.Http
             builder.Path += "/activities/state";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("stateId", state.Id);
+            query.Add("stateId", state.StateId);
             query.Add("activityId", state.Activity.Id.ToString());
             query.Add("agent", state.Agent.ToString());
 
@@ -476,16 +479,16 @@ namespace Doctrina.xAPI.Http
             // TOOD: Concurrency
             if (matchType.HasValue)
             {
-                if (state.ETag == null)
+                if (state.Tag == null)
                     throw new NullReferenceException("ETag");
 
                 switch (matchType.Value)
                 {
                     case ETagMatch.IfMatch:
-                        request.Headers.IfMatch.Add(state.ETag);
+                        request.Headers.IfMatch.Add(new EntityTagHeaderValue(state.Tag));
                         break;
                     case ETagMatch.IfNoneMatch:
-                        request.Headers.IfNoneMatch.Add(state.ETag);
+                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(state.Tag));
                         break;
                 }
             }
@@ -559,13 +562,13 @@ namespace Doctrina.xAPI.Http
             return JsonConvert.DeserializeObject<Guid[]>(strResponse);
         }
 
-        public async Task<ActivityProfileDocument> GetActivityProfile(string id, Iri activityId)
+        public async Task<ActivityProfileDocument> GetActivityProfile(string profileId, Iri activityId)
         {
             var builder = new UriBuilder(BaseAddress);
             builder.Path += "/activities/profile";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("profileId", id);
+            query.Add("profileId", profileId);
             query.Add("activityId", activityId.ToString());
 
             builder.Query = query.ToString();
@@ -576,11 +579,11 @@ namespace Doctrina.xAPI.Http
                 throw new HttpRequestException(response.ReasonPhrase);
 
             var profile = new ActivityProfileDocument();
-            profile.Id = id;
+            profile.ProfileId = profileId;
             profile.ActivityId = activityId;
             profile.Content = await response.Content.ReadAsByteArrayAsync();
-            profile.ContentType = response.Content.Headers.ContentType;
-            profile.ETag = response.Headers.ETag;
+            profile.ContentType = response.Content.Headers.ContentType.ToString();
+            profile.Tag = response.Headers.ETag.ToString();
             profile.LastModified = response.Content.Headers.LastModified;
             return profile;
         }
@@ -591,7 +594,7 @@ namespace Doctrina.xAPI.Http
             builder.Path += "/activities/profile";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("profileId", profile.Id);
+            query.Add("profileId", profile.ProfileId);
             query.Add("activityId", profile.ActivityId.ToString());
 
             if (profile.Registration.HasValue)
@@ -603,22 +606,22 @@ namespace Doctrina.xAPI.Http
 
             if (matchType.HasValue)
             {
-                if (profile.ETag == null)
+                if (profile.Tag == null)
                     throw new NullReferenceException("ETag");
 
                 switch (matchType.Value)
                 {
                     case ETagMatch.IfMatch:
-                        request.Headers.IfMatch.Add(profile.ETag);
+                        request.Headers.IfMatch.Add(new EntityTagHeaderValue(profile.Tag));
                         break;
                     case ETagMatch.IfNoneMatch:
-                        request.Headers.IfNoneMatch.Add(profile.ETag);
+                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(profile.Tag));
                         break;
                 }
             }
 
             request.Content = new ByteArrayContent(profile.Content);
-            request.Content.Headers.ContentType = profile.ContentType;
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(profile.ContentType);
 
             var response = await client.SendAsync(request);
 
@@ -632,7 +635,7 @@ namespace Doctrina.xAPI.Http
             builder.Path += "/activities/profile";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("profileId", profile.Id);
+            query.Add("profileId", profile.ProfileId);
             query.Add("activityId", profile.ActivityId.ToString());
 
             builder.Query = query.ToString();
@@ -641,16 +644,16 @@ namespace Doctrina.xAPI.Http
 
             if (matchType.HasValue)
             {
-                if (profile.ETag == null)
+                if (profile.Tag == null)
                     throw new NullReferenceException("ETag");
 
                 switch (matchType.Value)
                 {
                     case ETagMatch.IfMatch:
-                        request.Headers.IfMatch.Add(profile.ETag);
+                        request.Headers.IfMatch.Add(new EntityTagHeaderValue(profile.Tag));
                         break;
                     case ETagMatch.IfNoneMatch:
-                        request.Headers.IfNoneMatch.Add(profile.ETag);
+                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(profile.Tag));
                         break;
                 }
             }
@@ -683,13 +686,13 @@ namespace Doctrina.xAPI.Http
             return JsonConvert.DeserializeObject<Guid[]>(strResponse);
         }
 
-        public async Task<AgentProfileDocument> GetAgentProfile(string id, Agent agent)
+        public async Task<AgentProfileDocument> GetAgentProfile(string profileId, Agent agent)
         {
             var builder = new UriBuilder(BaseAddress);
             builder.Path += "/agents/profile";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("profileId", id);
+            query.Add("profileId", profileId);
             query.Add("agent", agent.ToString());
 
             builder.Query = query.ToString();
@@ -700,11 +703,11 @@ namespace Doctrina.xAPI.Http
                 throw new HttpRequestException(response.ReasonPhrase);
 
             var profile = new AgentProfileDocument();
-            profile.Id = id;
+            profile.ProfileId = profileId;
             profile.Agent = agent;
             profile.Content = await response.Content.ReadAsByteArrayAsync();
-            profile.ContentType = response.Content.Headers.ContentType;
-            profile.ETag = response.Headers.ETag;
+            profile.ContentType = response.Content.Headers.ContentType.ToString();
+            profile.Tag = response.Headers.ETag.ToString();
             profile.LastModified = response.Content.Headers.LastModified;
             return profile;
         }
@@ -715,7 +718,7 @@ namespace Doctrina.xAPI.Http
             builder.Path += "/agents/profile";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("profileId", profile.Id);
+            query.Add("profileId", profile.ProfileId);
             query.Add("agent", profile.Agent.ToString());
 
             builder.Query = query.ToString();
@@ -724,16 +727,16 @@ namespace Doctrina.xAPI.Http
 
             if (matchType.HasValue)
             {
-                if (profile.ETag == null)
+                if (profile.Tag == null)
                     throw new NullReferenceException("ETag");
 
                 switch (matchType.Value)
                 {
                     case ETagMatch.IfMatch:
-                        request.Headers.IfMatch.Add(profile.ETag);
+                        request.Headers.IfMatch.Add(new EntityTagHeaderValue(profile.Tag));
                         break;
                     case ETagMatch.IfNoneMatch:
-                        request.Headers.IfNoneMatch.Add(profile.ETag);
+                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(profile.Tag));
                         break;
                 }
             }
@@ -750,7 +753,7 @@ namespace Doctrina.xAPI.Http
             builder.Path += "/agents/profile";
 
             var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("profileId", profile.Id);
+            query.Add("profileId", profile.ProfileId);
             query.Add("agent", profile.Agent.ToString());
 
             builder.Query = query.ToString();
@@ -759,16 +762,16 @@ namespace Doctrina.xAPI.Http
 
             if (matchType.HasValue)
             {
-                if (profile.ETag == null)
+                if (profile.Tag == null)
                     throw new NullReferenceException("ETag");
 
                 switch (matchType.Value)
                 {
                     case ETagMatch.IfMatch:
-                        request.Headers.IfMatch.Add(profile.ETag);
+                        request.Headers.IfMatch.Add(new EntityTagHeaderValue(profile.Tag));
                         break;
                     case ETagMatch.IfNoneMatch:
-                        request.Headers.IfNoneMatch.Add(profile.ETag);
+                        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(profile.Tag));
                         break;
                 }
             }

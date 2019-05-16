@@ -16,7 +16,7 @@ namespace Doctrina.Persistence.Configurations
 
             builder.HasOne(e => e.Score)
                 .WithOne()
-                .HasForeignKey<ResultEntity>(e=> e.ScoreId);
+                .HasForeignKey<ResultEntity>(e => e.ScoreId);
 
             builder.Property(e => e.Extensions)
                 .HasColumnType("nvarchar(max)");

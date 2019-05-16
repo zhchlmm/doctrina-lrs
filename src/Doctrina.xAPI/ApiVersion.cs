@@ -84,7 +84,7 @@ namespace Doctrina.xAPI
 
             if (version.StartsWith("1.0.") || version.Equals("1.0"))
             {
-               // Accept version
+                // Accept version
             }
 
             else if (!GetKnownVersions().ContainsKey(version))

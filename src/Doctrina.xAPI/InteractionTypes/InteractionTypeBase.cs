@@ -1,13 +1,12 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace Doctrina.xAPI.InteractionTypes
 {
     public abstract class InteractionTypeBase : ActivityDefinition
     {
         public InteractionTypeBase() { }
-        public InteractionTypeBase(string jsonString) : this(JObject.Parse(jsonString)){ }
-        public InteractionTypeBase(JObject jobj) : this(jobj, ApiVersion.GetLatest()){ }
+        public InteractionTypeBase(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public InteractionTypeBase(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public InteractionTypeBase(JObject jobj, ApiVersion version)
             : base(jobj, version)
         {

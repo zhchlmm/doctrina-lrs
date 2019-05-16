@@ -10,12 +10,9 @@ namespace Doctrina.Persistence.Configurations
         {
             builder.HasKey(x => x.AgentHash);
 
-            builder.Property(e=> e.AgentHash)
-                .ValueGeneratedOnAdd();
-
             builder.Property(e => e.ObjectType)
                 .IsRequired()
-                .HasMaxLength(6);
+                .HasMaxLength(Constants.OBJECT_TYPE_LENGTH);// Or just 5 = Agent or Group
 
             builder.Property(e => e.Name)
                 .HasMaxLength(100);
@@ -26,14 +23,10 @@ namespace Doctrina.Persistence.Configurations
             builder.Property(e => e.Mbox_SHA1SUM)
                 .HasMaxLength(40);
 
-            builder.Property(e => e.Mbox_SHA1SUM)
-                .HasMaxLength(Constants.MAX_URL_LENGTH);
+            builder.OwnsOne(e => e.Account);
 
-            //builder.Property(e => e.OauthIdentifier)
-            //    .HasMaxLength(192);
-
-            builder.HasOne(e => e.Account)
-                .WithMany();
+            builder.HasIndex(x => new { x.ObjectType, x.AgentHash })
+                .IsUnique();
 
             builder
                 .HasIndex(x => new { x.ObjectType, x.Mbox })
@@ -52,7 +45,7 @@ namespace Doctrina.Persistence.Configurations
 
             builder
                 .HasIndex(agent => new { agent.ObjectType, agent.Account.HomePage, agent.Account.Name })
-                .HasFilter("[Account.Homepage] IS NOT NULL AND [Account_Name] IS NOT NULL")
+                .HasFilter("[Account_HomePage] IS NOT NULL AND [Account_Name] IS NOT NULL")
                 .IsUnique();
         }
     }

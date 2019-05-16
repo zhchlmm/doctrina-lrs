@@ -1,18 +1,15 @@
-﻿using Doctrina.Persistence;
+﻿using Doctrina.Application.Interfaces;
+using Doctrina.Persistence;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Serilog.Events;
-using Serilog.Core;
-using Doctrina.xAPI.LRS;
 
 namespace Doctrina.WebUI
 {
@@ -27,7 +24,6 @@ namespace Doctrina.WebUI
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseStartup<LrsStartup>()
                 .UseSerilog()
                 //.UseKestrel(options =>
                 //{
@@ -40,9 +36,9 @@ namespace Doctrina.WebUI
         {
             Log.Logger = new LoggerConfiguration()
                 //.ReadFrom.AppSettings()
-                .WriteTo.RollingFile("logs/log-{Date}.log", 
-                    shared: true, 
-                    flushToDiskInterval: new TimeSpan(0,0, 5))
+                .WriteTo.RollingFile("logs/log-{Date}.log",
+                    shared: true,
+                    flushToDiskInterval: new TimeSpan(0, 0, 5))
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Warning)
                 //.WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Error)
@@ -56,16 +52,18 @@ namespace Doctrina.WebUI
 
                 using (var scope = host.Services.CreateScope())
                 {
-                    var services = scope.ServiceProvider;
-                    var context = services.GetRequiredService<DoctrinaDbContext>();
                     try
                     {
-                        DoctrinaInitializer.Initialize(services);
+                        var context = scope.ServiceProvider.GetService<IDoctrinaDbContext>();
+
+                        var concreteContext = (DoctrinaDbContext)context;
+                        concreteContext.Database.Migrate();
+                        DoctrinaInitializer.Initialize(concreteContext);
                     }
                     catch (Exception ex)
                     {
-                        var logger = services.GetRequiredService<ILogger<Program>>();
-                        logger.LogError(ex, "An error occurred seeding the DB.");
+                        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                        logger.LogError(ex, "An error occurred while migrating or initializing the database.");
                     }
                 }
 
@@ -82,6 +80,6 @@ namespace Doctrina.WebUI
             }
         }
 
-        
+
     }
 }

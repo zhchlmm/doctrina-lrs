@@ -6,7 +6,7 @@ namespace Doctrina.Domain.Entities.Documents
     {
         ActivityEntity Activity { get; set; }
 
-        string ActivityEntityId { get; set; }
+        string ActivityHash { get; set; }
 
         DocumentEntity Document { get; set; }
 

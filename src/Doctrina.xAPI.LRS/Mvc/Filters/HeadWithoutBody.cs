@@ -1,10 +1,5 @@
-﻿using Doctrina.xAPI;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.LRS.Mvc.Filters
 {
@@ -15,10 +10,10 @@ namespace Doctrina.xAPI.LRS.Mvc.Filters
     {
         public override void OnActionExecuted(ActionExecutedContext context)
         {
-            if(context.HttpContext.Request.Method == "HEAD")
+            if (context.HttpContext.Request.Method == "HEAD")
             {
                 int statusCode = context.HttpContext.Response.StatusCode;
-                if (statusCode == 200 
+                if (statusCode == 200
                     || statusCode == 204)
                 {
                     // Return No Content

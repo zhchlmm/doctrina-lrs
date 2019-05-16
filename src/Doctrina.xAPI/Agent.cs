@@ -1,9 +1,7 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Doctrina.xAPI
 {
@@ -12,16 +10,16 @@ namespace Doctrina.xAPI
     /// </summary>
     [JsonObject]
     [JsonConverter(typeof(AgentJsonConverter))]
-    public class Agent : StatementObjectBase, IInvenseFunctionalIdenfitiers
+    public class Agent : StatementObjectBase, IInvenseFunctionalIdenfitiers, IAgent, IObjectType
     {
-        protected override ObjectType OBJECT_TYPE => ObjectType.Agent; 
+        protected override ObjectType OBJECT_TYPE => ObjectType.Agent;
 
-        public Agent() { }
+        public Agent() : base() { }
         public Agent(string jsonString) : this(JObject.Parse(jsonString)) { }
         public Agent(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public Agent(JObject jobj, ApiVersion version)
+        public Agent(JObject jobj, ApiVersion version) : base(jobj, version)
         {
-            if(jobj["name"] != null)
+            if (jobj["name"] != null)
             {
                 Name = jobj.Value<string>("name");
             }
@@ -33,7 +31,7 @@ namespace Doctrina.xAPI
 
             if (jobj["mbox_sha1sum"] != null)
             {
-                MboxSHA1SUM = jobj.Value<string>("mbox_sha1sum");
+                Mbox_SHA1SUM = jobj.Value<string>("mbox_sha1sum");
             }
 
             if (jobj["openid"] != null)
@@ -53,16 +51,15 @@ namespace Doctrina.xAPI
         [JsonProperty("objectType",
             Order = 1,
             Required = Required.DisallowNull)]
-        [EnumDataType(typeof(ObjectType))]
         [JsonConverter(typeof(ObjectTypeConverter))]
         public new ObjectType ObjectType { get { return OBJECT_TYPE; } }
 
         /// <summary>
         /// Full name of the Agent. (Optional)
         /// </summary>
-        [JsonProperty("name", 
+        [JsonProperty("name",
             Order = 2,
-            Required = Required.DisallowNull, 
+            Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
@@ -70,7 +67,7 @@ namespace Doctrina.xAPI
         /// The required format is "mailto:email address". 
         /// Only email addresses that have only ever been and will ever be assigned to this Agent, but no others, SHOULD be used for this property and mbox_sha1sum.
         /// </summary>
-        [JsonProperty("mbox", 
+        [JsonProperty("mbox",
             Order = 3,
             Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
@@ -79,16 +76,16 @@ namespace Doctrina.xAPI
         /// <summary>
         /// The hex-encoded SHA1 hash of a mailto IRI (i.e. the value of an mbox property). An LRS MAY include Agents with a matching hash when a request is based on an mbox.
         /// </summary>
-        [JsonProperty("mbox_sha1sum", 
+        [JsonProperty("mbox_sha1sum",
             Order = 4,
-            Required = Required.DisallowNull, 
+            Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
-        public string MboxSHA1SUM { get; set; }
+        public string Mbox_SHA1SUM { get; set; }
 
         /// <summary>
         /// An openID that uniquely identifies the Agent.
         /// </summary>
-        [JsonProperty("openid", 
+        [JsonProperty("openid",
             Order = 5,
             Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
@@ -97,37 +94,16 @@ namespace Doctrina.xAPI
         /// <summary>
         /// A user account on an existing system e.g. an LMS or intranet.
         /// </summary>
-        [JsonProperty("account", 
+        [JsonProperty("account",
             Order = 6,
             Required = Required.DisallowNull,
             NullValueHandling = NullValueHandling.Ignore)]
         public Account Account { get; set; }
 
-        public static Agent Parse(string jsonAgent)
-        {
-            // This thing calls typeconveter
-            //return JsonConvert.DeserializeObject<Agent>(jsonAgent);
-            return JToken.Parse(jsonAgent).ToObject<Agent>();
-        }
-
-        public static bool TryParse(string value, out Agent agent)
-        {
-            agent = null;
-            try
-            {
-                agent = JObject.Parse(value).ToObject<Agent>();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
         public bool IsAnonymous()
         {
             return (Mbox == null
-                && string.IsNullOrEmpty(MboxSHA1SUM)
+                && string.IsNullOrEmpty(Mbox_SHA1SUM)
                 && Account == null
                 && OpenId == null);
         }
@@ -137,25 +113,29 @@ namespace Doctrina.xAPI
             return !IsAnonymous();
         }
 
-        public List<string> GetIdentifiers()
+        public List<string> GetIdentifiersByName()
         {
             var ids = new List<string>();
-            if(Mbox != null)
+            if (Mbox != null)
             {
                 ids.Add(nameof(Mbox).ToLower());
             }
 
-            if (!string.IsNullOrEmpty(MboxSHA1SUM)){
-                ids.Add(nameof(MboxSHA1SUM));
+            if (!string.IsNullOrEmpty(Mbox_SHA1SUM))
+            {
+                ids.Add(nameof(Mbox_SHA1SUM));
             }
-            if(Account != null)
+
+            if (Account != null)
             {
                 ids.Add(nameof(Account));
             }
-            if(OpenId != null)
+
+            if (OpenId != null)
             {
                 ids.Add(nameof(OpenId));
             }
+
             return ids;
         }
 
@@ -167,7 +147,7 @@ namespace Doctrina.xAPI
                    ObjectType == agent.ObjectType &&
                    Name == agent.Name &&
                    EqualityComparer<Mbox>.Default.Equals(Mbox, agent.Mbox) &&
-                   MboxSHA1SUM == agent.MboxSHA1SUM &&
+                   Mbox_SHA1SUM == agent.Mbox_SHA1SUM &&
                    EqualityComparer<Iri>.Default.Equals(OpenId, agent.OpenId) &&
                    EqualityComparer<Account>.Default.Equals(Account, agent.Account);
         }
@@ -178,7 +158,7 @@ namespace Doctrina.xAPI
             hashCode = hashCode * -1521134295 + ObjectType.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             hashCode = hashCode * -1521134295 + EqualityComparer<Mbox>.Default.GetHashCode(Mbox);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(MboxSHA1SUM);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Mbox_SHA1SUM);
             hashCode = hashCode * -1521134295 + EqualityComparer<Iri>.Default.GetHashCode(OpenId);
             hashCode = hashCode * -1521134295 + EqualityComparer<Account>.Default.GetHashCode(Account);
             return hashCode;

@@ -26,7 +26,7 @@ namespace Doctrina.Domain.Entities
 
         public ContextEntity Context { get; set; }
 
-        public ICollection<AttachmentEntity> Attachments { get; set; }
+        public virtual ICollection<AttachmentEntity> Attachments { get; set; }
 
         /// <summary>
         /// Gets the object of the current statement
@@ -42,10 +42,10 @@ namespace Doctrina.Domain.Entities
                         return ObjectAgent;
                     case EntityObjectType.Activity:
                         return ObjectActivity;
-                    //case EntityObjectType.SubStatement:
-                    //    return ObjectSubStatement;
-                    //case EntityObjectType.StatementRef:
-                    //    return ObjectStatementRef;
+                        //case EntityObjectType.SubStatement:
+                        //    return ObjectSubStatement;
+                        //case EntityObjectType.StatementRef:
+                        //    return ObjectStatementRef;
                 }
 
                 return null;

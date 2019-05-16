@@ -1,7 +1,8 @@
 ﻿namespace Doctrina.xAPI
 {
-    public interface IInvenseFunctionalIdenfitiers
+    public interface IAgent
     {
+        ObjectType ObjectType { get; }
         Account Account { get; set; }
         Mbox Mbox { get; set; }
         string Mbox_SHA1SUM { get; set; }

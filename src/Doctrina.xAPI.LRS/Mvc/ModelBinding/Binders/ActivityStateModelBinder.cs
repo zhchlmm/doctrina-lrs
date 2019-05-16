@@ -28,13 +28,13 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
                 model.ContentType = contentType.MediaType;
                 // Validate content as valid json if application/json
 
-                using(var reader = new StreamContent(request.Body))
+                using (var reader = new StreamContent(request.Body))
                 {
                     var binaryDocument = reader.ReadAsByteArrayAsync().Result;
                     model.Content = binaryDocument;
                 }
 
-                if(contentType.MediaType == MediaTypes.Application.Json)
+                if (contentType.MediaType == MediaTypes.Application.Json)
                 {
                     string jsonString = System.Text.Encoding.UTF8.GetString(model.Content);
                     ValidateJson(jsonString, bindingContext.ModelState);

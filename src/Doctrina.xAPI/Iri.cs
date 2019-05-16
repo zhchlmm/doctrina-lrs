@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI
 {
@@ -124,16 +120,17 @@ namespace Doctrina.xAPI
             return new Iri(d.ToString());
         }
 
-        public static explicit operator Iri(string strIri){
+        public static explicit operator Iri(string strIri)
+        {
             return new Iri(strIri);
         }
     }
 
-    public class IRITypeConverter: TypeConverter
+    public class IRITypeConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
-            if(sourceType == typeof(string))
+            if (sourceType == typeof(string))
             {
                 return true;
             }
@@ -143,7 +140,7 @@ namespace Doctrina.xAPI
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            if(value is string)
+            if (value is string)
             {
                 if (Iri.TryParse(value as string, out Iri iri))
                 {

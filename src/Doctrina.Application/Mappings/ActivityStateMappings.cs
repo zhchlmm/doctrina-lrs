@@ -15,7 +15,7 @@ namespace Doctrina.Application.Mappings
                 .ForMember(x => x.Registration, opt => opt.MapFrom(p => p.Registration))
                 .ForMember(x => x.Content, opt => opt.MapFrom(p => p.Document.Content))
                 .ForMember(x => x.ContentType, opt => opt.MapFrom(p => p.Document.ContentType))
-                .ForMember(x => x.ETag, opt => opt.MapFrom(p => p.Document.Checksum))
+                .ForMember(x => x.Tag, opt => opt.MapFrom(p => p.Document.Checksum))
                 .ForMember(x => x.LastModified, opt => opt.MapFrom(p => p.Document.LastModified));
         }
     }

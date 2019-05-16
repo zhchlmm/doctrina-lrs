@@ -120,7 +120,7 @@ namespace Doctrina.xAPI
                         throw new FormatException($"'{chr}' is not a valid period or time designator.");
                     }
 
-                    if(!validDateDesignator && validDateDesignator && periodOrTime != 'T')
+                    if (!validDateDesignator && validDateDesignator && periodOrTime != 'T')
                     {
                         throw new FormatException($"Time designator 'T' must appear before '{chr}'.");
                     }
@@ -155,7 +155,7 @@ namespace Doctrina.xAPI
             }
 
             char periodOrTime = 'P';
-            int prevIndexOf = -1; 
+            int prevIndexOf = -1;
             for (int i = 0; i < elements.Count(); i++)
             {
                 var element = elements[i];
@@ -177,9 +177,9 @@ namespace Doctrina.xAPI
                 }
 
                 // Ensure the order of the designators
-                if(element.Key != 'W')
+                if (element.Key != 'W')
                 {
-                    if(periodOrTime == 'P')
+                    if (periodOrTime == 'P')
                     {
                         int indexOf = Array.IndexOf(_dateDesignators, element.Key);
                         if (prevIndexOf > indexOf)
@@ -189,7 +189,7 @@ namespace Doctrina.xAPI
                         }
                         prevIndexOf = indexOf;
                     }
-                    else if(periodOrTime == 'T')
+                    else if (periodOrTime == 'T')
                     {
                         int indexOf = Array.IndexOf(_timeDesignators, element.Key);
                         if (prevIndexOf > indexOf)

@@ -1,10 +1,7 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
-using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Doctrina.xAPI
 {
@@ -20,6 +17,7 @@ namespace Doctrina.xAPI
 
         public readonly string Alias;
         public readonly Type Type;
+
         private ObjectType(string alias, Type type)
         {
             Alias = alias;

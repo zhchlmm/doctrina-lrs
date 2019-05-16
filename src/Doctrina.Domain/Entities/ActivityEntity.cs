@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Doctrina.Domain.Entities
+﻿namespace Doctrina.Domain.Entities
 {
     public class ActivityEntity : IStatementObjectEntity
     {
@@ -16,6 +14,6 @@ namespace Doctrina.Domain.Entities
 
         public EntityObjectType ObjectType { get; } = EntityObjectType.Activity;
 
-        public ActivityDefinitionEntity Definition { get;set;}
+        public ActivityDefinitionEntity Definition { get; set; }
     }
 }

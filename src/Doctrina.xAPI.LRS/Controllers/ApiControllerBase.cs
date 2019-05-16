@@ -1,5 +1,4 @@
-﻿using Doctrina.xAPI;
-using Doctrina.xAPI.Http;
+﻿using Doctrina.xAPI.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 

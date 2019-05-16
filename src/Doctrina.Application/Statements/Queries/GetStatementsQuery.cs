@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Doctrina.Domain.Entities;
-using Doctrina.xAPI;
+﻿using Doctrina.xAPI;
 using MediatR;
+using System.Collections.Generic;
 
 namespace Doctrina.Application.Statements.Queries
 {

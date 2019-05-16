@@ -1,5 +1,4 @@
-﻿using Doctrina.xAPI.Exceptions;
-using Doctrina.xAPI.Http;
+﻿using Doctrina.xAPI.Http;
 using Doctrina.xAPI.Json;
 using Doctrina.xAPI.LRS.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -56,12 +54,12 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
                         if (sectionIndex == 0)
                         {
                             if (sectionContentType.MediaType != MediaTypes.Application.Json)
-                                throw new RequirementException("First document part must have a Content-Type header value of \"application/json\"");
+                                throw new Exception("First document part must have a Content-Type header value of \"application/json\"");
 
                             model.Statements = DeserializeStatement(bindingContext, section.Body, strVersion);
-                            foreach(var stmt in model.Statements)
+                            foreach (var stmt in model.Statements)
                             {
-                                foreach(var attachment in stmt.Attachments)
+                                foreach (var attachment in stmt.Attachments)
                                 {
 
                                 }
@@ -75,9 +73,9 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
                                 .Select(s => s.Attachments.SingleOrDefault(x => x.SHA2 == hash))
                                 .SingleOrDefault();
 
-                            if(attachment == null)
+                            if (attachment == null)
                             {
-                                throw new RequirementException($"No attachment match found for '{hash}'");
+                                throw new Exception($"No attachment match found for '{hash}'");
                             }
                             attachment.SetPayload(await attachmentSection.ReadAsByteArrayAsync());
                         }

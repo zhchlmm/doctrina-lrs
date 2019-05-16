@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using Doctrina.xAPI.Json.Converters;
-using System.Collections;
+﻿using Doctrina.xAPI.Json.Converters;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
@@ -14,11 +14,11 @@ namespace Doctrina.xAPI
 
         public Extensions() { }
 
-        public Extensions(JObject jobj) :this(jobj, ApiVersion.GetLatest()) { }
+        public Extensions(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
         public Extensions(JObject jobj, ApiVersion version)
         {
-            foreach(var token in jobj)
+            foreach (var token in jobj)
             {
                 Add(new Uri(token.Key), token.Value);
             }
@@ -71,7 +71,7 @@ namespace Doctrina.xAPI
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
-            foreach(var val in _values)
+            foreach (var val in _values)
             {
                 obj[val.Key] = val.Value;
             }

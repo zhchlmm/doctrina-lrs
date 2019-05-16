@@ -8,16 +8,16 @@ namespace Doctrina.xAPI
     public class Attachment : JsonModel
     {
         public Attachment() { }
-        public Attachment(string jsonString) :this(JObject.Parse(jsonString)) { }
-        public Attachment(JObject jobj) :this(jobj, ApiVersion.GetLatest()) { }
+        public Attachment(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Attachment(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Attachment(JObject jobj, ApiVersion version)
         {
-            if(jobj["usageType"] != null)
+            if (jobj["usageType"] != null)
             {
                 UsageType = jobj.Value<Iri>("usageType");
             }
 
-            if(jobj["display"] != null)
+            if (jobj["display"] != null)
             {
                 Display = new LanguageMap(jobj.Value<JObject>("display"), version);
             }
@@ -126,8 +126,8 @@ namespace Doctrina.xAPI
             {
                 obj["dispay"] = Display.ToJToken(version, format);
             }
-            
-            if(Description != null)
+
+            if (Description != null)
             {
                 obj["description"] = Description.ToJToken(version, format);
             }
@@ -138,7 +138,7 @@ namespace Doctrina.xAPI
 
             obj["sha2"] = SHA2;
 
-            if(FileUrl != null)
+            if (FileUrl != null)
             {
                 obj["fileUrl"] = FileUrl;
             }

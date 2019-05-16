@@ -19,6 +19,10 @@ namespace Doctrina.Persistence.Configurations.Documents
             builder.Property(e => e.UpdateDate)
                 .HasDefaultValue(DateTime.UtcNow);
 
+            builder.HasOne(e => e.Activity)
+                .WithMany()
+                .HasForeignKey(e => e.ActivityHash);
+
             builder.OwnsOne(e => e.Document);
         }
     }

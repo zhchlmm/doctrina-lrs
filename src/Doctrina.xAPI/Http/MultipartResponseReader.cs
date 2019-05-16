@@ -18,7 +18,7 @@ namespace Doctrina.xAPI.Http
         private Stream Stream { get; }
 
         public MultipartResponseReader(string contentType, Stream stream)
-            :this(MediaTypeHeaderValue.Parse(contentType), stream)
+            : this(MediaTypeHeaderValue.Parse(contentType), stream)
         {
         }
 

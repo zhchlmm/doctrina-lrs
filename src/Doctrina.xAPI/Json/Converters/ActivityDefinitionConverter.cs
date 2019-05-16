@@ -1,10 +1,8 @@
 ﻿using Doctrina.xAPI.InteractionTypes;
-using Doctrina.xAPI.Json.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace Doctrina.xAPI.Json.Converters
 {
@@ -23,7 +21,7 @@ namespace Doctrina.xAPI.Json.Converters
             JToken tokenInteractionType = jobj["interactionType"];
             if (tokenInteractionType != null)
             {
-                if(tokenInteractionType.Type != JTokenType.String)
+                if (tokenInteractionType.Type != JTokenType.String)
                 {
                     throw new JsonSerializationException($"interactionType must be a string");
                 }

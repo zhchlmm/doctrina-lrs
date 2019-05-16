@@ -38,19 +38,19 @@ namespace Doctrina.xAPI
             }
         }
 
-        
 
-        [JsonProperty("name", 
+
+        [JsonProperty("name",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
         public LanguageMap Name { get; set; }
 
-        [JsonProperty("description", 
+        [JsonProperty("description",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
         public LanguageMap Description { get; set; }
 
-        [JsonProperty("type", 
+        [JsonProperty("type",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
         public virtual Iri Type { get; set; }
@@ -58,12 +58,12 @@ namespace Doctrina.xAPI
         /// <summary>
         /// Resolves to a document with human-readable information about the Activity, which could include a way to launch the activity.
         /// </summary>
-        [JsonProperty("moreInfo", 
+        [JsonProperty("moreInfo",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
         public Uri MoreInfo { get; set; }
 
-        [JsonProperty("extensions", 
+        [JsonProperty("extensions",
             NullValueHandling = NullValueHandling.Include,
             Required = Required.Default)]
         public Extensions Extentions { get; set; }
@@ -72,22 +72,22 @@ namespace Doctrina.xAPI
         {
             var obj = new JObject();
 
-            if(Type != null)
+            if (Type != null)
             {
                 obj["type"] = Type.ToString();
             }
 
-            if(Name != null)
+            if (Name != null)
             {
                 obj["name"] = Name.ToJToken(version, format);
             }
 
-            if(Description != null)
+            if (Description != null)
             {
                 obj["description"] = Description.ToJToken(version, format);
             }
 
-            if(MoreInfo != null)
+            if (MoreInfo != null)
             {
                 obj["moreInfo"] = MoreInfo.ToString();
             }

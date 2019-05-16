@@ -13,7 +13,7 @@ namespace Doctrina.Domain.Entities.Documents
         /// <summary>
         /// MD5 checksum of Iri
         /// </summary>
-        public string ActivityEntityId { get; set; }
+        public string ActivityHash { get; set; }
 
         public Guid? RegistrationId { get; set; }
 

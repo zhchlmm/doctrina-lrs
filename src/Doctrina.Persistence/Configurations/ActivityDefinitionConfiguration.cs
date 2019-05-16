@@ -8,13 +8,15 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ActivityDefinitionEntity> builder)
         {
-            builder.OwnsMany(p => p.Name, a => {
+            builder.OwnsMany(p => p.Name, a =>
+            {
                 a.HasForeignKey("ActivityDefinitionId");
                 a.Property<int>("Id");
                 a.HasKey("ActivityDefinitionId", "Id");
             });
 
-            builder.OwnsMany(p => p.Description, a => {
+            builder.OwnsMany(p => p.Description, a =>
+            {
                 a.HasForeignKey("ActivityDefinitionId");
                 a.Property<int>("Id");
                 a.HasKey("ActivityDefinitionId", "Id");
@@ -24,7 +26,8 @@ namespace Doctrina.Persistence.Configurations
 
             builder.Property(e => e.MoreInfo);
 
-            builder.OwnsMany(p => p.Extensions, a => {
+            builder.OwnsMany(p => p.Extensions, a =>
+            {
                 a.HasForeignKey("ActivityDefinitionId");
                 a.Property<int>("Id");
                 a.HasKey("ActivityDefinitionId", "Id");

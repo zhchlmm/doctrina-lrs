@@ -1,5 +1,4 @@
-﻿using Doctrina.Domain.Entities;
-using Doctrina.xAPI;
+﻿using Doctrina.xAPI;
 using Doctrina.xAPI.Documents;
 using MediatR;
 using System;

@@ -3,14 +3,13 @@ using Doctrina.Application.Activities.Commands;
 using Doctrina.Application.ActivityStates.Commands;
 using Doctrina.Application.ActivityStates.Queries;
 using Doctrina.Application.Agents.Commands;
+using Doctrina.Application.Interfaces;
 using Doctrina.Domain.Entities;
 using Doctrina.Domain.Entities.Documents;
 using Doctrina.Domain.Entities.Extensions;
-using Doctrina.Persistence;
 using Doctrina.xAPI.Documents;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,11 +23,11 @@ namespace Doctrina.Application.ActivityStates
         IRequestHandler<DeleteActivityStateCommand>,
         IRequestHandler<DeleteActivityStatesCommand>
     {
-        private readonly DoctrinaDbContext _context;
+        private readonly IDoctrinaDbContext _context;
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
 
-        public ActivityStatesHandler(DoctrinaDbContext context, IMapper mapper, IMediator mediator)
+        public ActivityStatesHandler(IDoctrinaDbContext context, IMapper mapper, IMediator mediator)
         {
             _context = context;
             _mapper = mapper;
@@ -37,19 +36,19 @@ namespace Doctrina.Application.ActivityStates
         public async Task<ActivityStateDocument> Handle(CreateStateDocumentCommand request, CancellationToken cancellationToken)
         {
             var activity = await _mediator.Send(MergeActivityIriCommand.Create(request.ActivityId), cancellationToken);
-            var actor = await _mediator.Send(MergeActorCommand.Create(_mapper, request.Agent), cancellationToken);
+            var agent = await _mediator.Send(MergeActorCommand.Create(_mapper, request.Agent), cancellationToken);
 
             var state = new ActivityStateEntity()
             {
                 StateId = request.StateId,
-                Activity = activity,
-                Agent = actor,
+                ActivityHash = activity.ActivityHash,
+                AgentHash = agent.AgentHash,
                 Document = DocumentEntity.Create(request.Content, request.ContentType),
-                Registration = request.Registration,
+                Registration = request.Registration
             };
 
             _context.ActivityStates.Add(state);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<ActivityStateDocument>(state);
         }
@@ -69,7 +68,7 @@ namespace Doctrina.Application.ActivityStates
                 query.Where(x => x.Registration == request.Registration);
             }
 
-            ActivityStateEntity state = await query.SingleOrDefaultAsync();
+            ActivityStateEntity state = await query.SingleOrDefaultAsync(cancellationToken);
 
             return _mapper.Map<ActivityStateDocument>(state);
         }
@@ -94,7 +93,7 @@ namespace Doctrina.Application.ActivityStates
                 // Update
                 state.Document.Update(request.Content, request.ContentType);
                 _context.ActivityStates.Update(state);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
                 return _mapper.Map<ActivityStateDocument>(state);
             }
             else
@@ -136,7 +135,7 @@ namespace Doctrina.Application.ActivityStates
             var agent = _mapper.Map<AgentEntity>(request.Agent);
             string activityHash = request.ActivityId.ComputeHash();
             var activities = _context.ActivityStates.Where(x => x.Activity.ActivityHash == activityHash)
-                .WhereAgent(x=> x.Agent, agent);
+                .WhereAgent(x => x.Agent, agent);
 
             _context.ActivityStates.RemoveRange(activities);
 

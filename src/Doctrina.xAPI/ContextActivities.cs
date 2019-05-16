@@ -1,7 +1,6 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
@@ -100,7 +99,7 @@ namespace Doctrina.xAPI
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = new JObject();
-            if(Parent != null)
+            if (Parent != null)
             {
                 jobj["parent"] = Parent.ToJToken(version, format);
             }

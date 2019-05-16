@@ -1,12 +1,13 @@
-﻿using Doctrina.Domain.Entities;
+﻿using Doctrina.Application.Interfaces;
+using Doctrina.Domain.Entities;
 using Doctrina.Domain.Entities.Documents;
 using Microsoft.EntityFrameworkCore;
 
 namespace Doctrina.Persistence
 {
-    public partial class DoctrinaDbContext : DbContext
+    public partial class DoctrinaDbContext : DbContext, IDoctrinaDbContext
     {
-        public DoctrinaDbContext(DbContextOptions<DoctrinaDbContext> options) 
+        public DoctrinaDbContext(DbContextOptions<DoctrinaDbContext> options)
             : base(options)
         {
         }

@@ -1,13 +1,13 @@
-﻿using System;
-using Doctrina.xAPI.LRS.Mvc.ModelBinding;
+﻿using Doctrina.xAPI.LRS.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Doctrina.xAPI.LRS.Models
 {
     [ModelBinder(typeof(ActivityStateModelBinder))]
     public class StateDocumentModel
     {
-        
+
         public string StateId { get; set; }
         public Iri ActivityId { get; set; }
         public Agent Agent { get; set; }

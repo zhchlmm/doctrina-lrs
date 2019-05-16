@@ -49,7 +49,7 @@ namespace Doctrina.xAPI
             if (agent.ObjectType == xAPI.ObjectType.Group)
                 throw new ArgumentException("Groups are not allowed within an Person Object.");
 
-            if(agent.Account != null)
+            if (agent.Account != null)
             {
                 Account.Add(agent.Account);
                 return;
@@ -61,13 +61,13 @@ namespace Doctrina.xAPI
                 return;
             }
 
-            if (!string.IsNullOrWhiteSpace(agent.MboxSHA1SUM))
+            if (!string.IsNullOrWhiteSpace(agent.Mbox_SHA1SUM))
             {
-                Mbox_sha1sum.Add(agent.MboxSHA1SUM);
+                Mbox_sha1sum.Add(agent.Mbox_SHA1SUM);
                 return;
             }
 
-            if(agent.OpenId != null)
+            if (agent.OpenId != null)
             {
                 OpenId.Add(agent.OpenId);
                 return;

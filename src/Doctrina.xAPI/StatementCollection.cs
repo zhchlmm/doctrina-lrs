@@ -1,9 +1,7 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Doctrina.xAPI
 {
@@ -15,14 +13,15 @@ namespace Doctrina.xAPI
         private readonly ICollection<Statement> Statements = new HashSet<Statement>();
 
         public StatementCollection() { }
-        public StatementCollection(ICollection<Statement> statements) {
+        public StatementCollection(ICollection<Statement> statements)
+        {
             Statements = statements;
         }
         public StatementCollection(string jsonString) : this(JArray.Parse(jsonString)) { }
         public StatementCollection(JArray jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public StatementCollection(JArray jobj, ApiVersion version)
         {
-            foreach(var item in jobj)
+            foreach (var item in jobj)
             {
                 Add(new Statement(item.Value<JObject>(), version));
             }

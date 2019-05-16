@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
 using Doctrina.Application.Activities.Queries;
-using Doctrina.Persistence;
+using Doctrina.Application.Interfaces;
 using Doctrina.xAPI;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,10 +12,10 @@ namespace Doctrina.Application.Activities
     public class ActivitiesHandler :
         IRequestHandler<GetActivityQuery, Activity>
     {
-        private readonly DoctrinaDbContext _context;
+        private readonly IDoctrinaDbContext _context;
         private readonly IMapper _mapper;
 
-        public ActivitiesHandler(DoctrinaDbContext context, IMapper mapper)
+        public ActivitiesHandler(IDoctrinaDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

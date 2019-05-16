@@ -2,10 +2,11 @@
 using Doctrina.Application.AgentProfiles.Commands;
 using Doctrina.Application.AgentProfiles.Queries;
 using Doctrina.Application.Agents.Commands;
+using Doctrina.Application.Interfaces;
 using Doctrina.Domain.Entities;
 using Doctrina.Domain.Entities.Documents;
 using Doctrina.Domain.Entities.Extensions;
-using Doctrina.Persistence;
+using Doctrina.xAPI.Documents;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,51 +18,51 @@ using System.Threading.Tasks;
 namespace Doctrina.Application.AgentProfiles
 {
     public class AgentProfilesHandler :
-        IRequestHandler<GetAgentProfilesQuery, ICollection<AgentProfileEntity>>,
-        IRequestHandler<GetAgentProfileQuery, AgentProfileEntity>,
+        IRequestHandler<GetAgentProfilesQuery, ICollection<AgentProfileDocument>>,
+        IRequestHandler<GetAgentProfileQuery, AgentProfileDocument>,
         IRequestHandler<DeleteAgentProfileCommand>,
-        IRequestHandler<MergeAgentProfileCommand, AgentProfileEntity>,
-        IRequestHandler<CreateAgentProfileCommand, AgentProfileEntity>,
-        IRequestHandler<UpdateAgentProfileCommand, AgentProfileEntity>
+        IRequestHandler<MergeAgentProfileCommand, AgentProfileDocument>,
+        IRequestHandler<CreateAgentProfileCommand, AgentProfileDocument>,
+        IRequestHandler<UpdateAgentProfileCommand, AgentProfileDocument>
     {
-        private readonly DoctrinaDbContext _context;
+        private readonly IDoctrinaDbContext _context;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public AgentProfilesHandler(DoctrinaDbContext context, IMediator mediator, IMapper mapper)
+        public AgentProfilesHandler(IDoctrinaDbContext context, IMediator mediator, IMapper mapper)
         {
             _context = context;
             _mediator = mediator;
             _mapper = mapper;
         }
 
-        public async Task<ICollection<AgentProfileEntity>> Handle(GetAgentProfilesQuery request, CancellationToken cancellationToken)
+        public async Task<ICollection<AgentProfileDocument>> Handle(GetAgentProfilesQuery request, CancellationToken cancellationToken)
         {
             var agentEntity = _mapper.Map<AgentEntity>(request.Agent);
-            var profiles = _context.AgentProfiles
+            var query = _context.AgentProfiles
                 .WhereAgent(agentEntity);
 
             if (request.Since.HasValue)
             {
-                profiles.Where(x => x.Document.LastModified >= request.Since.Value);
+                query = query.Where(x => x.Document.LastModified >= request.Since.Value);
             }
-            profiles.OrderByDescending(x => x.Document.LastModified);
 
-            return await profiles.ToListAsync();
+            query = query.OrderByDescending(x => x.Document.LastModified);
+
+            return _mapper.Map<ICollection<AgentProfileDocument>>(await query.ToListAsync(cancellationToken));
         }
 
-        public async Task<AgentProfileEntity> Handle(GetAgentProfileQuery request, CancellationToken cancellationToken)
+        public async Task<AgentProfileDocument> Handle(GetAgentProfileQuery request, CancellationToken cancellationToken)
         {
             var agentEntity = _mapper.Map<AgentEntity>(request.Agent);
-            var profile = await _context.AgentProfiles
-                .WhereAgent(agentEntity)
-                .SingleOrDefaultAsync(x => x.ProfileId == request.ProfileId);
-            return profile;
+            var profile = await GetAgentProfile(agentEntity, request.ProfileId, cancellationToken);
+            return _mapper.Map<AgentProfileDocument>(profile);
         }
 
         public async Task<Unit> Handle(DeleteAgentProfileCommand request, CancellationToken cancellationToken)
         {
-            var profile = await Handle(GetAgentProfileQuery.Create(request.Agent, request.ProfileId), cancellationToken);
+            var agentEntity = _mapper.Map<AgentEntity>(request.Agent);
+            AgentProfileEntity profile = await GetAgentProfile(agentEntity, request.ProfileId, cancellationToken);
 
             if (profile != null)
             {
@@ -71,7 +72,7 @@ namespace Doctrina.Application.AgentProfiles
             return await Unit.Task;
         }
 
-        public async Task<AgentProfileEntity> Handle(MergeAgentProfileCommand request, CancellationToken cancellationToken)
+        public async Task<AgentProfileDocument> Handle(MergeAgentProfileCommand request, CancellationToken cancellationToken)
         {
             var profile = await Handle(GetAgentProfileQuery.Create(request.Agent, request.ProfileId), cancellationToken);
             if (profile == null)
@@ -84,29 +85,44 @@ namespace Doctrina.Application.AgentProfiles
             return await Handle(UpdateAgentProfileCommand.Create(request.Agent, request.ProfileId, request.Content, request.ContentType), cancellationToken);
         }
 
-        public async Task<AgentProfileEntity> Handle(CreateAgentProfileCommand request, CancellationToken cancellationToken)
+        public async Task<AgentProfileDocument> Handle(CreateAgentProfileCommand request, CancellationToken cancellationToken)
         {
-            var mergeActorCommand = _mapper.Map<MergeActorCommand>(request.Agent);
-            var agentEntity = await _mediator.Send(mergeActorCommand);
+
+            var agent = await _mediator.Send(MergeActorCommand.Create(_mapper, request.Agent), cancellationToken);
+
             var profile = new AgentProfileEntity()
             {
                 AgentProfileId = Guid.NewGuid(),
                 ProfileId = request.ProfileId,
-                AgentEntityId = agentEntity.AgentHash,
+                AgentHash = agent.AgentHash,
                 Document = DocumentEntity.Create(request.Content, request.ContentType)
             };
 
             _context.AgentProfiles.Add(profile);
-            await _context.SaveChangesAsync();
-            return profile;
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return _mapper.Map<AgentProfileDocument>(profile);
         }
 
-        public async Task<AgentProfileEntity> Handle(UpdateAgentProfileCommand request, CancellationToken cancellationToken)
+        public async Task<AgentProfileDocument> Handle(UpdateAgentProfileCommand request, CancellationToken cancellationToken)
         {
-            var profile = await Handle(GetAgentProfileQuery.Create(request.Agent, request.ProfileId), cancellationToken);
+            var agentEntity = _mapper.Map<AgentEntity>(request.Agent);
+
+            var profile = await GetAgentProfile(agentEntity, request.ProfileId, cancellationToken);
             profile.Document.Update(request.Content, request.ContentType);
             profile.Updated = DateTime.UtcNow;
-            return profile;
+
+            _context.AgentProfiles.Update(profile);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return _mapper.Map<AgentProfileDocument>(profile);
+        }
+
+        private async Task<AgentProfileEntity> GetAgentProfile(AgentEntity agentEntity, string profileId, CancellationToken cancellationToken)
+        {
+            return await _context.AgentProfiles
+                            .WhereAgent(agentEntity)
+                            .SingleOrDefaultAsync(x => x.ProfileId == profileId, cancellationToken);
         }
     }
 }

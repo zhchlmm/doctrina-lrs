@@ -1,15 +1,14 @@
-﻿using Doctrina.Persistence.Services;
+﻿using Doctrina.Application.AgentProfiles.Commands;
+using Doctrina.Application.AgentProfiles.Queries;
+using Doctrina.xAPI.Documents;
 using Doctrina.xAPI.LRS.Mvc.Filters;
-using Doctrina.xAPI;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MediatR;
-using Doctrina.Application.AgentProfiles.Commands;
 using System.Threading.Tasks;
-using Doctrina.Application.AgentProfiles.Queries;
 
 namespace Doctrina.xAPI.LRS.Controllers
 {
@@ -44,7 +43,7 @@ namespace Doctrina.xAPI.LRS.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                Agent agent = Agent.Parse(strAgent);
+                Agent agent = new Agent(strAgent);
 
                 var profile = await _mediator.Send(new GetAgentProfileQuery()
                 {
@@ -55,13 +54,9 @@ namespace Doctrina.xAPI.LRS.Controllers
                 if (profile == null)
                     return NotFound();
 
-                var document = profile.Document;
-                if (document == null)
-                    return NotFound();
+                string lastModified = profile.LastModified?.ToString("o");
 
-                string lastModified = document.LastModified.ToString("o");
-
-                Response.ContentType = document.ContentType;
+                Response.ContentType = profile.ContentType;
                 Response.Headers.Add("LastModified", lastModified);
                 Response.StatusCode = (int)System.Net.HttpStatusCode.OK;
 
@@ -70,7 +65,7 @@ namespace Doctrina.xAPI.LRS.Controllers
                     return NoContent();
                 }
 
-                return new FileContentResult(document.Content, document.ContentType);
+                return new FileContentResult(profile.Content, profile.ContentType);
             }
             catch (Exception ex)
             {
@@ -93,17 +88,19 @@ namespace Doctrina.xAPI.LRS.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                Agent agent = Agent.Parse(strAgent);
+                Agent agent = new Agent(strAgent);
 
-                var profiles = await _mediator.Send(new GetAgentProfilesQuery(agent, since));
+                ICollection<AgentProfileDocument> profiles = await _mediator.Send(new GetAgentProfilesQuery(agent, since));
 
                 if (profiles == null)
                     return Ok(new Guid[] { });
 
-                // TODO: Move this logic into a response model from command
-                IEnumerable<Guid> ids = profiles.Select(x => x.AgentProfileId).ToList();
-                // TODO: Check for null
-                string lastModified = profiles.OrderByDescending(x => x.Document.LastModified).FirstOrDefault()?.Document.LastModified.ToString("o");
+                IEnumerable<string> ids = profiles.Select(x => x.ProfileId).ToList();
+
+                string lastModified = profiles.OrderByDescending(x => x.LastModified)
+                    .FirstOrDefault()?
+                    .LastModified?
+                    .ToString("o");
 
                 Response.Headers.Add("LastModified", lastModified);
                 return Ok(ids);
@@ -130,9 +127,9 @@ namespace Doctrina.xAPI.LRS.Controllers
             try
             {
                 string contentType = Request.ContentType;
-                Agent agent = Agent.Parse(strAgent);
+                Agent agent = new Agent(strAgent);
 
-                var profile = await _mediator.Send(new MergeAgentProfileCommand()
+                AgentProfileDocument profile = await _mediator.Send(new MergeAgentProfileCommand()
                 {
                     Agent = agent,
                     ProfileId = profileId,
@@ -140,10 +137,9 @@ namespace Doctrina.xAPI.LRS.Controllers
                     ContentType = contentType
                 });
 
-                var document = profile.Document;
+                Response.Headers.Add("ETag", $"\"{profile.Tag}\"");
+                Response.Headers.Add("LastModified", profile.LastModified?.ToString("o"));
 
-                Response.Headers.Add("ETag", $"\"{document.Checksum}\"");
-                Response.Headers.Add("LastModified", document.LastModified.ToString("o"));
                 return NoContent();
             }
             catch (Exception ex)
@@ -162,7 +158,7 @@ namespace Doctrina.xAPI.LRS.Controllers
             try
             {
                 string contentType = Request.ContentType;
-                Agent agent = Agent.Parse(strAgent);
+                Agent agent = new Agent(strAgent);
 
                 var profile = await _mediator.Send(GetAgentProfileQuery.Create(agent, profileId));
                 if (profile == null)
@@ -170,7 +166,8 @@ namespace Doctrina.xAPI.LRS.Controllers
 
                 // TODO: Concurrency
 
-                await _mediator.Send(new DeleteAgentProfileCommand() {
+                await _mediator.Send(new DeleteAgentProfileCommand()
+                {
                     ProfileId = profileId,
                     Agent = agent
                 });

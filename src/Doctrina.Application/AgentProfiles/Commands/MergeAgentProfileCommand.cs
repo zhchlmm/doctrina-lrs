@@ -1,15 +1,10 @@
-﻿using Doctrina.Domain.Entities.Documents;
-using Doctrina.xAPI;
+﻿using Doctrina.xAPI;
+using Doctrina.xAPI.Documents;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.Application.AgentProfiles.Commands
 {
-    public class MergeAgentProfileCommand : IRequest<AgentProfileEntity>
+    public class MergeAgentProfileCommand : IRequest<AgentProfileDocument>
     {
         public Agent Agent { get; set; }
         public string ProfileId { get; set; }

@@ -28,8 +28,8 @@ namespace Doctrina.Domain.Entities
                     case EntityObjectType.Activity:
                         return ObjectActivity;
                         // TODO: StatementRef is nullable
-                    //case EntityObjectType.StatementRef:
-                    //    return ObjectStatementRef;
+                        //case EntityObjectType.StatementRef:
+                        //    return ObjectStatementRef;
                 }
 
                 return null;

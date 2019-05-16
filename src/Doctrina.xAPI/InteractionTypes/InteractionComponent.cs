@@ -21,7 +21,7 @@ namespace Doctrina.xAPI.InteractionTypes
 
         public InteractionComponent(JObject jobj, ApiVersion version)
         {
-            if(jobj["id"] != null)
+            if (jobj["id"] != null)
             {
                 Id = jobj.Value<string>("id");
             }
@@ -46,7 +46,7 @@ namespace Doctrina.xAPI.InteractionTypes
                 jobj["id"] = Id;
             }
 
-            if(Description != null)
+            if (Description != null)
             {
                 jobj["description"] = Description.ToJToken(version, format);
             }

@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
@@ -16,7 +14,7 @@ namespace Doctrina.xAPI
         }
         public Verb(JObject jobj, ApiVersion version)
         {
-            if(jobj["id"] != null)
+            if (jobj["id"] != null)
             {
                 Id = jobj.Value<Iri>("id");
             }

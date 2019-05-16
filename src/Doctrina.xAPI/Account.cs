@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -16,7 +15,7 @@ namespace Doctrina.xAPI
         public Account(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Account(JObject jobj, ApiVersion version)
         {
-            if(jobj["homePage"] != null)
+            if (jobj["homePage"] != null)
             {
                 HomePage = jobj.Value<Uri>("homePage");
             }
@@ -37,6 +36,35 @@ namespace Doctrina.xAPI
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Gets the url with username
+        /// </summary>
+        /// <returns>Url with username Eg. https://username@www.domain.com </returns>
+        public Uri ToUri()
+        {
+            var uriBuilder = new UriBuilder(HomePage)
+            {
+                UserName = Name
+            };
+            return new Uri(uriBuilder.ToString());
+        }
+
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        {
+            var jobj = new JObject();
+            if (HomePage != null)
+            {
+                jobj["homePage"] = HomePage.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(Name))
+            {
+                jobj["name"] = Name;
+            }
+
+            return jobj;
+        }
+
         public override bool Equals(object obj)
         {
             var account = obj as Account;
@@ -52,22 +80,6 @@ namespace Doctrina.xAPI
             hashCode = hashCode * -1521134295 + EqualityComparer<Uri>.Default.GetHashCode(HomePage);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             return hashCode;
-        }
-
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
-        {
-            var jobj = new JObject();
-            if(HomePage != null)
-            {
-                jobj["homePage"] = HomePage.ToString();
-            }
-
-            if (!string.IsNullOrEmpty(Name))
-            {
-                jobj["name"] = Name;
-            }
-
-            return jobj;
         }
 
         public static bool operator ==(Account account1, Account account2)

@@ -25,12 +25,12 @@ namespace Doctrina.xAPI
 
         public Context(JObject jobj, ApiVersion version)
         {
-            if(jobj["registration"] != null)
+            if (jobj["registration"] != null)
             {
                 Registration = jobj.Value<Guid?>("registration");
             }
 
-            if(jobj["instructor"] != null)
+            if (jobj["instructor"] != null)
             {
                 Instructor = (Agent)Agent.Parse(jobj.Value<JObject>("instructor"), version);
             }
@@ -71,7 +71,7 @@ namespace Doctrina.xAPI
             }
         }
 
-        [JsonProperty("registration", 
+        [JsonProperty("registration",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
         public Guid? Registration { get; set; }
@@ -79,7 +79,7 @@ namespace Doctrina.xAPI
         /// <summary>
         /// Instructor that the Statement relates to, if not included as the Actor of the Statement.
         /// </summary>
-        [JsonProperty("instructor", 
+        [JsonProperty("instructor",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull),
             JsonConverter(typeof(AgentJsonConverter))]
@@ -88,7 +88,7 @@ namespace Doctrina.xAPI
         /// <summary>
         /// Instructor that the Statement relates to, if not included as the Actor of the Statement.
         /// </summary>
-        [JsonProperty("team", 
+        [JsonProperty("team",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull),
             JsonConverter(typeof(AgentJsonConverter))]
@@ -120,7 +120,7 @@ namespace Doctrina.xAPI
             Required = Required.DisallowNull)]
         public string Platform { get; set; }
 
-        
+
         private string _language;
         /// <summary>
         /// Code representing the language in which the experience being recorded in this Statement (mainly) occurred in, if applicable and known.
@@ -131,7 +131,8 @@ namespace Doctrina.xAPI
         public string Language
         {
             get { return _language; }
-            set {
+            set
+            {
                 CultureInfo.GetCultureInfo(value);
                 _language = value;
             }
@@ -189,7 +190,7 @@ namespace Doctrina.xAPI
                 jobj["registration"] = Registration;
             }
 
-            if(Instructor != null)
+            if (Instructor != null)
             {
                 jobj["instructor"] = Instructor.ToJToken(version, format);
             }
@@ -199,7 +200,7 @@ namespace Doctrina.xAPI
                 jobj["instructor"] = Instructor.ToJToken(version, format);
             }
 
-            if(Team != null)
+            if (Team != null)
             {
                 jobj["team"] = Team.ToJToken(version, format);
             }
@@ -224,7 +225,7 @@ namespace Doctrina.xAPI
                 jobj["language"] = Language;
             }
 
-            if(Statement != null)
+            if (Statement != null)
             {
                 jobj["statement"] = Statement.ToJToken(version, format);
             }

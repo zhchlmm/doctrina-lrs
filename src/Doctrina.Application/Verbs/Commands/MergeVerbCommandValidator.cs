@@ -6,7 +6,7 @@ namespace Doctrina.Application.Verbs.Commands
     {
         public MergeVerbCommandValidator()
         {
-            RuleFor(x => x.Id).NotEmpty();
+            RuleFor(x => x.Verb.Id).NotEmpty();
             //TODO: RuleForEach(x => x.Display);
         }
     }

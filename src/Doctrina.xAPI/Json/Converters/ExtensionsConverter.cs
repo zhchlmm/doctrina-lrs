@@ -18,12 +18,12 @@ namespace Doctrina.xAPI.Json.Converters
 
             JObject jobj = JObject.Load(reader);
             var extensions = new Extensions();
-            foreach(var pair in jobj)
+            foreach (var pair in jobj)
             {
                 try
                 {
                     var uri = new Uri(pair.Key);
-                    if(pair.Value.Type == JTokenType.Null)
+                    if (pair.Value.Type == JTokenType.Null)
                     {
                         extensions.Add(uri, null);
                     }
@@ -44,7 +44,7 @@ namespace Doctrina.xAPI.Json.Converters
         {
             var extensions = value as Extensions;
             writer.WriteStartObject();
-            foreach(var pair in extensions)
+            foreach (var pair in extensions)
             {
                 writer.WritePropertyName(pair.Key.ToString());
                 writer.WriteValue(pair.Value);

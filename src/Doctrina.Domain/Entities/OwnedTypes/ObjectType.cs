@@ -9,11 +9,11 @@ namespace Doctrina.Domain.Entities
         Agent, Group, Activity, SubStatement, StatementRef
     }
 
-    public class ObjectTypeTypeConverter: TypeConverter
+    public class ObjectTypeTypeConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
-            if(sourceType == typeof(string))
+            if (sourceType == typeof(string))
             {
                 return true;
             }
@@ -23,7 +23,7 @@ namespace Doctrina.Domain.Entities
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            if(value is string)
+            if (value is string)
             {
                 if (Enum.TryParse(typeof(EntityObjectType), value as string, out object converted))
                 {

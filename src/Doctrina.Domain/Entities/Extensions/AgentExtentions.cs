@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace Doctrina.Domain.Entities.Extensions
 {
@@ -42,7 +40,7 @@ namespace Doctrina.Domain.Entities.Extensions
 
             if (string.IsNullOrEmpty(agent.Mbox_SHA1SUM))
             {
-                return profiles.Where(p=> agentSelector(p).Mbox_SHA1SUM == agent.Mbox_SHA1SUM);
+                return profiles.Where(p => agentSelector(p).Mbox_SHA1SUM == agent.Mbox_SHA1SUM);
             }
 
             if (string.IsNullOrEmpty(agent.OpenId))

@@ -1,10 +1,8 @@
-﻿using Doctrina.xAPI;
-using Doctrina.xAPI.Http;
+﻿using Doctrina.xAPI.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.LRS.Mvc.Filters

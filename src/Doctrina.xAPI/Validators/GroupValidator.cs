@@ -39,7 +39,7 @@ namespace Doctrina.xAPI.Validators
             if (arg.Mbox != null)
                 count++;
 
-            if (!string.IsNullOrEmpty(arg.MboxSHA1SUM))
+            if (!string.IsNullOrEmpty(arg.Mbox_SHA1SUM))
                 count++;
 
             if (arg.OpenId != null)
@@ -61,7 +61,7 @@ namespace Doctrina.xAPI.Validators
             if (arg.Mbox != null)
                 return true;
 
-            if (!string.IsNullOrEmpty(arg.MboxSHA1SUM))
+            if (!string.IsNullOrEmpty(arg.Mbox_SHA1SUM))
                 return true;
 
             if (arg.OpenId != null)
