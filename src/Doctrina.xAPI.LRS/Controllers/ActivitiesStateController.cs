@@ -1,19 +1,15 @@
-﻿using Doctrina.Persistence.Services;
+﻿using Doctrina.Application.ActivityStates.Commands;
+using Doctrina.Application.ActivityStates.Queries;
+using Doctrina.xAPI.Documents;
 using Doctrina.xAPI.LRS.Models;
 using Doctrina.xAPI.LRS.Mvc.Filters;
-using Doctrina.xAPI;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Doctrina.Application.ActivityStates.Commands;
-using MediatR;
-using Doctrina.Application.ActivityStates.Queries;
 using System.Threading.Tasks;
-using Doctrina.xAPI.Documents;
-using Doctrina.Domain.Entities.Documents;
 
 namespace Doctrina.xAPI.LRS.Controllers
 {
@@ -28,12 +24,10 @@ namespace Doctrina.xAPI.LRS.Controllers
     public class ActivitiesStateController : ApiControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IActivitiesStateService _activityStateService;
 
-        public ActivitiesStateController(IMediator mediator, IActivitiesStateService activityStateService)
+        public ActivitiesStateController(IMediator mediator)
         {
             _mediator = mediator;
-            _activityStateService = activityStateService;
         }
 
         // GET|HEAD xapi/activities/state
@@ -52,15 +46,16 @@ namespace Doctrina.xAPI.LRS.Controllers
                     Agent = model.Agent,
                     Registration = model.Registration
                 });
+
                 if (stateDocument == null)
                     return NotFound();
 
                 if (HttpMethods.IsHead(Request.Method))
                     return NoContent();
 
-                var content = new FileContentResult(stateDocument.Content, stateDocument.ContentType);
+                var content = new FileContentResult(stateDocument.Content, stateDocument.ContentType.ToString());
                 content.LastModified = stateDocument.LastModified;
-                content.EntityTag = stateDocument.ETag;
+                content.EntityTag = new Microsoft.Net.Http.Headers.EntityTagHeaderValue(stateDocument.ETag.Tag);
                 return content;
             }
             catch (Exception ex)

@@ -20,12 +20,12 @@ using System.Threading.Tasks;
 namespace Doctrina.Application.Statements
 {
     public class StatementsHandler :
-        IRequestHandler<GetStatementsQuery>,
-        IRequestHandler<GetStatementQuery>,
-        IRequestHandler<GetConsistentThroughQuery>,
-        IRequestHandler<GetVoidedStatemetQuery>,
-        IRequestHandler<CreateStatementCommand>,
-        IRequestHandler<CreateStatementsCommand>,
+        IRequestHandler<GetStatementsQuery, ICollection<Statement>>,
+        IRequestHandler<GetStatementQuery, Statement>,
+        IRequestHandler<GetConsistentThroughQuery, DateTimeOffset>,
+        IRequestHandler<GetVoidedStatemetQuery, Statement>,
+        IRequestHandler<CreateStatementCommand, Guid>,
+        IRequestHandler<CreateStatementsCommand, ICollection<Guid>>,
         IRequestHandler<PutStatementCommand>,
         IRequestHandler<VoidStatementCommand>
     {
@@ -40,7 +40,7 @@ namespace Doctrina.Application.Statements
             _mapper = mapper;
         }
 
-        public async Task<ICollection<Statement>> Handle(GetStatementsQuery request, CancellationToken cancellationToken)
+        public Task<ICollection<Statement>> Handle(GetStatementsQuery request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -50,12 +50,12 @@ namespace Doctrina.Application.Statements
             throw new NotImplementedException();
         }
 
-        public Task<Unit> Handle(GetConsistentThroughQuery request, CancellationToken cancellationToken)
+        public Task<DateTimeOffset> Handle(GetConsistentThroughQuery request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Unit> Handle(GetVoidedStatemetQuery request, CancellationToken cancellationToken)
+        public Task<Statement> Handle(GetVoidedStatemetQuery request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

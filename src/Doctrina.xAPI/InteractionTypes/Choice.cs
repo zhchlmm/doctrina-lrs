@@ -13,7 +13,7 @@ namespace Doctrina.xAPI.InteractionTypes
         {
             if(jobj["choices"] != null)
             {
-                Choices = new InteractionComponentCollection(jobj.Value<JObject>("choices"));
+                Choices = new InteractionComponentCollection(jobj.Value<JArray>("choices"), version);
             }
         }
         

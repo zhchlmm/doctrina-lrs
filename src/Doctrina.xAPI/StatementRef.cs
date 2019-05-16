@@ -28,7 +28,7 @@ namespace Doctrina.xAPI
         /// </summary>
         public Guid Id { get; set; }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             return new JObject
             {

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class BooleanConverter : JsonConverter
+    public class BooleanConverter : ApiJsonConverter
     {
         private readonly Type[] _typesNotToReadAsString = {
             typeof(bool), typeof(bool?),

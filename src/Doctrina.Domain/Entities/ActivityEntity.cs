@@ -7,7 +7,7 @@ namespace Doctrina.Domain.Entities
         /// <summary>
         /// MD5 of <see cref="Id"/>
         /// </summary>
-        public string ActivityEntityId { get; set; }
+        public string ActivityHash { get; set; }
 
         /// <summary>
         /// Actual Iri
@@ -16,8 +16,6 @@ namespace Doctrina.Domain.Entities
 
         public EntityObjectType ObjectType { get; } = EntityObjectType.Activity;
 
-        public Guid? DefinitionId { get; set; }
-
-        public virtual ActivityDefinitionEntity Definition { get;set;}
+        public ActivityDefinitionEntity Definition { get;set;}
     }
 }

@@ -14,8 +14,8 @@ namespace Doctrina.xAPI
     public struct Duration
     {
         //private static string _regexPattern = @"^P((\d+(?:\.\d+)?Y)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?D)?(T(?=\d)(\d+(?:\.\d+)?H)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?S)?)?)$|^P(\d+(?:\.\d+)?W)?$";
-        private static char[] _dateDesignators = new char[] { 'Y', 'M', 'W', 'D' };
-        private static char[] _timeDesignators = new char[] { 'T', 'H', 'M', 'S' };
+        private static readonly char[] _dateDesignators = new char[] { 'Y', 'M', 'W', 'D' };
+        private static readonly char[] _timeDesignators = new char[] { 'T', 'H', 'M', 'S' };
 
         public long Ticks;
 

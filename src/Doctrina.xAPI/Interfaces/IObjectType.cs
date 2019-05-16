@@ -2,10 +2,10 @@
 
 namespace Doctrina.xAPI
 {
-    public interface IStatementTarget
+    public interface IObjectType
     {
         ObjectType ObjectType { get; }
 
-        JObject ToJObject(ApiVersion version, ResultFormat format);
+        JObject ToJToken(ApiVersion version, ResultFormat format);
     }
 }

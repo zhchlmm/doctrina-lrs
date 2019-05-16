@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System;
+using Microsoft.Extensions.Configuration.Json;
 using System.IO;
 
 namespace Doctrina.Persistence.Infrastructure

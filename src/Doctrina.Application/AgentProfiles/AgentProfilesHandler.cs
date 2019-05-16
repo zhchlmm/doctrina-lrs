@@ -92,7 +92,7 @@ namespace Doctrina.Application.AgentProfiles
             {
                 AgentProfileId = Guid.NewGuid(),
                 ProfileId = request.ProfileId,
-                AgentEntityId = agentEntity.AgentEntityId,
+                AgentEntityId = agentEntity.AgentHash,
                 Document = DocumentEntity.Create(request.Content, request.ContentType)
             };
 

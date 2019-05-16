@@ -73,7 +73,7 @@ namespace Doctrina.xAPI.InteractionTypes
             var jarr = new JArray();
             foreach(var component in Components)
             {
-                jarr.Add(component.ToJToken(vers));
+                jarr.Add(component.ToJToken(version, format));
             }
             return jarr;
         }

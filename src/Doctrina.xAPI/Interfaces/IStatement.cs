@@ -9,7 +9,7 @@ namespace Doctrina.xAPI
         Attachment[] Attachments { get; set; }
         Agent Authority { get; set; }
         Context Context { get; set; }
-        IStatementTarget Object { get; set; }
+        IObjectType Object { get; set; }
         Result Result { get; set; }
         DateTimeOffset? Stored { get; set; }
         DateTimeOffset? Timestamp { get; set; }

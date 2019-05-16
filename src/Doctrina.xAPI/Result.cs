@@ -1,5 +1,6 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -8,6 +9,46 @@ namespace Doctrina.xAPI
     [JsonObject]
     public class Result : JsonModel
     {
+        public Result() { }
+        public Result(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Result(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
+
+        public Result(JObject jobj, ApiVersion version)
+        {
+            if (jobj["score"] != null)
+            {
+                Score = new Score(jobj.Value<JObject>("score"), version);
+            }
+            if (jobj["success"] != null)
+            {
+                Success = jobj.Value<bool?>("success");
+            }
+            if (jobj["completion"] != null)
+            {
+                Completion = jobj.Value<bool?>("completion");
+            }
+
+            if (jobj["response"] != null)
+            {
+                Response = jobj.Value<string>("response");
+            }
+
+            if (jobj["duration"] != null)
+            {
+                Duration = jobj.Value<Duration>("duration");
+            }
+
+            if (jobj["duration"] != null)
+            {
+                Duration = jobj.Value<Duration>("duration");
+            }
+
+            if (jobj["extentions"] != null)
+            {
+                Extentions = new Extensions(jobj.Value<JObject>("extentions"), version);
+            }
+        }
+
         /// <summary>
         /// The score of the Agent in relation to the success or quality of the experience. See: <seealso cref="Models.Score"/>
         /// </summary>
@@ -59,6 +100,43 @@ namespace Doctrina.xAPI
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.Default)]
         public Extensions Extentions { get; set; }
+
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        {
+            var jobj = new JObject();
+
+            if (Score != null)
+            {
+                jobj["score"] = Score.ToJToken(version, format);
+            }
+
+            if (Success.HasValue)
+            {
+                jobj["success"] = Success;
+            }
+
+            if (Completion.HasValue)
+            {
+                jobj["completion"] = Completion;
+            }
+
+            if (!string.IsNullOrEmpty(Response))
+            {
+                jobj["response"] = Response;
+            }
+
+            if (Duration != null)
+            {
+                jobj["duration"] = Duration.ToString();
+            }
+
+            if (jobj["extentions"] != null)
+            {
+                Extentions = new Extensions(jobj.Value<JObject>("extentions"), version);
+            }
+
+            return jobj;
+        }
 
         public override bool Equals(object obj)
         {

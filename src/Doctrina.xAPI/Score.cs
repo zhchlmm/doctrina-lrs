@@ -1,5 +1,6 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
@@ -8,10 +9,45 @@ namespace Doctrina.xAPI
     [JsonConverter(typeof(ScoreJsonConverter))]
     public class Score : JsonModel
     {
+        public Score()
+        {
+        }
+
+        public Score(string jsonString) : this(JObject.Parse(jsonString))
+        {
+        }
+
+        public Score(JObject jobj) : this(jobj, ApiVersion.GetLatest())
+        {
+        }
+
+        public Score(JObject jobj, ApiVersion version)
+        {
+            if (jobj["scaled"] != null)
+            {
+                Scaled = jobj.Value<double?>("scaled");
+            }
+
+            if (jobj["raw"] != null)
+            {
+                Raw = jobj.Value<double?>("raw");
+            }
+
+            if (jobj["min"] != null)
+            {
+                Min = jobj.Value<double?>("min");
+            }
+
+            if (jobj["max"] != null)
+            {
+                Max = jobj.Value<double?>("max");
+            }
+        }
+
         /// <summary>
         /// The score related to the experience as modified by scaling and/or normalization.
         /// </summary>
-        [JsonProperty("scaled", 
+        [JsonProperty("scaled",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
         [JsonConverter(typeof(NumberConverter))]
@@ -21,7 +57,7 @@ namespace Doctrina.xAPI
         /// Decimal number between min and max (if present, otherwise unrestricted), inclusive
         /// The score achieved by the Actor in the experience described by the Statement. This is not modified by any scaling or normalization.
         /// </summary>
-        [JsonProperty("raw", 
+        [JsonProperty("raw",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
         [JsonConverter(typeof(NumberConverter))]
@@ -66,6 +102,33 @@ namespace Doctrina.xAPI
             hashCode = hashCode * -1521134295 + EqualityComparer<double?>.Default.GetHashCode(Min);
             hashCode = hashCode * -1521134295 + EqualityComparer<double?>.Default.GetHashCode(Max);
             return hashCode;
+        }
+
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        {
+            var jobj = new JObject();
+
+            if (Scaled.HasValue)
+            {
+                jobj["scaled"] = Scaled;
+            }
+
+            if (Raw.HasValue)
+            {
+                jobj["raw"] = Raw;
+            }
+
+            if (Min.HasValue)
+            {
+                jobj["min"] = Min;
+            }
+
+            if(Max.HasValue)
+            {
+                jobj["max"] = Max;
+            }
+
+            return jobj;
         }
 
         public static bool operator ==(Score score1, Score score2)

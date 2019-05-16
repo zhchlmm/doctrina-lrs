@@ -8,9 +8,9 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<AgentEntity> builder)
         {
-            builder.HasKey(x => x.AgentEntityId);
+            builder.HasKey(x => x.AgentHash);
 
-            builder.Property(e=> e.AgentEntityId)
+            builder.Property(e=> e.AgentHash)
                 .ValueGeneratedOnAdd();
 
             builder.Property(e => e.ObjectType)
@@ -29,12 +29,11 @@ namespace Doctrina.Persistence.Configurations
             builder.Property(e => e.Mbox_SHA1SUM)
                 .HasMaxLength(Constants.MAX_URL_LENGTH);
 
-            builder.Property(e => e.OauthIdentifier)
-                .HasMaxLength(192);
+            //builder.Property(e => e.OauthIdentifier)
+            //    .HasMaxLength(192);
 
             builder.HasOne(e => e.Account)
-                .WithMany()
-                .HasForeignKey(x=> x.AccountId);
+                .WithMany();
 
             builder
                 .HasIndex(x => new { x.ObjectType, x.Mbox })

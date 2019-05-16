@@ -10,7 +10,7 @@ namespace Doctrina.Domain.Entities
         /// <summary>
         /// MD5 hash of agent identifier
         /// </summary>
-        public string AgentEntityId { get; set; }
+        public string AgentHash { get; set; }
 
         public EntityObjectType ObjectType { get; set; }
 
@@ -21,8 +21,6 @@ namespace Doctrina.Domain.Entities
         public string Mbox_SHA1SUM { get; set; }
 
         public string OpenId { get; set; }
-
-        //public string OauthIdentifier { get; set; }
 
         public Account Account { get; set; }
 

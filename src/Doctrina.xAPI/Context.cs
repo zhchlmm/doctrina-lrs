@@ -11,6 +11,66 @@ namespace Doctrina.xAPI
     [JsonObject]
     public class Context : JsonModel
     {
+        public Context()
+        {
+        }
+
+        public Context(string jsonString) : this(JObject.Parse(jsonString))
+        {
+        }
+
+        public Context(JObject jobj) : this(jobj, ApiVersion.GetLatest())
+        {
+        }
+
+        public Context(JObject jobj, ApiVersion version)
+        {
+            if(jobj["registration"] != null)
+            {
+                Registration = jobj.Value<Guid?>("registration");
+            }
+
+            if(jobj["instructor"] != null)
+            {
+                Instructor = (Agent)Agent.Parse(jobj.Value<JObject>("instructor"), version);
+            }
+
+            if (jobj["team"] != null)
+            {
+                Instructor = (Group)Group.Parse(jobj.Value<JObject>("team"), version);
+            }
+
+            if (jobj["contextActivities"] != null)
+            {
+                ContextActivities = new ContextActivities(jobj.Value<JObject>("contextActivities"), version);
+            }
+
+            if (jobj["revision"] != null)
+            {
+                Revision = jobj.Value<string>("revision");
+            }
+
+            if (jobj["platform"] != null)
+            {
+                Platform = jobj.Value<string>("platform");
+            }
+
+            if (jobj["language"] != null)
+            {
+                Language = jobj.Value<string>("language");
+            }
+
+            if (jobj["statement"] != null)
+            {
+                Statement = new StatementRef(jobj.Value<JObject>("statement"), version);
+            }
+
+            if (jobj["extensions"] != null)
+            {
+                Extensions = new Extensions(jobj.Value<JObject>("extensions"), version);
+            }
+        }
+
         [JsonProperty("registration", 
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
@@ -121,9 +181,60 @@ namespace Doctrina.xAPI
             return hashCode;
         }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
-            throw new NotImplementedException();
+            var jobj = new JObject();
+            if (Registration.HasValue)
+            {
+                jobj["registration"] = Registration;
+            }
+
+            if(Instructor != null)
+            {
+                jobj["instructor"] = Instructor.ToJToken(version, format);
+            }
+
+            if (Instructor != null)
+            {
+                jobj["instructor"] = Instructor.ToJToken(version, format);
+            }
+
+            if(Team != null)
+            {
+                jobj["team"] = Team.ToJToken(version, format);
+            }
+
+            if (ContextActivities != null)
+            {
+                jobj["contextActivities"] = ContextActivities.ToJToken(version, format);
+            }
+
+            if (Revision != null)
+            {
+                jobj["revision"] = Revision;
+            }
+
+            if (Platform != null)
+            {
+                jobj["platform"] = Platform;
+            }
+
+            if (Language != null)
+            {
+                jobj["language"] = Language;
+            }
+
+            if(Statement != null)
+            {
+                jobj["statement"] = Statement.ToJToken(version, format);
+            }
+
+            if (Extensions != null)
+            {
+                jobj["extensions"] = Extensions.ToJToken(version, format);
+            }
+
+            return jobj;
         }
 
         public static bool operator ==(Context context1, Context context2)

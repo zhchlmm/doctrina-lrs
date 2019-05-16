@@ -10,18 +10,31 @@ namespace Doctrina.xAPI
     /// </summary>
     public class Account : JsonModel<JObject>
     {
+
+        public Account() { }
+        public Account(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Account(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Account(JObject jobj, ApiVersion version)
+        {
+            if(jobj["homePage"] != null)
+            {
+                HomePage = jobj.Value<Uri>("homePage");
+            }
+
+            if (jobj["name"] != null)
+            {
+                Name = jobj.Value<string>("name");
+            }
+        }
+
         /// <summary>
         /// The canonical home page for the system the account is on. This is based on FOAF's accountServiceHomePage.
         /// </summary>
-        [JsonProperty("homePage",
-            Required = Required.Always)]
         public Uri HomePage { get; set; }
 
         /// <summary>
         /// The unique id or name used to log in to this account. This is based on FOAF's accountName.
         /// </summary>
-        [JsonProperty("name",
-            Required = Required.Always)]
         public string Name { get; set; }
 
         public override bool Equals(object obj)
@@ -41,9 +54,20 @@ namespace Doctrina.xAPI
             return hashCode;
         }
 
-        public override JToken ToJToken(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
-            throw new NotImplementedException();
+            var jobj = new JObject();
+            if(HomePage != null)
+            {
+                jobj["homePage"] = HomePage.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(Name))
+            {
+                jobj["name"] = Name;
+            }
+
+            return jobj;
         }
 
         public static bool operator ==(Account account1, Account account2)

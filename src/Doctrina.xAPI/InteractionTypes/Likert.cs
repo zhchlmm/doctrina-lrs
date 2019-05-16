@@ -7,12 +7,22 @@ namespace Doctrina.xAPI.InteractionTypes
     {
         protected override InteractionType INTERACTION_TYPE => InteractionType.Likert;
 
-        [JsonProperty("scale")]
-        public InteractionComponent[] Scale { get; set; }
-
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public Likert()
         {
-            var jobj = base.ToJObject(version, format);
+        }
+        public Likert(JObject jobj, ApiVersion version) : base(jobj, version)
+        {
+            if (jobj["scale"] != null)
+            {
+                Scale = new InteractionComponentCollection(jobj.Value<JArray>("scale"), version);
+            }
+        }
+
+        public InteractionComponentCollection Scale { get; set; }
+
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        {
+            var jobj = base.ToJToken(version, format);
 
             return jobj;
         }

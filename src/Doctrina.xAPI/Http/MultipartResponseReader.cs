@@ -52,7 +52,7 @@ namespace Doctrina.xAPI.Http
                         }
 
                         string jsonString = await section.ReadAsStringAsync();
-                        result = StatementsResult.Parse(jsonString);
+                        result = new StatementsResult(jsonString);
                     }
                     else
                     {

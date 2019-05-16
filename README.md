@@ -28,7 +28,7 @@ Follow these steps to get your development environment set up:
 	 dotnet run
 	 ```
   5. Launch [http://localhost:52468/](http://localhost:52468/) in your browser to view the Web UI
-  
+
   6. Launch [http://localhost:52468/api](http://localhost:52468/api) in your browser to view the API
 
 ## Technologies

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace Doctrina.xAPI
 {
     [JsonObject]
-    public class Activity : StatementObjectBase, IStatementTarget
+    public class Activity : StatementObjectBase, IObjectType
     {
         public Activity() { }
 
@@ -27,48 +27,13 @@ namespace Doctrina.xAPI
                 JToken tokenInteractionType = jdefinition["interactionType"];
                 if(tokenInteractionType != null)
                 {
-                    InteractionType type = tokenInteractionType.Value<string>();
-                    if(type == InteractionType.Choice)
-                    {
-                        Definition = new Choice(jdefinition, version);
-                    }
-                    else if (type == InteractionType.FillIn)
-                    {
-                        Definition = new FillIn(jdefinition, version);
-                    }
-                    else if (type == InteractionType.LongFillIn)
-                    {
-                        Definition = new LongFillIn(jdefinition, version);
-                    }
-                    else if (type == InteractionType.Likert)
-                    {
-                        Definition = new Likert(jdefinition, version);
-                    }
-                    else if (type == InteractionType.Matching)
-                    {
-                        Definition = new Matching(jdefinition, version);
-                    }
-                    else if (type == InteractionType.Numeric)
-                    {
-                        Definition = new Numeric(jdefinition, version);
-                    }
-                    else if (type == InteractionType.Sequencing)
-                    {
-                        Definition = new Performance(jdefinition, version);
-                    }
-                    else if (type == InteractionType.Performance)
-                    {
-                        Definition = new Performance(jdefinition, version);
-                    }
-                    else if (type == InteractionType.Other)
-                    {
-                        Definition = new Other(jdefinition, version);
-                    }
-
-                    throw new NotImplementedException();
+                    InteractionType interactionType = tokenInteractionType.Value<string>();
+                    Definition = interactionType.CreateInstance(jdefinition, version);
                 }
-
-                Definition = new ActivityDefinition(jobj.Value<JObject>("definition"), version);
+                else
+                {
+                    Definition = new ActivityDefinition(jobj.Value<JObject>("definition"), version);
+                }
             }
         }
 
@@ -84,9 +49,9 @@ namespace Doctrina.xAPI
         /// </summary>
         public ActivityDefinition Definition { get; set; }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
-            var result = base.ToJObject(version, format);
+            var result = base.ToJToken(version, format);
 
             if (Id != null)
             {
@@ -95,7 +60,7 @@ namespace Doctrina.xAPI
 
             if (Definition != null)
             {
-                result.Add("definition", Definition.ToJObject(version, format));
+                result.Add("definition", Definition.ToJToken(version, format));
             }
 
             return result;

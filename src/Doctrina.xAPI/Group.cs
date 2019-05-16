@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
 using System.Collections.Generic;
@@ -9,11 +10,32 @@ namespace Doctrina.xAPI
     //[JSchemaGenerationProvider(typeof(GroupSchema))]
     public class Group : Agent
     {
-        public Group()
-            : base()
+        public Group() { }
+        public Group(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Group(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Group(JObject jobj, ApiVersion version)
+            : base(jobj, version)
         {
-        }
+            if (jobj["member"] != null)
+            {
+                Member = new HashSet<Agent>();
 
+                var members = jobj["member"].Value<JArray>();
+                foreach(var member in members)
+                {
+                    var memberJobj = member.ToObject<JObject>();
+
+                    if (memberJobj.Value<string>("objectType") == ObjectType.Group)
+                    {
+                        Member.Add(new Group(memberJobj, version));
+                    }
+                    else
+                    {
+                        Member.Add(new Agent(memberJobj, version));
+                    }
+                }
+            }
+        }
 
         protected override ObjectType OBJECT_TYPE => ObjectType.Group;
 
@@ -23,34 +45,30 @@ namespace Doctrina.xAPI
         [JsonProperty("member",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
-        public Agent[] Member { get; set; }
+        public ICollection<Agent> Member { get; set; }
 
         public bool HasMember()
         {
             return Member != null && Member.Count() > 0;
         }
-
         public override bool Equals(object obj)
         {
             var group = obj as Group;
             return group != null &&
                    base.Equals(obj) &&
-                   EqualityComparer<Agent[]>.Default.Equals(Member, group.Member);
+                   EqualityComparer<ICollection<Agent>>.Default.Equals(Member, group.Member);
         }
-
         public override int GetHashCode()
         {
             var hashCode = 606588793;
             hashCode = hashCode * -1521134295 + base.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<Agent[]>.Default.GetHashCode(Member);
+            hashCode = hashCode * -1521134295 + EqualityComparer<ICollection<Agent>>.Default.GetHashCode(Member);
             return hashCode;
         }
-
         public static bool operator ==(Group group1, Group group2)
         {
             return EqualityComparer<Group>.Default.Equals(group1, group2);
         }
-
         public static bool operator !=(Group group1, Group group2)
         {
             return !(group1 == group2);

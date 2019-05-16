@@ -38,7 +38,7 @@ namespace Doctrina.Application.ActivityStates.Commands
 
                 var query = _context.ActivityStates
                     .Include(x => x.Document)
-                    .Where(x => x.ActivityEntityId == activityHash)
+                    .Where(x => x.ActivityHash == activityHash)
                     .WhereAgent(agent);
 
                 if (request.Registration.HasValue)

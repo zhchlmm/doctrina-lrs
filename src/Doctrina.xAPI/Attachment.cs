@@ -117,19 +117,19 @@ namespace Doctrina.xAPI
             }
         }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
             obj["usageType"] = UsageType.ToString();
 
             if (Display != null)
             {
-                obj["dispay"] = Display.ToJObject(version, format);
+                obj["dispay"] = Display.ToJToken(version, format);
             }
             
             if(Description != null)
             {
-                obj["description"] = Description.ToJObject(version, format);
+                obj["description"] = Description.ToJToken(version, format);
             }
 
             obj["contentType"] = ContentType;

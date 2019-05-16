@@ -1,17 +1,13 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Json.Converters
 {
     /// <summary>
     /// Ensures DateTime is well formed
     /// </summary>
-    public class DateTimeJsonConverter : JsonConverter
+    public class DateTimeJsonConverter : ApiJsonConverter
     {
         public override bool CanConvert(Type objectType)
         {

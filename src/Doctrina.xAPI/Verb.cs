@@ -7,17 +7,27 @@ namespace Doctrina.xAPI
 {
     public class Verb : JsonModel, IVerb
     {
+        public Verb() { }
+        public Verb(string jsonString) : this(JObject.Parse(jsonString))
+        {
+        }
+        public Verb(JObject jObject) : this(jObject, ApiVersion.GetLatest())
+        {
+        }
+        public Verb(JObject jobj, ApiVersion version)
+        {
+            if(jobj["id"] != null)
+            {
+                Id = jobj.Value<Iri>("id");
+            }
+        }
+
         /// <summary>
         /// Corresponds to a Verb definition. (Required)
         /// Each Verb definition corresponds to the meaning of a Verb, not the word. 
         /// </summary>
-        [JsonProperty("id",
-            Required = Required.Always)]
         public Iri Id { get; set; }
 
-        [JsonProperty("display",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public LanguageMap Display { get; set; }
 
         public override bool Equals(object obj)
@@ -32,14 +42,19 @@ namespace Doctrina.xAPI
             return 2108858624 + EqualityComparer<Iri>.Default.GetHashCode(Id);
         }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
-            var obj = new JObject
+            var jobj = new JObject
             {
                 ["id"] = Id.ToString(),
-                ["display"] = Display.ToJObject(version, format)
             };
-            return obj;
+
+            if (Display != null)
+            {
+                jobj["display"] = Display.ToJToken(version, format);
+            }
+
+            return jobj;
         }
 
         public static bool operator ==(Verb verb1, Verb verb2)

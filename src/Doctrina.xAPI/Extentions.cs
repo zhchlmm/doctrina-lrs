@@ -68,7 +68,7 @@ namespace Doctrina.xAPI
             return _values.GetEnumerator();
         }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
             foreach(var val in _values)

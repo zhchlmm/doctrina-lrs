@@ -18,16 +18,13 @@ namespace Doctrina.Persistence.Configurations
                 .HasColumnType("ntext");
 
             builder.HasOne(e => e.Instructor)
-                .WithMany()
-                .HasForeignKey(e=> e.InstructorId);
+                .WithMany();
 
             builder.HasOne(e => e.Instructor)
-                .WithMany()
-                .HasForeignKey(e => e.InstructorId);
+                .WithMany();
 
             builder.HasOne(e => e.ContextActivities)
-                .WithMany()
-                .HasForeignKey(e => e.ContextActivitiesId);
+                .WithMany();
         }
     }
 }

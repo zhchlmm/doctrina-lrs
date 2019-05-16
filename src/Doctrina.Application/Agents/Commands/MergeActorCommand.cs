@@ -29,13 +29,13 @@ namespace Doctrina.Application.Agents.Commands
                 _mapper = mapper;
             }
 
-            public async Task<AgentEntity> Handle(MergeActorCommand request, CancellationToken cancellationToken)
+            public Task<AgentEntity> Handle(MergeActorCommand request, CancellationToken cancellationToken)
             {
                 var agent = request.Actor;
                 
                 MergeActor(agent);
 
-                return agent;
+                return Task.FromResult(agent);
             }
 
             /// <summary>
@@ -92,7 +92,7 @@ namespace Doctrina.Application.Agents.Commands
             /// <returns></returns>
             private void CreateGroupMemberRelation(GroupEntity group, AgentEntity actor)
             {
-                var isMember = group.Members.Any(x => x.AgentEntityId == actor.GenerateIdentifierHash());
+                var isMember = group.Members.Any(x => x.AgentHash == actor.GenerateIdentifierHash());
                 if (!isMember)
                 {
                     group.Members.Add(actor);
@@ -113,14 +113,24 @@ namespace Doctrina.Application.Agents.Commands
 
             public AgentEntity GetEntity(AgentEntity agentEntity)
             {
-                if (string.IsNullOrEmpty(agentEntity.AgentEntityId))
+                if (string.IsNullOrEmpty(agentEntity.AgentHash))
                 {
-                    agentEntity.AgentEntityId = agentEntity.GenerateIdentifierHash();
+                    agentEntity.AgentHash = agentEntity.GenerateIdentifierHash();
                 }
 
-                return _context.Agents.FirstOrDefault(x => x.AgentEntityId == agentEntity.AgentEntityId &&
+                return _context.Agents.FirstOrDefault(x => x.AgentHash == agentEntity.AgentHash &&
                     x.ObjectType == agentEntity.ObjectType);
             }
+        }
+
+        public static MergeActorCommand Create(IMapper mapper, Agent actor)
+        {
+            var cmd = new MergeActorCommand()
+            {
+                Actor = mapper.Map<AgentEntity>(actor)
+            };
+
+            return cmd;
         }
 
         public static MergeActorCommand Create(AgentEntity actor)

@@ -30,12 +30,12 @@ namespace Doctrina.Application.ActivityStates.Commands
 
             public async Task<Unit> Handle(DeleteActivityStatesCommand request, CancellationToken cancellationToken)
             {
-                string activityChecksum = request.ActivityId.ComputeHash();
+                string activityHash = request.ActivityId.ComputeHash();
                 AgentEntity agent = _mapper.Map<AgentEntity>(request.Agent);
 
-                var sql = _context.ActivityStates.WhereAgent(agent);
+                var sql = _context.ActivityStates.WhereAgent(x=> x.Agent, agent);
 
-                sql.Where(x => x.ActivityEntityId == activityChecksum);
+                sql.Where(x => x.Activity.ActivityHash == activityHash);
 
                 if (request.Registration.HasValue)
                 {

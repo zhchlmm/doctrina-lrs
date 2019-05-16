@@ -5,14 +5,7 @@ using System.Threading.Tasks;
 
 namespace Doctrina.Application.Statements.Queries
 {
-    public class GetConsistentThroughQuery : IRequest<DateTime>
+    public class GetConsistentThroughQuery : IRequest<DateTimeOffset>
     {
-        public class Handler : IRequestHandler<GetConsistentThroughQuery, DateTime>
-        {
-            public Task<DateTime> HandleAsync(GetConsistentThroughQuery request, CancellationToken cancellationToken)
-            {
-                throw new NotImplementedException();
-            }
-        }
     }
 }

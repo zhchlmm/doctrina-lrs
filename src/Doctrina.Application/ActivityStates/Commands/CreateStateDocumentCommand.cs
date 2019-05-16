@@ -44,9 +44,9 @@ namespace Doctrina.Application.ActivityStates.Commands
                 var activityState = new ActivityStateEntity()
                 {
                     StateId = request.StateId,
-                    ActivityEntityId = request.ActivityId.ComputeHash(),
+                    ActivityHash = request.ActivityId.ComputeHash(),
                     Registration = request.Registration,
-                    AgentEntityId = actor.AgentEntityId,
+                    AgentEntityId = actor.AgentHash,
                     Document = documentEntity
                 };
 

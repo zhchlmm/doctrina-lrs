@@ -16,6 +16,37 @@ namespace Doctrina.xAPI
     {
         protected override ObjectType OBJECT_TYPE => ObjectType.Agent; 
 
+        public Agent() { }
+        public Agent(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Agent(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Agent(JObject jobj, ApiVersion version)
+        {
+            if(jobj["name"] != null)
+            {
+                Name = jobj.Value<string>("name");
+            }
+
+            if (jobj["mbox"] != null)
+            {
+                Mbox = jobj.Value<Mbox>("name");
+            }
+
+            if (jobj["mbox_sha1sum"] != null)
+            {
+                MboxSHA1SUM = jobj.Value<string>("mbox_sha1sum");
+            }
+
+            if (jobj["openid"] != null)
+            {
+                OpenId = jobj.Value<Iri>("openid");
+            }
+
+            if (jobj["account"] != null)
+            {
+                Account = new Account(jobj.Value<JObject>("account"), version);
+            }
+        }
+
         /// <summary>
         /// Agent. This property is optional except when the Agent is used as a Statement's object.
         /// </summary>
@@ -126,11 +157,6 @@ namespace Doctrina.xAPI
                 ids.Add(nameof(OpenId));
             }
             return ids;
-        }
-
-        public override string ToString()
-        {
-            return ToJson(false);
         }
 
         public override bool Equals(object obj)

@@ -16,11 +16,9 @@ namespace Doctrina.xAPI
     /// IRIs can contain some characters outside of the ASCII character set.
     /// </summary>
     [TypeConverter(typeof(IRITypeConverter))]
-    public class Iri
+    public struct Iri
     {
-        private readonly string _iriString = null;
-
-        public Iri() { }
+        private readonly string _iriString;
 
         public Iri(string iriString)
         {
@@ -81,11 +79,16 @@ namespace Doctrina.xAPI
 
         public override bool Equals(object obj)
         {
-            var iri = obj as Iri;
-            return iri != null &&
+            if (obj is Iri iri)
+            {
+                return iri != null &&
                    _iriString == iri._iriString;
+            }
+            else
+            {
+                return false;
+            }
         }
-
         public override int GetHashCode()
         {
             return 314876093 + EqualityComparer<string>.Default.GetHashCode(_iriString);
@@ -142,8 +145,7 @@ namespace Doctrina.xAPI
         {
             if(value is string)
             {
-                Iri iri = null;
-                if (Iri.TryParse(value as string, out iri))
+                if (Iri.TryParse(value as string, out Iri iri))
                 {
                     return iri;
                 }

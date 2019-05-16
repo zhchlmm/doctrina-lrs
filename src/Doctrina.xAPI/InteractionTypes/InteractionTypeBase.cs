@@ -21,9 +21,9 @@ namespace Doctrina.xAPI.InteractionTypes
 
         public string[] CorrectResponsesPattern { get; set; }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
-            var obj = base.ToJObject(version, format);
+            var obj = base.ToJToken(version, format);
             obj.Add("interactionType", (string)InteractionType);
             obj.Add("correctResponsesPattern", JToken.FromObject(CorrectResponsesPattern));
             return obj;

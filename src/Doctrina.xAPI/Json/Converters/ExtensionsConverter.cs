@@ -4,7 +4,7 @@ using System;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class ExtensionsConverter : JsonConverter
+    public class ExtensionsConverter : ApiJsonConverter
     {
         public override bool CanConvert(Type objectType)
         {

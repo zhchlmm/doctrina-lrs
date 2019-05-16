@@ -15,20 +15,16 @@ namespace Doctrina.Persistence.Configurations
                 .ValueGeneratedOnAdd();
 
             builder.HasMany(e => e.Parent)
-                .WithOne()
-                .HasForeignKey(e=> e.ContextId);
+                .WithOne();
 
             builder.HasMany(e => e.Grouping)
-                .WithOne()
-                .HasForeignKey(e => e.ContextId);
+                .WithOne();
 
             builder.HasMany(e => e.Category)
-                .WithOne()
-                .HasForeignKey(e => e.ContextId);
+                .WithOne();
 
             builder.HasMany(e => e.Other)
-                .WithOne()
-                .HasForeignKey(e => e.ContextId);
+                .WithOne();
         }
     }
 }

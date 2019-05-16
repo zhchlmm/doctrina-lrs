@@ -21,14 +21,9 @@ namespace Doctrina.xAPI.Json.Converters
             var jObjectType = jobj["objectType"];
             if (jObjectType != null)
             {
-                JsonValidator.IsString(jObjectType);
+                IsString(jObjectType);
 
-                string strObjectType = jObjectType.Value<string>();
-                if (!Enum.TryParse(strObjectType, out objType))
-                    throw new JsonSerializationException($"'{strObjectType}' is not valid. Path: '{jObjectType.Path}'");
-
-                if(!Enum.IsDefined(typeof(ObjectType), objType))
-                    throw new JsonSerializationException($"'{strObjectType}' is not valid. Path: '{jObjectType.Path}'");
+                objType = jObjectType.Value<string>();
             }
 
             if (objType == ObjectType.Agent)

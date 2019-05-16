@@ -15,7 +15,7 @@ namespace Doctrina.xAPI
     /// </summary>
 
     [JsonObject]
-    public class SubStatement : StatementBase, IStatementTarget
+    public class SubStatement : StatementBase, IObjectType
     {
         public ObjectType ObjectType => ObjectType.SubStatement;
 
@@ -37,9 +37,11 @@ namespace Doctrina.xAPI
             return base.GetHashCode();
         }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
-            throw new NotImplementedException();
+            var jobj = base.ToJToken(version, format);
+
+            return jobj;
         }
 
         public static implicit operator SubStatement(JObject jobj)

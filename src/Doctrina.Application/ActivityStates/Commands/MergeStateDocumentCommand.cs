@@ -1,11 +1,12 @@
 ﻿using Doctrina.Domain.Entities.Documents;
 using Doctrina.xAPI;
+using Doctrina.xAPI.Documents;
 using MediatR;
 using System;
 
 namespace Doctrina.Application.ActivityStates.Commands
 {
-    public class MergeStateDocumentCommand : IRequest<ActivityStateEntity>
+    public class MergeStateDocumentCommand : IRequest<ActivityStateDocument>
     {
         public string StateId { get; set; }
         public Iri ActivityId { get; set; }

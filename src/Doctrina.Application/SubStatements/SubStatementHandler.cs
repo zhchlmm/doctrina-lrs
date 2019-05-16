@@ -5,16 +5,12 @@ using Doctrina.Application.Verbs.Commands;
 using Doctrina.Domain.Entities;
 using Doctrina.Persistence;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Doctrina.Application.SubStatements
 {
-    public class SubStatementHandler : IRequestHandler<CreateSubStatementCommand>
+    public class SubStatementHandler : IRequestHandler<CreateSubStatementCommand, SubStatementEntity>
     {
         private readonly DoctrinaDbContext _context;
         private readonly IMediator _mediator;
@@ -27,24 +23,17 @@ namespace Doctrina.Application.SubStatements
             _mapper = mapper;
         }
 
-        public Task<Unit> Handle(CreateSubStatementCommand request, CancellationToken cancellationToken)
+        public async Task<SubStatementEntity> Handle(CreateSubStatementCommand request, CancellationToken cancellationToken)
         {
-            var verb = _mediator.Send(MergeVerbCommand.Create(request.SubStatement.Verb));
-            var actor = _mediator.Send(MergeActorCommand.Create(request.SubStatement.Actor));
+            var subStatement = _mapper.Map<SubStatementEntity>(request.SubStatement);
 
-            var entity = _mapper.Map<SubStatementEntity>(request.SubStatement);
-            // TODO: Merge verb
-            // TODO: Merge actor
+            await _mediator.Send(MergeVerbCommand.Create(subStatement.Verb));
 
+            await _mediator.Send(MergeActorCommand.Create(subStatement.Actor));
 
-            var SubStatement = new SubStatementEntity()
-            {
-                Actor = actor,
-                Verb = verb,
-                Attachments = _mapper.Map<ICollection<AttachmentEntity>>(request.SubStatement.Attachments),
-                Result = _mapper.Map<ResultContext>
-            }
-            
+            _context.SubStatements.Add(subStatement);
+
+            return subStatement;
         }
     }
 }

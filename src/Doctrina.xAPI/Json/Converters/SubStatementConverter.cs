@@ -22,33 +22,11 @@ namespace Doctrina.xAPI.Json.Converters
                 if (jobjectType.Type != JTokenType.String)
                     throw new JsonSerializationException("objectType must be a string");
 
-                string strObjectType = jobj["objectType"].Value<string>();
-
-                if (!Enum.TryParse(strObjectType, out objType))
-                    throw new JsonSerializationException($"'{strObjectType}' is not valid. Path: '{reader.Path}'");
+                objType = jobj["objectType"].Value<string>();
             }
-
-            StatementObjectBase target = null;
 
             // If Statement Object
-            switch (objType)
-            {
-                case ObjectType.Activity:
-                    target = new Activity();
-                    break;
-                case ObjectType.Agent:
-                    target = new Agent();
-                    break;
-                case ObjectType.Group:
-                    target = new Group();
-                    break;
-                case ObjectType.StatementRef:
-                    target = new StatementRef();
-                    break;
-                default:
-                    throw new NullReferenceException($"objectType '{objType}' is not valid at path '{jobj.Path}'");
-            }
-
+            var target = objType.CreateInstance();
             return serializer.Deserialize(jobj.CreateReader(), target.GetType());
         }
 

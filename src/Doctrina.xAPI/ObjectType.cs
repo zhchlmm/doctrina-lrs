@@ -3,31 +3,45 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Linq;
+using System;
+using Newtonsoft.Json.Linq;
 
 namespace Doctrina.xAPI
 {
     public class ObjectType
     {
-        private static readonly ICollection<ObjectType> _types = new HashSet<ObjectType>();
+        public static readonly ICollection<ObjectType> Types = new HashSet<ObjectType>();
 
-        public static ObjectType Agent = new ObjectType("Agent");
-        public static ObjectType Group = new ObjectType("Group");
-        public static ObjectType Activity = new ObjectType("Activity");
-        public static ObjectType SubStatement = new ObjectType("SubStatement");
-        public static ObjectType StatementRef = new ObjectType("StatementRef");
+        public static readonly ObjectType Agent = new ObjectType("Agent", typeof(Agent));
+        public static readonly ObjectType Group = new ObjectType("Group", typeof(Group));
+        public static readonly ObjectType Activity = new ObjectType("Activity", typeof(Activity));
+        public static readonly ObjectType SubStatement = new ObjectType("SubStatement", typeof(SubStatement));
+        public static readonly ObjectType StatementRef = new ObjectType("StatementRef", typeof(StatementRef));
 
-        private readonly string _type;
-        private ObjectType(string type)
+        public readonly string Alias;
+        public readonly Type Type;
+        private ObjectType(string alias, Type type)
         {
-            _type = type;
-            _types.Add(this);
+            Alias = alias;
+            Type = type;
+            Types.Add(this);
+        }
+        public IObjectType CreateInstance()
+        {
+            return (IObjectType)Activator.CreateInstance(Type);
+        }
+
+        public IObjectType CreateInstance(JObject jobj, ApiVersion version)
+        {
+            return (IObjectType)Activator.CreateInstance(Type, jobj, version);
         }
 
         public static implicit operator ObjectType(string type)
         {
-            if (_types.Any(x=>x._type == type))
+            var objectType = Types.FirstOrDefault(x => x.Alias == type);
+            if (objectType != null)
             {
-                return new ObjectType(type);
+                return objectType;
             }
 
             throw new KeyNotFoundException();
@@ -35,7 +49,7 @@ namespace Doctrina.xAPI
 
         public override string ToString()
         {
-            return _type;
+            return Alias;
         }
 
         public static implicit operator string(ObjectType type)

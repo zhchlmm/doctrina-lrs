@@ -16,7 +16,7 @@ namespace Doctrina.Application.Mappings
                 .ForMember(ent => ent.Mbox_SHA1SUM, opt => opt.MapFrom(x => x.MboxSHA1SUM))
                 .ForMember(ent => ent.OpenId, opt => opt.MapFrom(x => x.OpenId))
                 .ForMember(ent => ent.Account, opt => opt.MapFrom(x => x.Account))
-                .AfterMap((source, dist) => { dist.AgentEntityId = dist.GenerateIdentifierHash(); })
+                .AfterMap((source, dist) => { dist.AgentHash = dist.GenerateIdentifierHash(); })
                 .Include<Group, GroupEntity>();
 
             configuration.CreateMap<Group, GroupEntity>()

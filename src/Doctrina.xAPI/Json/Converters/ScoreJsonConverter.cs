@@ -10,7 +10,7 @@ using System.Xml;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class ScoreJsonConverter : JsonConverter
+    public class ScoreJsonConverter : ApiJsonConverter
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             Newtonsoft.Json.JsonSerializer serializer)

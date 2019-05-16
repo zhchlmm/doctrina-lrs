@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class ObjectTypeConverter : JsonConverter
+    public class ObjectTypeConverter : ApiJsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -21,30 +21,15 @@ namespace Doctrina.xAPI.Json.Converters
 
             var enumString = (string)reader.Value;
 
-            ObjectType? enumObjectType = null;
-            var members = typeof(ObjectType).GetEnumValues();
-            foreach (var enumValue in members)
+            try
             {
-                var memberType = enumValue.GetType();
-                var memberInfo = memberType.GetMember(enumValue.ToString());
-                var attribute = (EnumMemberAttribute)memberInfo[0].GetCustomAttributes(typeof(EnumMemberAttribute), false).FirstOrDefault();
-                if (attribute == null)
-                    continue;
-
-                if (attribute.Value == enumString)
-                {
-                    // Match
-                    enumObjectType = (ObjectType)enumValue;
-                    break;
-                }
+                ObjectType enumObjectType = enumString;
+                return enumObjectType;
             }
-
-            if (!enumObjectType.HasValue)
+            catch (Exception)
             {
                 throw new JsonSerializationException($"'{enumString}' is not a valid objectType.");
             }
-
-            return enumObjectType.HasValue;
         }
 
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)

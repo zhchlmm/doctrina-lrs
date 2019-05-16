@@ -11,7 +11,12 @@ namespace Doctrina.xAPI
         {
         }
         public ActivityDefinition(string jsonString) :
-            this(JObject.Parse(jsonString), ApiVersion.GetLatest())
+            this(JObject.Parse(jsonString))
+        {
+        }
+
+        public ActivityDefinition(JObject jobj) :
+           this(jobj, ApiVersion.GetLatest())
         {
         }
 
@@ -63,7 +68,7 @@ namespace Doctrina.xAPI
             Required = Required.Default)]
         public Extensions Extentions { get; set; }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
 
@@ -74,12 +79,12 @@ namespace Doctrina.xAPI
 
             if(Name != null)
             {
-                obj["name"] = Name.ToJObject(version, format);
+                obj["name"] = Name.ToJToken(version, format);
             }
 
             if(Description != null)
             {
-                obj["description"] = Description.ToJObject(version, format);
+                obj["description"] = Description.ToJToken(version, format);
             }
 
             if(MoreInfo != null)
@@ -87,7 +92,7 @@ namespace Doctrina.xAPI
                 obj["moreInfo"] = MoreInfo.ToString();
             }
 
-            obj["extentions"] = Extentions?.ToJObject(version, format);
+            obj["extentions"] = Extentions?.ToJToken(version, format);
 
             return obj;
         }

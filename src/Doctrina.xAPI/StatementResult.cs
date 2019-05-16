@@ -11,44 +11,46 @@ namespace Doctrina.xAPI
     [JsonObject]
     public class StatementsResult : JsonModel, IStatementsResult
     {
-        //public StatementsResult()
-        //{
-        //}
+        public StatementsResult()
+        {
+        }
+        public StatementsResult(string jsonString)
+           : this(JObject.Parse(jsonString))
+        {
+        }
+        public StatementsResult(JObject jobj): this(jobj, ApiVersion.GetLatest()) { }
+        public StatementsResult(JObject jobj, ApiVersion version)
+        {
+            if (jobj["statements"] != null)
+            {
+                Statements = new StatementCollection(jobj.Value<JArray>("statements"), version);
+            }
 
-        //public StatementsResult(string json)
-        //   : this(json, ApiVersion.GetLatest(), ResultFormat.Exact)
-        //{
-        //}
+            if(jobj["more"] != null)
+            {
+                More = jobj.Value<Uri>("more");
+            }
+        }
 
-        //public StatementsResult(string json, ApiVersion version)
-        //    : this(json, version, ResultFormat.Exact)
-        //{
-        //}
+        public StatementsResult(string json, ApiVersion version, ResultFormat format)
+        {
+            var apiSerializer = new xAPI.Json.ApiJsonSerializer(version, format);
+            var reader = new JsonTextReader(new System.IO.StringReader(json));
 
-        //public StatementsResult(string json, ApiVersion version, ResultFormat format)
-        //{
-        //    var apiSerializer = new xAPI.Json.ApiJsonSerializer(version, format);
-        //    var reader = new JsonTextReader(new System.IO.StringReader(json));
-
-        //    var result = apiSerializer.Deserialize<StatementsResult>(reader);
-        //    Statements = result.Statements;
-        //    More = result.More;
-        //}
+            var result = apiSerializer.Deserialize<StatementsResult>(reader);
+            Statements = result.Statements;
+            More = result.More;
+        }
 
         /// <summary>
         /// List of Statements. If the list returned has been limited (due to pagination), and there are more results, they will be located at the "statements" property within the container located at the IRL provided by the "more" property of this Statement result Object. Where no matching Statements are found, this property will contain an empty array.
         /// </summary>
-        public Statement[] Statements { get; set; }
+        public StatementCollection Statements { get; set; }
 
         /// <summary>
         /// Relative IRL that can be used to fetch more results, including the full path and optionally a query string but excluding scheme, host, and port. Empty string if there are no more results to fetch.
         /// </summary>
         public Uri More { get; set; }
-
-        public static StatementsResult Parse(string jsonString)
-        {
-            throw new NotImplementedException();
-        }
 
         //public string ToJson()
         //{
@@ -90,7 +92,7 @@ namespace Doctrina.xAPI
                 {
                     // StatementsResult
                     string jsonString = await section.ReadAsStringAsync();
-                    result = StatementsResult.Parse(jsonString);
+                    result = new StatementsResult(jsonString);
                 }
                 else
                 {
@@ -119,12 +121,14 @@ namespace Doctrina.xAPI
             throw new NotImplementedException();
         }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
-            obj["statements"] = new JArray(Statements.Select(x => x.ToJObject(x.Version, format)));
+            obj["statements"] = Statements.ToJToken(version, format);
             obj["more"] = More.ToString();
             return obj;
         }
+
+        
     }
 }

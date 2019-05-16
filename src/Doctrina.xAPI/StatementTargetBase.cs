@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Doctrina.xAPI
 {
     [JsonConverter(typeof(StatementObjectConverter))]
-    public abstract class StatementObjectBase : JsonModel, IStatementTarget
+    public abstract class StatementObjectBase : JsonModel, IObjectType
     {
         protected StatementObjectBase() { }
         protected StatementObjectBase(JObject jobj, ApiVersion version)
@@ -19,7 +19,7 @@ namespace Doctrina.xAPI
 
         public ObjectType ObjectType { get { return this.OBJECT_TYPE; } }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             return new JObject
             {
@@ -27,7 +27,7 @@ namespace Doctrina.xAPI
             };
         }
 
-        internal static IStatementTarget Parse(JObject jobj, ApiVersion version)
+        internal static IObjectType Parse(JObject jobj, ApiVersion version)
         {
             string strObjectType = jobj["objectType"].Value<string>();
 
@@ -44,11 +44,6 @@ namespace Doctrina.xAPI
             if (strObjectType == ObjectType.Agent)
             {
                 return new Agent(jobj, version);
-            }
-
-            if (strObjectType == ObjectType.Group)
-            {
-                return new Group(jobj, version);
             }
 
             if (strObjectType == ObjectType.Group)

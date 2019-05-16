@@ -14,6 +14,31 @@ namespace Doctrina.xAPI
     [JsonObject()]
     public class Statement : StatementBase
     {
+
+        public Statement() { }
+        public Statement(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Statement(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Statement(JObject jobj, ApiVersion version)
+            :base(jobj, version)
+        {
+            if(jobj["id"] != null)
+            {
+                Id = jobj.Value<Guid?>("id");
+            }
+
+            if (jobj["stored"] != null)
+            {
+                Stored = jobj.Value<DateTimeOffset?>("stored");
+            }
+
+            if (jobj["authority"] != null)
+            {
+                var auth = jobj.Value<JObject>("authority");
+                ObjectType objType = auth.Value<string>("objectType");
+                Authority = (Agent)objType.CreateInstance(auth, version);
+            }
+        }
+
         /// <summary>
         /// UUID assigned by LRS if not set by the Learning Record Provider.
         /// </summary>
@@ -80,12 +105,12 @@ namespace Doctrina.xAPI
             return hashCode;
         }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
-            var obj = base.ToJObject(version, format);
+            var obj = base.ToJToken(version, format);
             obj["id"] = Id;
             obj["stored"] = Stored;
-            obj["authority"] = Authority.ToJObject(version, format);
+            obj["authority"] = Authority.ToJToken(version, format);
             obj["version"] = Version.ToString();
             return obj;
         }

@@ -12,7 +12,7 @@ namespace Doctrina.Application.Activities.Queries
 
         public class Handler : IRequestHandler<GetActivityQuery, Activity>
         {
-            public Task<Activity> HandleAsync(GetActivityQuery request, CancellationToken cancellationToken)
+            public Task<Activity> Handle(GetActivityQuery request, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();
             }

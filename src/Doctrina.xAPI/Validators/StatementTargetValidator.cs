@@ -7,35 +7,36 @@ namespace Doctrina.xAPI.Validators
     {
         public StatementTargetValidator()
         {
-            RuleFor(x => x.Target).NotNull().Custom((target, context) =>
+            RuleFor(x => x.Object).NotNull().Custom((target, context) =>
             {
                 ValidationResult result = null;
-                
-                switch (target.ObjectType)
+
+                if (target.ObjectType == ObjectType.Agent)
                 {
-                    case ObjectType.Agent:
-                        var agentValidator = new AgentValidator();
-                        result = agentValidator.Validate((Agent)context.InstanceToValidate);
-                        break;
-                    case ObjectType.Group:
-                        var groupValidator = new GroupValidator();
-                        result = groupValidator.Validate((Group)context.InstanceToValidate);
-                        break;
-                    case ObjectType.Activity:
-                        var ActivityValidator = new ActivityValidator();
-                        result = ActivityValidator.Validate((Activity)context.InstanceToValidate);
-                        break;
-                    case ObjectType.SubStatement:
-                        var SubStatementValidator = new SubStatementValidator();
-                        result = SubStatementValidator.Validate((SubStatement)context.InstanceToValidate);
-                        break;
-                    case ObjectType.StatementRef:
-                        break;
-                    default:
-                        break;
+                    var agentValidator = new AgentValidator();
+                    result = agentValidator.Validate((Agent)context.InstanceToValidate);
+                }
+                else if (target.ObjectType == ObjectType.Group)
+                {
+                    var groupValidator = new GroupValidator();
+                    result = groupValidator.Validate((Group)context.InstanceToValidate);
+                }
+                else if (target.ObjectType == ObjectType.Activity)
+                {
+                    var ActivityValidator = new ActivityValidator();
+                    result = ActivityValidator.Validate((Activity)context.InstanceToValidate);
+                }
+                else if (target.ObjectType == ObjectType.SubStatement)
+                {
+                    var SubStatementValidator = new SubStatementValidator();
+                    result = SubStatementValidator.Validate((SubStatement)context.InstanceToValidate);
+                }
+                else if (target.ObjectType == ObjectType.StatementRef)
+                {
+
                 }
 
-                foreach(var failure in result.Errors)
+                foreach (var failure in result.Errors)
                 {
                     context.AddFailure(failure);
                 }

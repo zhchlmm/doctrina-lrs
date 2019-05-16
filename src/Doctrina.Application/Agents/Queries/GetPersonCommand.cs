@@ -4,14 +4,10 @@ using Doctrina.Persistence;
 using Doctrina.xAPI;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Doctrina.Application.Agents.Commands
+namespace Doctrina.Application.Agents.Queries
 {
     public class GetPersonCommand : IRequest<Person>
     {
@@ -28,14 +24,14 @@ namespace Doctrina.Application.Agents.Commands
                 _mapper = mapper;
             }
 
-            public async Task<Person> HandleAsync(GetPersonCommand request, CancellationToken cancellationToken)
+            public async Task<Person> Handle(GetPersonCommand request, CancellationToken cancellationToken)
             {
                 var person = new Person();
                 person.Add(request.Agent);
 
                 var agentEntity = _mapper.Map<AgentEntity>(request.Agent);
 
-                agentEntity = await _context.Agents.FirstOrDefaultAsync(x => x.AgentEntityId == agentEntity.AgentEntityId);
+                agentEntity = await _context.Agents.FirstOrDefaultAsync(x => x.AgentHash == agentEntity.AgentHash);
 
                 if (agentEntity != null)
                 {

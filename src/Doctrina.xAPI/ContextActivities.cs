@@ -1,13 +1,42 @@
 ﻿using Doctrina.xAPI.Json.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
     [JsonConverter(typeof(ContextActivitiesConverter))]
     [JsonObject]
-    public class ContextActivities
+    public class ContextActivities : JsonModel
     {
+        public ContextActivities() { }
+        public ContextActivities(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public ContextActivities(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
+
+        public ContextActivities(JObject jobj, ApiVersion version)
+        {
+            if (jobj["parent"] != null)
+            {
+                Parent = new ActivityCollection(jobj.Value<JToken>("parent"), version);
+            }
+
+            if (jobj["category"] != null)
+            {
+                Category = new ActivityCollection(jobj.Value<JToken>("category"), version);
+            }
+
+            if (jobj["grouping"] != null)
+            {
+                Grouping = new ActivityCollection(jobj.Value<JToken>("grouping"), version);
+            }
+
+            if (jobj["other"] != null)
+            {
+                Other = new ActivityCollection(jobj.Value<JToken>("other"), version);
+            }
+        }
+
         /// <summary>
         /// Parent: an Activity with a direct relation to the Activity which is the Object of the Statement. 
         /// In almost all cases there is only one sensible parent or none, not multiple. 
@@ -16,7 +45,7 @@ namespace Doctrina.xAPI
         [JsonProperty("parent",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
-        public Activity[] Parent { get; set; }
+        public ActivityCollection Parent { get; set; }
 
         /// <summary>
         /// Category: an Activity used to categorize the Statement. "Tags" would be a synonym. 
@@ -27,7 +56,7 @@ namespace Doctrina.xAPI
         [JsonProperty("category",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
-        public Activity[] Category { get; set; }
+        public ActivityCollection Category { get; set; }
 
         /// <summary>
         /// Grouping: an Activity with an indirect relation to the Activity which is the Object of the Statement. 
@@ -37,7 +66,7 @@ namespace Doctrina.xAPI
         [JsonProperty("grouping",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
-        public Activity[] Grouping { get; set; }
+        public ActivityCollection Grouping { get; set; }
 
         /// <summary>
         /// Other: a contextActivity that doesn't fit one of the other properties. 
@@ -46,26 +75,48 @@ namespace Doctrina.xAPI
         [JsonProperty("other",
             NullValueHandling = NullValueHandling.Ignore,
             Required = Required.DisallowNull)]
-        public Activity[] Other { get; set; }
+        public ActivityCollection Other { get; set; }
 
         public override bool Equals(object obj)
         {
             var activities = obj as ContextActivities;
             return activities != null &&
-                   EqualityComparer<Activity[]>.Default.Equals(Parent, activities.Parent) &&
-                   EqualityComparer<Activity[]>.Default.Equals(Category, activities.Category) &&
-                   EqualityComparer<Activity[]>.Default.Equals(Grouping, activities.Grouping) &&
-                   EqualityComparer<Activity[]>.Default.Equals(Other, activities.Other);
+                   EqualityComparer<ActivityCollection>.Default.Equals(Parent, activities.Parent) &&
+                   EqualityComparer<ActivityCollection>.Default.Equals(Category, activities.Category) &&
+                   EqualityComparer<ActivityCollection>.Default.Equals(Grouping, activities.Grouping) &&
+                   EqualityComparer<ActivityCollection>.Default.Equals(Other, activities.Other);
         }
 
         public override int GetHashCode()
         {
             var hashCode = -682935721;
-            hashCode = hashCode * -1521134295 + EqualityComparer<Activity[]>.Default.GetHashCode(Parent);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Activity[]>.Default.GetHashCode(Category);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Activity[]>.Default.GetHashCode(Grouping);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Activity[]>.Default.GetHashCode(Other);
+            hashCode = hashCode * -1521134295 + EqualityComparer<ActivityCollection>.Default.GetHashCode(Parent);
+            hashCode = hashCode * -1521134295 + EqualityComparer<ActivityCollection>.Default.GetHashCode(Category);
+            hashCode = hashCode * -1521134295 + EqualityComparer<ActivityCollection>.Default.GetHashCode(Grouping);
+            hashCode = hashCode * -1521134295 + EqualityComparer<ActivityCollection>.Default.GetHashCode(Other);
             return hashCode;
+        }
+
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        {
+            var jobj = new JObject();
+            if(Parent != null)
+            {
+                jobj["parent"] = Parent.ToJToken(version, format);
+            }
+            if (Category != null)
+            {
+                jobj["category"] = Category.ToJToken(version, format);
+            }
+            if (Grouping != null)
+            {
+                jobj["grouping"] = Grouping.ToJToken(version, format);
+            }
+            if (Other != null)
+            {
+                jobj["other"] = Other.ToJToken(version, format);
+            }
+            return jobj;
         }
 
         public static bool operator ==(ContextActivities activities1, ContextActivities activities2)

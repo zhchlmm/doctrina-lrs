@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class LanguageMapJsonConverter : JsonConverter
+    public class LanguageMapJsonConverter : ApiJsonConverter
     {
         public override bool CanConvert(Type objectType)
         {

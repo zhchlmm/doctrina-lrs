@@ -29,7 +29,7 @@ namespace Doctrina.Domain.Entities.Documents
         /// <summary>
         /// UTC Date when the document was last modified
         /// </summary>
-        public DateTimeOffset LastModified { get; set; }
+        public DateTimeOffset? LastModified { get; set; }
 
         /// <summary>
         /// UTC Date when the document was created

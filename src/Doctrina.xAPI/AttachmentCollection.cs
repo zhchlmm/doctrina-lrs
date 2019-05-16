@@ -10,13 +10,13 @@ namespace Doctrina.xAPI
     /// A collection of <see cref="Attachment"/> objects.
     /// </summary>
     //[JsonConverter(typeof(AttachmentCollectionConverter))]
-    public class AttachmentCollection : JsonModel, ICollection<Attachment>
+    public class AttachmentCollection : JsonModel<JArray>, ICollection<Attachment>
     {
-        private readonly HashSet<Attachment> _list;
+        private readonly HashSet<Attachment> Attachments;
 
-        public int Count => _list.Count;
+        public int Count => Attachments.Count;
 
-        public bool IsReadOnly => ((ICollection<Attachment>)_list).IsReadOnly;
+        public bool IsReadOnly => ((ICollection<Attachment>)Attachments).IsReadOnly;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AttachmentCollection"/> class.
@@ -24,7 +24,7 @@ namespace Doctrina.xAPI
         public AttachmentCollection()
         {
             // foreach over List<T> to avoid boxing the Enumerator
-            _list = new HashSet<Attachment>();
+            Attachments = new HashSet<Attachment>();
         }
 
         public AttachmentCollection(string jsonString) : this(JObject.Parse(jsonString)) { }
@@ -58,48 +58,55 @@ namespace Doctrina.xAPI
 
         public bool TryGetAttachment(string sha2, out Attachment attachment)
         {
-            attachment = _list.FirstOrDefault(x => x.SHA2 == sha2);
+            attachment = Attachments.FirstOrDefault(x => x.SHA2 == sha2);
             return attachment != null;
         }
 
         public void Add(Attachment item)
         {
-            _list.Add(item);
+            Attachments.Add(item);
         }
 
         public void Clear()
         {
-            _list.Clear();
+            Attachments.Clear();
         }
 
         public bool Contains(Attachment item)
         {
-            return _list.Any(x=> x.SHA2 == item.SHA2);
+            return Attachments.Any(x=> x.SHA2 == item.SHA2);
         }
 
         public void CopyTo(Attachment[] array, int arrayIndex)
         {
-            _list.CopyTo(array, arrayIndex);
+            Attachments.CopyTo(array, arrayIndex);
         }
 
         public bool Remove(Attachment item)
         {
-            return _list.Remove(item);
+            return Attachments.Remove(item);
         }
 
         public IEnumerator<Attachment> GetEnumerator()
         {
-            return ((ICollection<Attachment>)_list).GetEnumerator();
+            return ((ICollection<Attachment>)Attachments).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((ICollection<Attachment>)_list).GetEnumerator();
+            return ((ICollection<Attachment>)Attachments).GetEnumerator();
         }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JArray ToJToken(ApiVersion version, ResultFormat format)
         {
-            throw new NotImplementedException();
+            var jArray = new JArray();
+
+            foreach (var attachment in Attachments)
+            {
+                jArray.Add(attachment.ToJToken(version, format));
+            }
+
+            return jArray;
         }
     }
 }

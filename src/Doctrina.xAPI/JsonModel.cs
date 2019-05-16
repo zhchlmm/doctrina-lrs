@@ -10,7 +10,7 @@ namespace Doctrina.xAPI
     {
         public abstract TToken ToJToken(ApiVersion version, ResultFormat format);
 
-        public virtual string ToJson(ApiVersion version, ResultFormat format) {
+        public virtual string ToJson(ApiVersion version, ResultFormat format = ResultFormat.Exact) {
             return ToJToken(version, format).ToString();
         }
 
@@ -18,16 +18,6 @@ namespace Doctrina.xAPI
         {
             return ToJson(ApiVersion.GetLatest(), format);
         }
-
-        //public static TModel Parse(string json);
-
-        //public static bool TryParse(string json, out TModel result);
-
-        // Causes loop reference
-        //public override string ToString()
-        //{
-        //    return ToJson();
-        //}
 
         public override bool Equals(object obj)
         {

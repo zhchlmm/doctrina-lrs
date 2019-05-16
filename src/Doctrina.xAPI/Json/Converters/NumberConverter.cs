@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class NumberConverter : JsonConverter
+    public class NumberConverter : ApiJsonConverter
     {
         private readonly Type[] _typesNotToReadAsString = {
             typeof(float), typeof(float?),

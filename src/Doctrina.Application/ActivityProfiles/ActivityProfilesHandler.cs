@@ -56,7 +56,7 @@ namespace Doctrina.Application.ActivityProfiles
             var profile = new ActivityProfileEntity()
             {
                 Key = Guid.NewGuid(),
-                ActivityEntityId = activity.ActivityEntityId,
+                ActivityEntityId = activity.ActivityHash,
                 ProfileId = request.ProfileId,
                 RegistrationId = request.Registration,
                 Document = DocumentEntity.Create(request.Content, request.ContentType)

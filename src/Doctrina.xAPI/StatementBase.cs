@@ -70,7 +70,7 @@ namespace Doctrina.xAPI
         /// <summary>
         /// Activity, Agent, or another Statement that is the Object of the Statement.
         /// </summary>
-        public IStatementTarget Object { get; set; }
+        public IObjectType Object { get; set; }
 
         /// <summary>
         /// Result Object, further details representing a measured outcome.
@@ -96,7 +96,7 @@ namespace Doctrina.xAPI
                    base.Equals(obj) &&
                    EqualityComparer<Agent>.Default.Equals(Actor, @base.Actor) &&
                    EqualityComparer<Verb>.Default.Equals(Verb, @base.Verb) &&
-                   EqualityComparer<IStatementTarget>.Default.Equals(Object, @base.Object) &&
+                   EqualityComparer<IObjectType>.Default.Equals(Object, @base.Object) &&
                    EqualityComparer<Result>.Default.Equals(Result, @base.Result) &&
                    EqualityComparer<Context>.Default.Equals(Context, @base.Context);
         }
@@ -106,25 +106,52 @@ namespace Doctrina.xAPI
             var hashCode = -1199450156;
             hashCode = hashCode * -1521134295 + EqualityComparer<Agent>.Default.GetHashCode(Actor);
             hashCode = hashCode * -1521134295 + EqualityComparer<Verb>.Default.GetHashCode(Verb);
-            hashCode = hashCode * -1521134295 + EqualityComparer<IStatementTarget>.Default.GetHashCode(Object);
+            hashCode = hashCode * -1521134295 + EqualityComparer<IObjectType>.Default.GetHashCode(Object);
             hashCode = hashCode * -1521134295 + EqualityComparer<Result>.Default.GetHashCode(Result);
             hashCode = hashCode * -1521134295 + EqualityComparer<Context>.Default.GetHashCode(Context);
             return hashCode;
         }
 
-        public override JObject ToJObject(ApiVersion version, ResultFormat format)
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
-            var obj = new JObject
+            var jobj = new JObject();
+
+            if(Actor != null)
             {
-                ["actor"] = Actor.ToJObject(version, format),
-                ["verb"] = Verb.ToJObject(version, format),
-                ["object"] = Object.ToJObject(version, format),
-                ["result"] = Result.ToJObject(version, format),
-                ["context"] = Context.ToJObject(version, format),
-                ["timestamp"] = Timestamp?.ToString("o"),
-                ["attachments"] = Attachments.ToJObject(version, format),
-            };
-            return obj;
+                jobj["actor"] = Actor.ToJToken(version, format);
+            }
+
+            if(Verb != null)
+            {
+                jobj["verb"] = Verb.ToJToken(version, format);
+            }
+
+            if (Object != null)
+            {
+                jobj["object"] = Object.ToJToken(version, format);
+            }
+
+            if(Result != null)
+            {
+                jobj["result"] = Result.ToJToken(version, format);
+            }
+
+            if (Context != null)
+            {
+                jobj["context"] = Context.ToJToken(version, format);
+            }
+
+            if (Timestamp.HasValue)
+            {
+                jobj["timestamp"] = Timestamp?.ToString("o");
+            }
+
+            if(Attachments != null)
+            {
+                jobj["attachments"] = Attachments.ToJToken(version, format);
+            }
+
+            return jobj;
         }
 
         public static bool operator ==(StatementBase base1, StatementBase base2)

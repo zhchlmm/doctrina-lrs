@@ -165,7 +165,7 @@ namespace Doctrina.xAPI.LRS.Controllers
             ICollection<Statement> statements = await _mediator.Send(parameters);
 
             // Derserialize to json statement object
-            result.Statements = statements.ToArray();
+            result.Statements = new StatementCollection(statements);
 
             // Generate more url
             if (result.Statements != null && parameters.Limit.HasValue)

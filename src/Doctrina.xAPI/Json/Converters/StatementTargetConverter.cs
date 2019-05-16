@@ -4,7 +4,7 @@ using System;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class StatementObjectConverter : JsonConverter
+    public class StatementObjectConverter : ApiJsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -24,10 +24,7 @@ namespace Doctrina.xAPI.Json.Converters
                 if (jobjectType.Type != JTokenType.String)
                     throw new JsonSerializationException("objectType must be a string");
 
-                string strObjectType = jobj["objectType"].Value<string>();
-
-                if (!Enum.TryParse(strObjectType, out objType))
-                    throw new JsonSerializationException($"'{strObjectType}' is not valid. Path: '{reader.Path}'");
+                objType = jobj["objectType"].Value<string>();
             }
             else if (jobj["id"] != null)
             {
@@ -46,28 +43,32 @@ namespace Doctrina.xAPI.Json.Converters
                 return ReadSubStatementObject(serializer, jobj, objType);
             }
 
-            StatementObjectBase target = null;
+            IObjectType target = null;
 
             // If Statement Object
-            switch (objType)
+            if (objType == ObjectType.Activity)
             {
-                case ObjectType.Activity:
-                    target = new Activity();
-                    break;
-                case ObjectType.Agent:
-                    target = new Agent();
-                    break;
-                case ObjectType.Group:
-                    target = new Group();
-                    break;
-                case ObjectType.SubStatement:
-                    target = new SubStatement();
-                    break;
-                case ObjectType.StatementRef:
-                    target = new StatementRef();
-                    break;
-                default:
-                    throw new NullReferenceException($"objectType '{objType}' is not valid. Path '{jobj.Path}'.");
+                target = new Activity();
+            }
+            else if (objType == ObjectType.Agent)
+            {
+                target = new Agent();
+            }
+            else if (objType == ObjectType.Group)
+            {
+                target = new Group();
+            }
+            else if (objType == ObjectType.SubStatement)
+            {
+                target = new SubStatement();
+            }
+            else if (objType == ObjectType.StatementRef)
+            {
+                target = new StatementRef();
+            }
+            else
+            {
+                throw new NullReferenceException($"objectType '{objType}' is not valid. Path '{jobj.Path}'.");
             }
 
             serializer.Populate(jobj.CreateReader(), target);
@@ -79,22 +80,25 @@ namespace Doctrina.xAPI.Json.Converters
             StatementObjectBase target = null;
 
             // If Statement Object
-            switch (objType)
+            if (objType == ObjectType.Activity)
             {
-                case ObjectType.Activity:
-                    target = new Activity();
-                    break;
-                case ObjectType.Agent:
-                    target = new Agent();
-                    break;
-                case ObjectType.Group:
-                    target = new Group();
-                    break;
-                case ObjectType.StatementRef:
-                    target = new StatementRef();
-                    break;
-                default:
-                    throw new NullReferenceException($"objectType '{objType}' is not valid at path '{jobj.Path}'");
+                target = new Activity();
+            }
+            else if (objType == ObjectType.Agent)
+            {
+                target = new Agent();
+            }
+            else if (objType == ObjectType.Group)
+            {
+                target = new Group();
+            }
+            else if (objType == ObjectType.StatementRef)
+            {
+                target = new StatementRef();
+            }
+            else
+            {
+                throw new NullReferenceException($"objectType '{objType}' is not valid. Path '{jobj.Path}'.");
             }
 
             return serializer.Deserialize(jobj.CreateReader(), target.GetType());
