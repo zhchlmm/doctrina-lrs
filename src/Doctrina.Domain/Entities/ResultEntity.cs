@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Doctrina.Domain.Entities
 {
@@ -25,13 +26,11 @@ namespace Doctrina.Domain.Entities
         /// <summary>
         /// Json structure of extensions data
         /// </summary>
-        public OwnedTypes.ExtensionEntity Extensions { get; set; }
+        public ICollection<OwnedTypes.ExtensionEntity> Extensions { get; set; }
 
-        public Guid? ScoreId { get; set; }
+        public Guid StatementId { get; set; }
+        public StatementBaseEntity Statement { get; set; }
 
-        #region Navigation
-        public virtual StatementEntity Statement { get; set; }
-        public virtual ScoreEntity Score { get; set; }
-        #endregion
+        public ScoreEntity Score { get; set; }
     }
 }

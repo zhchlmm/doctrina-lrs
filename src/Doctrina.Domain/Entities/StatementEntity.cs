@@ -4,8 +4,6 @@ namespace Doctrina.Domain.Entities
 {
     public class StatementEntity : StatementBaseEntity
     {
-        public Guid StatementId { get; set; }
-
         public Guid? ObjectSubStatementId { get; set; }
 
         public DateTimeOffset Stored { get; set; }

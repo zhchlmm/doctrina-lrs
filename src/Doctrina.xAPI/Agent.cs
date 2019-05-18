@@ -10,7 +10,7 @@ namespace Doctrina.xAPI
     /// </summary>
     [JsonObject]
     [JsonConverter(typeof(AgentJsonConverter))]
-    public class Agent : StatementObjectBase, IInvenseFunctionalIdenfitiers, IAgent, IObjectType
+    public class Agent : StatementObjectBase, IInvenseFunctionalIdenfitiers, IAgent, IStatementObject
     {
         protected override ObjectType OBJECT_TYPE => ObjectType.Agent;
 
@@ -26,7 +26,7 @@ namespace Doctrina.xAPI
 
             if (jobj["mbox"] != null)
             {
-                Mbox = jobj.Value<Mbox>("name");
+                Mbox = new Mbox(jobj.Value<string>("mbox"));
             }
 
             if (jobj["mbox_sha1sum"] != null)
@@ -36,7 +36,7 @@ namespace Doctrina.xAPI
 
             if (jobj["openid"] != null)
             {
-                OpenId = jobj.Value<Iri>("openid");
+                OpenId = new Iri(jobj.Value<string>("openid"));
             }
 
             if (jobj["account"] != null)

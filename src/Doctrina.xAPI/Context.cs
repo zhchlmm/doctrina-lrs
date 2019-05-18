@@ -27,17 +27,17 @@ namespace Doctrina.xAPI
         {
             if (jobj["registration"] != null)
             {
-                Registration = jobj.Value<Guid?>("registration");
+                Registration = Guid.Parse(jobj.Value<string>("registration"));
             }
 
             if (jobj["instructor"] != null)
             {
-                Instructor = (Agent)Agent.Parse(jobj.Value<JObject>("instructor"), version);
+                Instructor = new Agent(jobj.Value<JObject>("instructor"), version);
             }
 
             if (jobj["team"] != null)
             {
-                Instructor = (Group)Group.Parse(jobj.Value<JObject>("team"), version);
+                Instructor = new Group(jobj.Value<JObject>("team"), version);
             }
 
             if (jobj["contextActivities"] != null)

@@ -13,10 +13,10 @@ namespace Doctrina.Application.Mappings
                 .ForMember(x => x.Activity, opt => opt.MapFrom(p => p.Activity))
                 .ForMember(x => x.Agent, opt => opt.MapFrom(p => p.Agent))
                 .ForMember(x => x.Registration, opt => opt.MapFrom(p => p.Registration))
-                .ForMember(x => x.Content, opt => opt.MapFrom(p => p.Document.Content))
-                .ForMember(x => x.ContentType, opt => opt.MapFrom(p => p.Document.ContentType))
-                .ForMember(x => x.Tag, opt => opt.MapFrom(p => p.Document.Checksum))
-                .ForMember(x => x.LastModified, opt => opt.MapFrom(p => p.Document.LastModified));
+                .ForMember(x => x.Content, opt => opt.MapFrom(p => p.Content))
+                .ForMember(x => x.ContentType, opt => opt.MapFrom(p => p.ContentType))
+                .ForMember(x => x.Tag, opt => opt.MapFrom(p => p.Checksum))
+                .ForMember(x => x.LastModified, opt => opt.MapFrom(p => p.LastModified));
         }
     }
 }

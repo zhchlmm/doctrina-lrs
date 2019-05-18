@@ -16,7 +16,7 @@ namespace Doctrina.Persistence.Configurations
 
             builder
                 .HasIndex(account => new { account.HomePage, account.Name })
-                .HasFilter("[HomePage] IS NOT NULL AND [Name] IS NOT NULL")
+                .HasFilter("[Account_HomePage] IS NOT NULL AND [Account_Name] IS NOT NULL")
                 .IsUnique();
         }
     }

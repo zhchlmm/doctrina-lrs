@@ -9,8 +9,21 @@ namespace Doctrina.Domain.Entities.Documents
     /// Represents a stored document
     /// </summary>
     [Owned]
-    public class DocumentEntity : IDocumentEntity
+    public abstract class DocumentBaseEntity
     {
+        public DocumentBaseEntity() { }
+
+        public DocumentBaseEntity(byte[] content, string contentType)
+        {
+            Content = content;
+            ContentType = contentType;
+            LastModified = DateTimeOffset.UtcNow;
+            CreateDate = DateTimeOffset.UtcNow;
+            Checksum = GenerateChecksum();
+        }
+
+        public Guid Key { get; set; }
+
         /// <summary>
         /// Representation of the Content-Type header received
         /// </summary>
@@ -37,37 +50,22 @@ namespace Doctrina.Domain.Entities.Documents
         public DateTimeOffset CreateDate { get; set; }
 
         // Methods:
-        private void GenerateChecksum()
+        private string GenerateChecksum()
         {
             using (var md5 = MD5.Create())
             {
-                byte[] hash = md5.ComputeHash(Content);
-                Checksum = Encoding.UTF8.GetString(hash);
+                byte[] checksum = md5.ComputeHash(Content);
+                return BitConverter.ToString(checksum).Replace("-", string.Empty).ToLower(); ;
             }
         }
 
         // Factories:
-        public static DocumentEntity Create(byte[] content, string contentType)
-        {
-            var doc = new DocumentEntity()
-            {
-                Content = content,
-                ContentType = contentType,
-                LastModified = DateTimeOffset.UtcNow,
-                CreateDate = DateTimeOffset.UtcNow,
-            };
-
-            doc.GenerateChecksum();
-
-            return doc;
-        }
-
-        public void Update(byte[] content, string contentType)
+        public void UpdateDocument(byte[] content, string contentType)
         {
             this.Content = content;
             this.ContentType = contentType;
-            this.LastModified = DateTime.UtcNow;
-            this.GenerateChecksum();
+            this.LastModified = DateTimeOffset.UtcNow;
+            Checksum = this.GenerateChecksum();
         }
     }
 }

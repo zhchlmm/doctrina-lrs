@@ -10,6 +10,8 @@ namespace Doctrina.Domain.Entities
             Attachments = new HashSet<AttachmentEntity>();
         }
 
+        public Guid? StatementId { get; set; }
+
         public EntityObjectType ObjectObjectType { get; set; }
         public AgentEntity Actor { get; set; }
         public VerbEntity Verb { get; set; }

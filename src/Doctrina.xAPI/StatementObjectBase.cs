@@ -25,7 +25,7 @@ namespace Doctrina.xAPI
             };
         }
 
-        internal static IObjectType Parse(JObject jobj, ApiVersion version)
+        internal static IStatementObject Parse(JObject jobj, ApiVersion version)
         {
             if (jobj["objectType"] != null)
             {
@@ -33,9 +33,13 @@ namespace Doctrina.xAPI
 
                 return strObjectType.CreateInstance(jobj, version);
             }
+            else if(jobj["id"] != null)
+            {
+                // Assume activity
+                return ObjectType.Activity.CreateInstance(jobj, version);
+            }
 
-            // Assume activity
-            return ObjectType.Activity.CreateInstance(jobj, version);
+            return null;
         }
 
         public override bool Equals(object obj)

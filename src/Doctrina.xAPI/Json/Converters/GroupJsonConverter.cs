@@ -81,7 +81,7 @@ namespace Doctrina.xAPI.Json.Converters
             //    throw new JsonSerializationException($"'{objectType}' is not allowed as authority.");
             //}
 
-            IObjectType target = objType.CreateInstance();
+            IStatementObject target = objType.CreateInstance();
 
             serializer.Populate(jobj.CreateReader(), target);
             return target;

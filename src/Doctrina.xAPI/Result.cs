@@ -34,12 +34,7 @@ namespace Doctrina.xAPI
 
             if (jobj["duration"] != null)
             {
-                Duration = jobj.Value<Duration>("duration");
-            }
-
-            if (jobj["duration"] != null)
-            {
-                Duration = jobj.Value<Duration>("duration");
+                Duration = new Duration(jobj.Value<string>("duration"));
             }
 
             if (jobj["extentions"] != null)

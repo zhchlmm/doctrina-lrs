@@ -24,14 +24,14 @@ namespace Doctrina.xAPI
             Type = type;
             Types.Add(this);
         }
-        public IObjectType CreateInstance()
+        public IStatementObject CreateInstance()
         {
-            return (IObjectType)Activator.CreateInstance(Type);
+            return (IStatementObject)Activator.CreateInstance(Type);
         }
 
-        public IObjectType CreateInstance(JObject jobj, ApiVersion version)
+        public IStatementObject CreateInstance(JObject jobj, ApiVersion version)
         {
-            return (IObjectType)Activator.CreateInstance(Type, jobj, version);
+            return (IStatementObject)Activator.CreateInstance(Type, jobj, version);
         }
 
         public static implicit operator ObjectType(string type)

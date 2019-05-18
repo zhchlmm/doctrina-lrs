@@ -38,8 +38,7 @@ namespace Doctrina.Application.ActivityProfiles
         {
             ActivityProfileEntity profile = await GetProfile(request.ActivityId, request.ProfileId, request.Registration, cancellationToken);
 
-            profile.UpdateDate = DateTime.UtcNow;
-            profile.Document.Update(request.Content, request.ContentType);
+            profile.UpdateDocument(request.Content, request.ContentType);
 
             _context.ActivityProfiles.Update(profile);
             await _context.SaveChangesAsync(cancellationToken);
@@ -54,13 +53,11 @@ namespace Doctrina.Application.ActivityProfiles
                 ActivityId = request.ActivityId
             });
 
-            var profile = new ActivityProfileEntity()
+            var profile = new ActivityProfileEntity(request.Content, request.ContentType)
             {
-                Key = Guid.NewGuid(),
                 ActivityHash = activity.ActivityHash,
                 ProfileId = request.ProfileId,
-                RegistrationId = request.Registration,
-                Document = DocumentEntity.Create(request.Content, request.ContentType)
+                RegistrationId = request.Registration
             };
 
             _context.ActivityProfiles.Add(profile);
@@ -83,9 +80,9 @@ namespace Doctrina.Application.ActivityProfiles
             var query = _context.ActivityProfiles.Where(x => x.ActivityHash == activityHash);
             if (request.Since.HasValue)
             {
-                query = query.Where(x => x.UpdateDate >= request.Since);
+                query = query.Where(x => x.LastModified >= request.Since);
             }
-            query = query.OrderByDescending(x => x.UpdateDate);
+            query = query.OrderByDescending(x => x.LastModified);
             return _mapper.Map<ICollection<ActivityProfileDocument>>(await query.ToListAsync(cancellationToken));
         }
 

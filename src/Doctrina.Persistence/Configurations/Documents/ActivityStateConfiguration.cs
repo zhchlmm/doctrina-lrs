@@ -8,6 +8,12 @@ namespace Doctrina.Persistence.Configurations.Documents
     {
         public void Configure(EntityTypeBuilder<ActivityStateEntity> builder)
         {
+            builder.HasBaseType<DocumentBaseEntity>();
+
+            //builder.HasKey(x => x.ActivityStateId);
+            //builder.Property(e => e.ActivityStateId)
+            //    .ValueGeneratedOnAdd();
+
             builder.Property(e => e.StateId)
                 .IsRequired()
                 .HasMaxLength(Constants.MAX_URL_LENGTH);
@@ -19,8 +25,6 @@ namespace Doctrina.Persistence.Configurations.Documents
             builder.HasOne(e => e.Agent)
                 .WithMany()
                 .HasForeignKey(e => e.AgentHash);
-
-            builder.OwnsOne(e => e.Document);
 
             builder.HasIndex(e => new { e.StateId, e.AgentHash, e.ActivityHash, e.Registration })
                 .IsUnique();

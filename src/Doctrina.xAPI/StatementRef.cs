@@ -6,14 +6,14 @@ using System.Collections.Generic;
 namespace Doctrina.xAPI
 {
     [JsonObject]
-    public class StatementRef : StatementObjectBase, IObjectType
+    public class StatementRef : StatementObjectBase, IStatementObject
     {
         public StatementRef() { }
         public StatementRef(string jsonString) : this(JObject.Parse(jsonString)) { }
         public StatementRef(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public StatementRef(JObject jobj, ApiVersion version)
         {
-            Id = jobj.Value<Guid>();
+            Id = Guid.Parse(jobj.Value<string>("id"));
         }
 
         protected override ObjectType OBJECT_TYPE => ObjectType.StatementRef;

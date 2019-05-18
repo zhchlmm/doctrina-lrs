@@ -17,7 +17,7 @@ namespace Doctrina.xAPI
         {
             if (jobj["homePage"] != null)
             {
-                HomePage = jobj.Value<Uri>("homePage");
+                HomePage = new Uri(jobj.Value<string>("homePage"));
             }
 
             if (jobj["name"] != null)

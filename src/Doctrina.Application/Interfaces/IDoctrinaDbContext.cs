@@ -28,8 +28,6 @@ namespace Doctrina.Application.Interfaces
 
         DbSet<ActivityStateEntity> ActivityStates { get; set; }
 
-        DbSet<ResultEntity> Results { get; set; }
-
         DbSet<AttachmentEntity> Attachments { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);

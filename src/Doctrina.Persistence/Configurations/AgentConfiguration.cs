@@ -23,7 +23,8 @@ namespace Doctrina.Persistence.Configurations
             builder.Property(e => e.Mbox_SHA1SUM)
                 .HasMaxLength(40);
 
-            builder.OwnsOne(e => e.Account);
+            builder.OwnsOne(e => e.Account).Property(x => x.HomePage).HasColumnName("Account_HomePage");
+            builder.OwnsOne(e => e.Account).Property(x => x.Name).HasColumnName("Account_Name");
 
             builder.HasIndex(x => new { x.ObjectType, x.AgentHash })
                 .IsUnique();
@@ -41,11 +42,6 @@ namespace Doctrina.Persistence.Configurations
             builder
                 .HasIndex(x => new { x.ObjectType, x.OpenId })
                 .HasFilter("[OpenId] IS NOT NULL")
-                .IsUnique();
-
-            builder
-                .HasIndex(agent => new { agent.ObjectType, agent.Account.HomePage, agent.Account.Name })
-                .HasFilter("[Account_HomePage] IS NOT NULL AND [Account_Name] IS NOT NULL")
                 .IsUnique();
         }
     }

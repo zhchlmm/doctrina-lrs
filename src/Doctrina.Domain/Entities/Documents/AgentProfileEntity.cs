@@ -2,22 +2,20 @@
 
 namespace Doctrina.Domain.Entities.Documents
 {
-    public class AgentProfileEntity : IQueryableAgent, IAgentProfileEntity
+    public class AgentProfileEntity : DocumentBaseEntity, IAgentProfileEntity, IDocumentEntity
     {
-        public Guid AgentProfileId { get; set; }
+        public AgentProfileEntity()
+        {
+        }
+
+        public AgentProfileEntity(byte[] content, string contentType) : base(content, contentType)
+        {
+        }
 
         public string ProfileId { get; set; }
-
-        public DateTime Updated { get; set; }
-
-        public string ContentType { get; set; }
-
-        public string ETag { get; set; }
 
         public string AgentHash { get; set; }
 
         public virtual AgentEntity Agent { get; set; }
-
-        public virtual DocumentEntity Document { get; set; }
     }
 }

@@ -38,12 +38,11 @@ namespace Doctrina.Application.ActivityStates
             var activity = await _mediator.Send(MergeActivityIriCommand.Create(request.ActivityId), cancellationToken);
             var agent = await _mediator.Send(MergeActorCommand.Create(_mapper, request.Agent), cancellationToken);
 
-            var state = new ActivityStateEntity()
+            var state = new ActivityStateEntity(request.Content, request.ContentType)
             {
                 StateId = request.StateId,
                 ActivityHash = activity.ActivityHash,
                 AgentHash = agent.AgentHash,
-                Document = DocumentEntity.Create(request.Content, request.ContentType),
                 Registration = request.Registration
             };
 
@@ -91,7 +90,7 @@ namespace Doctrina.Application.ActivityStates
             if (state != null)
             {
                 // Update
-                state.Document.Update(request.Content, request.ContentType);
+                state.UpdateDocument(request.Content, request.ContentType);
                 _context.ActivityStates.Update(state);
                 await _context.SaveChangesAsync(cancellationToken);
                 return _mapper.Map<ActivityStateDocument>(state);

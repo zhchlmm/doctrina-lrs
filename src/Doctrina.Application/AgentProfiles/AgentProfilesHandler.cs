@@ -40,14 +40,14 @@ namespace Doctrina.Application.AgentProfiles
         {
             var agentEntity = _mapper.Map<AgentEntity>(request.Agent);
             var query = _context.AgentProfiles
-                .WhereAgent(agentEntity);
+                .WhereAgent(a=> a.Agent, agentEntity);
 
             if (request.Since.HasValue)
             {
-                query = query.Where(x => x.Document.LastModified >= request.Since.Value);
+                query = query.Where(x => x.LastModified >= request.Since.Value);
             }
 
-            query = query.OrderByDescending(x => x.Document.LastModified);
+            query = query.OrderByDescending(x => x.LastModified);
 
             return _mapper.Map<ICollection<AgentProfileDocument>>(await query.ToListAsync(cancellationToken));
         }
@@ -90,12 +90,10 @@ namespace Doctrina.Application.AgentProfiles
 
             var agent = await _mediator.Send(MergeActorCommand.Create(_mapper, request.Agent), cancellationToken);
 
-            var profile = new AgentProfileEntity()
+            var profile = new AgentProfileEntity(request.Content, request.ContentType)
             {
-                AgentProfileId = Guid.NewGuid(),
                 ProfileId = request.ProfileId,
-                AgentHash = agent.AgentHash,
-                Document = DocumentEntity.Create(request.Content, request.ContentType)
+                AgentHash = agent.AgentHash
             };
 
             _context.AgentProfiles.Add(profile);
@@ -109,8 +107,7 @@ namespace Doctrina.Application.AgentProfiles
             var agentEntity = _mapper.Map<AgentEntity>(request.Agent);
 
             var profile = await GetAgentProfile(agentEntity, request.ProfileId, cancellationToken);
-            profile.Document.Update(request.Content, request.ContentType);
-            profile.Updated = DateTime.UtcNow;
+            profile.UpdateDocument(request.Content, request.ContentType);
 
             _context.AgentProfiles.Update(profile);
             await _context.SaveChangesAsync(cancellationToken);
@@ -121,7 +118,7 @@ namespace Doctrina.Application.AgentProfiles
         private async Task<AgentProfileEntity> GetAgentProfile(AgentEntity agentEntity, string profileId, CancellationToken cancellationToken)
         {
             return await _context.AgentProfiles
-                            .WhereAgent(agentEntity)
+                            .WhereAgent(x=> x.Agent, agentEntity)
                             .SingleOrDefaultAsync(x => x.ProfileId == profileId, cancellationToken);
         }
     }

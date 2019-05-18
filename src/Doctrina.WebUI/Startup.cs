@@ -40,6 +40,8 @@ namespace Doctrina.WebUI
             // Add AutoMapper
             services.AddAutoMapper(new Assembly[] { typeof(AutoMapperProfile).GetTypeInfo().Assembly });
 
+            //services.AddCustomMapper();
+
             // Add framework services.
             //services.AddTransient<INotificationService, NotificationService>();
             //services.AddTransient<IDateTime, MachineDateTime>();
@@ -51,8 +53,13 @@ namespace Doctrina.WebUI
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
 
             // Add DbContext using SQL Server Provider
+#if DEBUG
+            services.AddDbContext<IDoctrinaDbContext, DoctrinaDbContext>(options =>
+                options.UseInMemoryDatabase("Doctrina"));
+#else
             services.AddDbContext<IDoctrinaDbContext, DoctrinaDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DoctrinaDatabase")));
+#endif
 
             //services.AddIdentity<DoctrinaUser, IdentityRole>()
             //    .AddEntityFrameworkStores<DoctrinaContext>()
@@ -96,6 +103,7 @@ namespace Doctrina.WebUI
                 app.UseHsts();
             }
 
+            app.UseLearningRecordStore();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -113,7 +121,7 @@ namespace Doctrina.WebUI
             app.UseCookiePolicy();
 
             // Authenticate before the user accesses secure resources.
-            app.UseAuthentication();
+            //app.UseAuthentication();
 
             // If the app uses session state, call Session Middleware after Cookie 
             // Policy Middleware and before MVC Middleware.
@@ -139,7 +147,6 @@ namespace Doctrina.WebUI
                 }
             });
 
-            app.UseLearningRecordStore();
         }
     }
 }

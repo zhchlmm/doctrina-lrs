@@ -125,18 +125,18 @@ namespace Doctrina.WebUI.Mvc.ModelBinders
             }
         }
 
-        private void AddValidationError(ModelBindingContext bindingContext, ValidationError error)
-        {
-            if (error.Value != null)
-            {
-                bindingContext.ModelState.AddModelError(error.Path, error.Message);
-                return;
-            }
+        //private void AddValidationError(ModelBindingContext bindingContext, ValidationError error)
+        //{
+        //    if (error.Value != null)
+        //    {
+        //        bindingContext.ModelState.AddModelError(error.Path, error.Message);
+        //        return;
+        //    }
 
-            foreach (var childError in error.ChildErrors)
-            {
-                AddValidationError(bindingContext, childError);
-            }
-        }
+        //    foreach (var childError in error.ChildErrors)
+        //    {
+        //        AddValidationError(bindingContext, childError);
+        //    }
+        //}
     }
 }

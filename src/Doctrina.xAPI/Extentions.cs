@@ -8,11 +8,18 @@ using System.Collections.Generic;
 namespace Doctrina.xAPI
 {
     [JsonConverter(typeof(ExtensionsConverter))]
-    public class Extensions : JsonModel, ICollection<KeyValuePair<Uri, JToken>>
+    public class Extensions : JsonModel, IDictionary<Uri, JToken>
     {
         private IDictionary<Uri, JToken> _values = new Dictionary<Uri, JToken>();
 
         public Extensions() { }
+        public Extensions(IEnumerable<KeyValuePair<Uri, JToken>> values)
+        {
+            foreach(var value in values)
+            {
+                _values.Add(value);
+            }
+        }
 
         public Extensions(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
@@ -27,6 +34,12 @@ namespace Doctrina.xAPI
         public int Count => _values.Count;
 
         public bool IsReadOnly => _values.IsReadOnly;
+
+        public ICollection<Uri> Keys => _values.Keys;
+
+        public ICollection<JToken> Values => _values.Values;
+
+        public JToken this[Uri key] { get => _values[key]; set => _values[key] = value; }
 
         public void Add(Uri key, JToken value)
         {
@@ -76,6 +89,21 @@ namespace Doctrina.xAPI
                 obj[val.Key] = val.Value;
             }
             return obj;
+        }
+
+        public bool ContainsKey(Uri key)
+        {
+            return _values.ContainsKey(key);
+        }
+
+        public bool Remove(Uri key)
+        {
+            return _values.Remove(key);
+        }
+
+        public bool TryGetValue(Uri key, out JToken value)
+        {
+            return _values.TryGetValue(key, out value);
         }
 
         public static implicit operator Extensions(JObject jobj)

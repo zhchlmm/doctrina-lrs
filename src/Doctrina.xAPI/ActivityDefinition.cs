@@ -24,17 +24,17 @@ namespace Doctrina.xAPI
         {
             if (obj["type"] != null)
             {
-                Type = obj["type"].Value<Iri>();
+                Type = (Iri)obj["type"].Value<string>();
             }
 
             if (obj["moreInfo"] != null)
             {
-                MoreInfo = obj["moreInfo"].Value<Uri>();
+                MoreInfo = new Uri(obj["moreInfo"].Value<string>());
             }
 
             if (obj["description"] != null)
             {
-                Description = obj.Value<JObject>("description");
+                Description = new LanguageMap(obj.Value<JObject>("description"), version);
             }
         }
 

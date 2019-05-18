@@ -13,6 +13,10 @@ namespace Doctrina.xAPI
         public IDictionary<string, string> _values = new Dictionary<string, string>();
 
         public LanguageMap() { }
+        public LanguageMap(IEnumerable<KeyValuePair<string, string>> values)
+        {
+            
+        }
 
         public LanguageMap(string jsonString) : this(JObject.Parse(jsonString)) { }
 

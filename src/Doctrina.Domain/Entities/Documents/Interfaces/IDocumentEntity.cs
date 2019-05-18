@@ -8,5 +8,6 @@ namespace Doctrina.Domain.Entities.Documents
         string ContentType { get; set; }
         string Checksum { get; set; }
         DateTimeOffset? LastModified { get; set; }
+        DateTimeOffset CreateDate { get; set; }
     }
 }

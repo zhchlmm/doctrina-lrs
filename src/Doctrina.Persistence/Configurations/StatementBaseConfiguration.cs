@@ -8,9 +8,11 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<StatementBaseEntity> builder)
         {
-            //builder.HasKey(e => e.StatementBaseId);
-            //builder.Property(e => e.StatementBaseId)
-            //    .ValueGeneratedOnAdd();
+            builder.ToTable("StatementBase");
+
+            builder.HasKey(e => e.StatementId);
+            builder.Property(e => e.StatementId)
+                .ValueGeneratedOnAdd();
 
             builder.Property(e => e.ObjectObjectType)
                 .HasColumnType("nvarchar(12)")
@@ -18,24 +20,25 @@ namespace Doctrina.Persistence.Configurations
                 .HasConversion<string>();
 
             // Actor
-            builder.Property(e => e.Actor)
-                .IsRequired();
             builder.HasOne(e => e.Actor)
-                .WithMany();
+                .WithMany()
+                .HasPrincipalKey(e=> e.AgentHash)
+                .IsRequired();
 
             // Verb
-            builder.Property(e => e.Verb)
-                .IsRequired();
             builder.HasOne(e => e.Verb)
-                .WithMany();
+                .WithMany()
+                .IsRequired();
 
             // Object Agent 
             builder.HasOne(r => r.ObjectAgent)
-                .WithMany();
+                .WithMany()
+                .HasPrincipalKey(x=> x.AgentHash);
 
             // Object Activity 
             builder.HasOne(r => r.ObjectActivity)
-                .WithMany();
+                .WithMany()
+                .HasPrincipalKey(x=> x.ActivityHash);
 
             // Object SubStatement 
             //builder.HasOne(r => r.ObjectSubStatement)
@@ -43,13 +46,14 @@ namespace Doctrina.Persistence.Configurations
             //    .HasForeignKey<StatementEntity>(e => e.ObjectSubStatementId);
 
             builder.HasOne(e => e.Result)
-                .WithOne();
+                .WithOne(x=> x.Statement)
+                .HasForeignKey<ResultEntity>(x=> x.StatementId);
 
             builder.Property(e => e.Timestamp)
                 .IsRequired();
 
             builder.HasMany(e => e.Attachments)
-                .WithOne()
+                .WithOne(x=> x.Statement)
                 .HasForeignKey(e => e.StatementId);
         }
     }

@@ -12,7 +12,7 @@ namespace Doctrina.xAPI
     /// IRIs can contain some characters outside of the ASCII character set.
     /// </summary>
     [TypeConverter(typeof(IRITypeConverter))]
-    public struct Iri
+    public class Iri
     {
         private readonly string _iriString;
 
@@ -110,12 +110,12 @@ namespace Doctrina.xAPI
         //    return iri.ToString() != str;
         //}
 
-        public static implicit operator Uri(Iri d)
+        public static explicit operator Uri(Iri d)
         {
             return new Uri(d.ToString());
         }
 
-        public static implicit operator Iri(Uri d)
+        public static explicit operator Iri(Uri d)
         {
             return new Iri(d.ToString());
         }

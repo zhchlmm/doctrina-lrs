@@ -1,6 +1,7 @@
 ﻿using Doctrina.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 
 namespace Doctrina.Persistence.Configurations
 {
@@ -17,8 +18,13 @@ namespace Doctrina.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(Constants.MAX_URL_LENGTH);
 
-            builder.Property(e => e.Display)
-                .HasConversion<string>();
+            builder.OwnsMany(e => e.Display);
+
+            builder.OwnsMany(p => p.Display, a => {
+                a.HasForeignKey("VerbHash");
+                a.Property<Guid>("DisplayId");
+                a.HasKey("DisplayId");
+            });
         }
     }
 }

@@ -22,6 +22,10 @@ namespace Doctrina.xAPI.Json
             Converters.Insert(0, new StrictStringConverter());
             Converters.Insert(1, new UriJsonConverter());
             Converters.Insert(2, new DateTimeJsonConverter());
+            Converters.Insert(3, new StatementObjectConverter());
+            Converters.Insert(4, new AgentJsonConverter());
+            DateParseHandling = Newtonsoft.Json.DateParseHandling.None;
+            DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat;
         }
     }
 }

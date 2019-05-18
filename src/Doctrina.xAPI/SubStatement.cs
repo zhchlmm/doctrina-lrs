@@ -13,7 +13,7 @@ namespace Doctrina.xAPI
     /// </summary>
 
     [JsonObject]
-    public class SubStatement : StatementBase, IObjectType
+    public class SubStatement : StatementBase, IStatementObject
     {
         public ObjectType ObjectType => ObjectType.SubStatement;
 

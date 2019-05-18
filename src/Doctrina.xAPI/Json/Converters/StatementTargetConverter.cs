@@ -8,7 +8,7 @@ namespace Doctrina.xAPI.Json.Converters
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsAssignableFrom(typeof(StatementObjectBase));
+            return objectType.IsAssignableFrom(typeof(IStatementObject));
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
@@ -24,7 +24,7 @@ namespace Doctrina.xAPI.Json.Converters
                 if (jobjectType.Type != JTokenType.String)
                     throw new JsonSerializationException("objectType must be a string");
 
-                objType = jobj["objectType"].Value<string>();
+                objType = jobj.Value<string>("objectType");
             }
             else if (jobj["id"] != null)
             {
@@ -43,33 +43,32 @@ namespace Doctrina.xAPI.Json.Converters
                 return ReadSubStatementObject(serializer, jobj, objType);
             }
 
-            IObjectType target = null;
-
-            // If Statement Object
-            if (objType == ObjectType.Activity)
-            {
-                target = new Activity();
-            }
-            else if (objType == ObjectType.Agent)
-            {
-                target = new Agent();
-            }
-            else if (objType == ObjectType.Group)
-            {
-                target = new Group();
-            }
-            else if (objType == ObjectType.SubStatement)
-            {
-                target = new SubStatement();
-            }
-            else if (objType == ObjectType.StatementRef)
-            {
-                target = new StatementRef();
-            }
-            else
-            {
-                throw new NullReferenceException($"objectType '{objType}' is not valid. Path '{jobj.Path}'.");
-            }
+            //// If Statement Object
+            //if (objType == ObjectType.Activity)
+            //{
+            //    target = new Activity();
+            //}
+            //else if (objType == ObjectType.Agent)
+            //{
+            //    target = new Agent();
+            //}
+            //else if (objType == ObjectType.Group)
+            //{
+            //    target = new Group();
+            //}
+            //else if (objType == ObjectType.SubStatement)
+            //{
+            //    target = new SubStatement();
+            //}
+            //else if (objType == ObjectType.StatementRef)
+            //{
+            //    target = new StatementRef();
+            //}
+            //else
+            //{
+            //    throw new NullReferenceException($"objectType '{objType}' is not valid. Path '{jobj.Path}'.");
+            //}
+            IStatementObject target = objType.CreateInstance();
 
             serializer.Populate(jobj.CreateReader(), target);
             return target;

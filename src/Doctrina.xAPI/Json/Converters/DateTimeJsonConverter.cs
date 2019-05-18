@@ -38,7 +38,7 @@ namespace Doctrina.xAPI.Json.Converters
                 throw new JsonSerializationException($"'{strDateTime}' does not allow an offset of -00:00, -0000, -00");
             }
 
-            if (DateTime.TryParse(strDateTime, out DateTime result))
+            if (DateTimeOffset.TryParse(strDateTime, out DateTimeOffset result))
             {
                 return result;
             }
@@ -50,7 +50,7 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
-            var dateTime = value as DateTime?;
+            var dateTime = value as DateTimeOffset?;
             var jvalue = new JValue(dateTime?.ToString("o"));
             jvalue.WriteTo(writer);
         }

@@ -10,10 +10,6 @@ namespace Doctrina.Persistence.Configurations
         {
             builder.HasBaseType(typeof(StatementBaseEntity));
 
-            builder.HasKey(e => e.SubStatementId);
-            builder.Property(e => e.SubStatementId)
-                .ValueGeneratedOnAdd();
-
             //builder.HasOne(e => e.ObjectStatementRef)
             //    .WithMany()
             //    .HasForeignKey(e => e.ObjectStatementRefId);

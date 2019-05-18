@@ -8,25 +8,18 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<StatementEntity> builder)
         {
-            //builder.HasBaseType<StatementBaseEntity>();
-
-            builder.HasKey(e => e.StatementId);
-            builder.Property(e => e.StatementId)
-                .ValueGeneratedOnAdd();
+            builder.HasBaseType<StatementBaseEntity>();
 
             builder.Property(e => e.Stored)
-               .IsRequired();
+               .IsRequired()
+               .ValueGeneratedOnAdd();
 
             builder.Property(e => e.Version)
                 .HasMaxLength(7);
 
             builder.HasOne(e => e.Authority)
                 .WithMany()
-                .HasForeignKey(e => e.AuthorityId);
-
-            builder.HasMany(e => e.Attachments)
-                .WithOne()
-                .HasForeignKey(e => e.StatementId);
+                .HasPrincipalKey(e => e.AgentHash);
 
             builder.Property(e => e.Voided)
                 .IsRequired()

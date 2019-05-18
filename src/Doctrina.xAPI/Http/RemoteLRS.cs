@@ -86,7 +86,7 @@ namespace Doctrina.xAPI.Http
             if (more == null)
                 return null;
 
-            var requestUri = new Uri(BaseAddress, more);
+            var requestUri = new Uri(BaseAddress, (Uri)more);
             var response = await client.GetAsync(requestUri);
 
             response.EnsureSuccessStatusCode();
@@ -103,7 +103,7 @@ namespace Doctrina.xAPI.Http
         /// <returns></returns>
         public async Task<StatementsResult> MoreStatements(StatementsResult result)
         {
-            return await MoreStatements(result.More);
+            return await MoreStatements((Iri)result.More);
         }
 
         public async Task<Statement> SaveStatement(Statement statement)

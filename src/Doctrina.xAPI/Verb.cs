@@ -16,7 +16,7 @@ namespace Doctrina.xAPI
         {
             if (jobj["id"] != null)
             {
-                Id = jobj.Value<Iri>("id");
+                Id = new Iri(jobj.Value<string>("id"));
             }
         }
 

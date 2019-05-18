@@ -2,13 +2,17 @@
 
 namespace Doctrina.Domain.Entities.Documents
 {
-    public class ActivityProfileEntity : IActivityProfileEntity
+    public class ActivityProfileEntity : DocumentBaseEntity, IActivityProfileEntity, IDocumentEntity
     {
-        public Guid Key { get; set; }
+        public ActivityProfileEntity()
+        {
+        }
+
+        public ActivityProfileEntity(byte[] content, string contentType) : base(content, contentType)
+        {
+        }
 
         public string ProfileId { get; set; }
-
-        public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// MD5 checksum of Iri
@@ -16,9 +20,6 @@ namespace Doctrina.Domain.Entities.Documents
         public string ActivityHash { get; set; }
 
         public Guid? RegistrationId { get; set; }
-
-        public DocumentEntity Document { get; set; }
-
 
         #region Navigation Properties
         public virtual ActivityEntity Activity { get; set; }

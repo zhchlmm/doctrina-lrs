@@ -6,9 +6,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Infrastructure\Mapping\**" />
+    <EmbeddedResource Remove="Infrastructure\Mapping\**" />
+    <None Remove="Infrastructure\Mapping\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Infrastructure\AddMapperContextExtension.cs" />
+    <Compile Remove="Mappings\AbstractMapper.cs" />
+    <Compile Remove="Mappings\AgentMapper.cs" />
+    <Compile Remove="Mappings\IAbstractMapper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.0.0" />
     <PackageReference Include="FluentValidation" Version="8.3.0" />
-    <PackageReference Include="MediatR" Version="6.0.0" />
+    <PackageReference Include="MediatR" Version="7.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
   </ItemGroup>
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    public class Activity : StatementObjectBase, IObjectType
+    public class Activity : StatementObjectBase, IStatementObject
     {
         public Activity() { }
 
@@ -14,7 +14,7 @@ namespace Doctrina.xAPI
         {
             if (jobj["id"] != null)
             {
-                Id = jobj.Value<Iri>("id");
+                Id = (Iri)jobj.Value<string>("id");
             }
 
             if (jobj["definition"] != null)

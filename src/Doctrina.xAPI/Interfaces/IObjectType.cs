@@ -2,7 +2,7 @@
 
 namespace Doctrina.xAPI
 {
-    public interface IObjectType
+    public interface IStatementObject
     {
         ObjectType ObjectType { get; }
 

@@ -4,8 +4,10 @@ using Doctrina.xAPI.LRS.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -36,7 +38,7 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
                 var contentType = MediaTypeHeaderValue.Parse(request.ContentType);
                 if (contentType.MediaType == MediaTypes.Application.Json)
                 {
-                    model.Statements = DeserializeStatement(bindingContext, request.Body, strVersion);
+                    model.Statements = DeserializeStatement(bindingContext, request.Body, strVersion).ToArray();
                 }
                 else if (contentType.MediaType == MediaTypes.Multipart.Mixed)
                 {
@@ -56,14 +58,14 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
                             if (sectionContentType.MediaType != MediaTypes.Application.Json)
                                 throw new Exception("First document part must have a Content-Type header value of \"application/json\"");
 
-                            model.Statements = DeserializeStatement(bindingContext, section.Body, strVersion);
-                            foreach (var stmt in model.Statements)
-                            {
-                                foreach (var attachment in stmt.Attachments)
-                                {
+                            model.Statements = DeserializeStatement(bindingContext, section.Body, strVersion).ToArray();
+                            //foreach (var stmt in model.Statements)
+                            //{
+                            //    foreach (var attachment in stmt.Attachments)
+                            //    {
 
-                                }
-                            }
+                            //    }
+                            //}
                         }
                         else
                         {
@@ -98,7 +100,7 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
             }
         }
 
-        private Statement[] DeserializeStatement(ModelBindingContext bindingContext, Stream jsonStream, ApiVersion version)
+        private IEnumerable<Statement> DeserializeStatement(ModelBindingContext bindingContext, Stream jsonStream, ApiVersion version)
         {
             var serializer = new ApiJsonSerializer(version);
 
@@ -126,6 +128,7 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
 
                     if (isArray)
                     {
+                        serializer.Deserialize<Statement[]>(jsonReader);
                         return serializer.Deserialize<Statement[]>(jsonReader);
                     }
                     else
@@ -140,18 +143,18 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
             }
         }
 
-        private void AddValidationError(ModelBindingContext bindingContext, ValidationError error)
-        {
-            if (error.Value != null)
-            {
-                bindingContext.ModelState.AddModelError(error.Path, error.Message);
-                return;
-            }
+        //private void AddValidationError(ModelBindingContext bindingContext, ValidationError error)
+        //{
+        //    if (error.Value != null)
+        //    {
+        //        bindingContext.ModelState.AddModelError(error.Path, error.Message);
+        //        return;
+        //    }
 
-            foreach (var childError in error.ChildErrors)
-            {
-                AddValidationError(bindingContext, childError);
-            }
-        }
+        //    foreach (var childError in error.ChildErrors)
+        //    {
+        //        AddValidationError(bindingContext, childError);
+        //    }
+        //}
     }
 }

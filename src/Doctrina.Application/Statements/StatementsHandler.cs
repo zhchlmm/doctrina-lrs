@@ -104,15 +104,15 @@ namespace Doctrina.Application.Statements
             }
 
             StatementEntity statement = _mapper.Map<StatementEntity>(request.Statement);
-            statement.StatementId = Guid.NewGuid();
-            statement.Timestamp = DateTimeOffset.UtcNow;
-            statement.Stored = DateTimeOffset.UtcNow;
+            //statement.StatementId = statement.StatementId ?? Guid.NewGuid();
+            //statement.Timestamp = DateTimeOffset.UtcNow;
+            //statement.Stored = DateTimeOffset.UtcNow;
             statement.Verb = await _mediator.Send(MergeVerbCommand.Create(statement.Verb), cancellationToken);
             statement.Actor = await _mediator.Send(MergeActorCommand.Create(statement.Actor), cancellationToken);
 
             _context.Statements.Add(statement);
 
-            return statement.StatementId;
+            return statement.StatementId.Value;
         }
 
         public async Task<ICollection<Guid>> Handle(CreateStatementsCommand request, CancellationToken cancellationToken)

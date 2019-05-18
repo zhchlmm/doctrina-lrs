@@ -8,15 +8,10 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ScoreEntity> builder)
         {
-            builder.HasKey(e => e.ScoreId);
-            builder.Property(e => e.ScoreId)
-                .ValueGeneratedOnAdd();
-
             builder.Property(e => e.Scaled);
-
-            builder.HasOne(e => e.Result)
-                .WithOne()
-                .HasForeignKey<ResultEntity>(e => e.ResultId);
+            builder.Property(e => e.Raw);
+            builder.Property(e => e.Min);
+            builder.Property(e => e.Max);
         }
     }
 }
