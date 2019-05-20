@@ -51,13 +51,13 @@ namespace Doctrina.xAPI.LRS.Controllers
             if (statement == null)
                 return NotFound();
 
-            string fullStatement = statement.ToJson();
+            string statementJson = statement.ToJson(format);
 
             if (includeAttachments && statement.Attachments.Any(x => x.Payload != null))
             {
                 var multipart = new MultipartContent("mixed")
                     {
-                        new StringContent(fullStatement, Encoding.UTF8, MediaTypes.Application.Json)
+                        new StringContent(statementJson, Encoding.UTF8, MediaTypes.Application.Json)
                     };
                 foreach (var attachment in statement.Attachments)
                 {
@@ -74,7 +74,7 @@ namespace Doctrina.xAPI.LRS.Controllers
                 return Content(strMultipart, MediaTypes.Multipart.Mixed);
             }
 
-            return Content(fullStatement, MediaTypes.Application.Json);
+            return Content(statementJson, MediaTypes.Application.Json);
 
         }
 
@@ -213,6 +213,21 @@ namespace Doctrina.xAPI.LRS.Controllers
         }
 
         /// <summary>
+        /// Stores a single Statement with the given id.
+        /// </summary>
+        /// <param name="statementId"></param>
+        /// <param name="statement"></param>
+        /// <returns></returns>
+        [RequiredVersionHeader]
+        [AcceptVerbs("PUT", "POST", Order = 1)]
+        public async Task<IActionResult> PutStatement([FromQuery]Guid statementId, [ModelBinder(typeof(StatementPutModelBinder))]Statement statement)
+        {
+            await _mediator.Send(PutStatementCommand.Create(statementId, statement));
+
+            return NoContent();
+        }
+
+        /// <summary>
         /// Create statement(s) with attachment(s)
         /// </summary>
         /// <param name="model"></param>
@@ -224,21 +239,6 @@ namespace Doctrina.xAPI.LRS.Controllers
             ICollection<Guid> guids = await _mediator.Send(CreateStatementsCommand.Create(model.Statements));
 
             return Ok(guids);
-        }
-
-        /// <summary>
-        /// Stores a single Statement with the given id.
-        /// </summary>
-        /// <param name="statementId"></param>
-        /// <param name="statement"></param>
-        /// <returns></returns>
-        [RequiredVersionHeader]
-        [HttpPut]
-        public async Task<IActionResult> PutStatement([FromQuery]Guid statementId, [ModelBinder(typeof(StatementPutModelBinder))]Statement statement)
-        {
-            await _mediator.Send(PutStatementCommand.Create(statementId, statement));
-
-            return NoContent();
         }
     }
 }
