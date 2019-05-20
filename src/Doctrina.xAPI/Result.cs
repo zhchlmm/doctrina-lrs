@@ -167,57 +167,6 @@ namespace Doctrina.xAPI
             return !(result1 == result2);
         }
 
-        //public override bool Equals(object obj)
-        //{
-        //    var result = obj as Result;
-        //    return result != null &&
-        //           base.Equals(obj) &&
-        //           EqualityComparer<Score>.Default.Equals(Score, result.Score) &&
-        //           EqualityComparer<bool?>.Default.Equals(Success, result.Success) &&
-        //           EqualityComparer<bool?>.Default.Equals(Completion, result.Completion) &&
-        //           Response == result.Response &&
-        //           EqualityComparer<TimeSpan?>.Default.Equals(Duration, result.Duration) &&
-        //           EqualityComparer<Extensions>.Default.Equals(Extentions, result.Extentions);
-        //}
 
-        //public override int GetHashCode()
-        //{
-        //    var hashCode = -1749961971;
-        //    hashCode = hashCode * -1521134295 + EqualityComparer<Score>.Default.GetHashCode(Score);
-        //    hashCode = hashCode * -1521134295 + EqualityComparer<bool?>.Default.GetHashCode(Success);
-        //    hashCode = hashCode * -1521134295 + EqualityComparer<bool?>.Default.GetHashCode(Completion);
-        //    hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Response);
-        //    hashCode = hashCode * -1521134295 + EqualityComparer<TimeSpan?>.Default.GetHashCode(Duration);
-        //    hashCode = hashCode * -1521134295 + EqualityComparer<Extensions>.Default.GetHashCode(Extentions);
-        //    return hashCode;
-        //}
-
-        //public static bool operator ==(Result left, Result right)
-        //{
-        //    if (left.Score != right.Score)
-        //        return false;
-
-        //    if (left.Success != right.Success)
-        //        return false;
-
-        //    if (left.Completion != right.Completion)
-        //        return false;
-
-        //    if (left.Response != right.Response)
-        //        return false;
-
-        //    if (left.Duration != right.Duration)
-        //        return false;
-
-        //    if (left.Extentions != right.Extentions)
-        //        return false;
-
-        //    return true;
-        //}
-
-        //public static bool operator !=(Result left, Result right)
-        //{
-        //    return !(left == right);
-        //}
     }
 }
