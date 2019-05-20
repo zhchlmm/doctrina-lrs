@@ -109,6 +109,7 @@ namespace Doctrina.Application.Statements
             //statement.Stored = DateTimeOffset.UtcNow;
             statement.Verb = await _mediator.Send(MergeVerbCommand.Create(statement.Verb), cancellationToken);
             statement.Actor = await _mediator.Send(MergeActorCommand.Create(statement.Actor), cancellationToken);
+            statement.Version = !string.IsNullOrEmpty(statement.Version) ? statement.Version : ApiVersion.GetLatest().ToString();
 
             _context.Statements.Add(statement);
 
@@ -122,6 +123,9 @@ namespace Doctrina.Application.Statements
             {
                 ids.Add(await Handle(CreateStatementCommand.Create(statement), cancellationToken));
             }
+
+            await _context.SaveChangesAsync(cancellationToken);
+
             return ids;
         }
 
@@ -142,6 +146,8 @@ namespace Doctrina.Application.Statements
             {
                 await Handle(CreateStatementCommand.Create(request.Statement), cancellationToken);
             }
+
+            await _context.SaveChangesAsync(cancellationToken);
 
             return await Unit.Task;
         }
