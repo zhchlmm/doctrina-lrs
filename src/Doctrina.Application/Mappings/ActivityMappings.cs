@@ -9,10 +9,10 @@ namespace Doctrina.Application.Mappings
     {
         public void CreateMappings(Profile configuration)
         {
-            configuration.CreateMap<Activity, ActivityEntity>()
-                .ForMember(entity => entity.ActivityId, opt => opt.MapFrom(x => x.Id.ToString()))
-                .ForMember(entity => entity.ActivityHash, opt => opt.MapFrom(x => x.Id.ComputeHash()))
-                .ForMember(entity => entity.Definition, opt => opt.MapFrom(x => x.Definition));
+            //configuration.CreateMap<Activity, ActivityEntity>()
+            //    .ForMember(entity => entity.ActivityId, opt => opt.MapFrom(x => x.Id.ToString()))
+            //    .ForMember(entity => entity.ActivityHash, opt => opt.MapFrom(x => x.Id.ComputeHash()))
+            //    .ForMember(entity => entity.Definition, opt => opt.MapFrom(x => x.Definition));
         }
     }
 }
