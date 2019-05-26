@@ -1,4 +1,5 @@
 ﻿using Doctrina.Domain.Entities;
+using Doctrina.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,17 +15,21 @@ namespace Doctrina.Persistence.Configurations
             builder.Property(e => e.ContextActivitiesId)
                 .ValueGeneratedOnAdd();
 
-            builder.HasMany(e => e.Parent)
-                .WithOne();
+            builder.Property(e => e.Parent)
+                .HasConversion(new ContextActivityCollectionValueConverter())
+                .HasColumnType("ntext");
 
-            builder.HasMany(e => e.Grouping)
-                .WithOne();
+            builder.Property(e => e.Grouping)
+                .HasConversion(new ContextActivityCollectionValueConverter())
+                .HasColumnType("ntext");
 
-            builder.HasMany(e => e.Category)
-                .WithOne();
+            builder.Property(e => e.Category)
+                 .HasConversion(new ContextActivityCollectionValueConverter())
+                 .HasColumnType("ntext");
 
-            builder.HasMany(e => e.Other)
-                .WithOne();
+            builder.Property(e => e.Other)
+                 .HasConversion(new ContextActivityCollectionValueConverter())
+                 .HasColumnType("ntext");
         }
     }
 }

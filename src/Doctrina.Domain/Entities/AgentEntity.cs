@@ -6,14 +6,14 @@ using System.Text;
 
 namespace Doctrina.Domain.Entities
 {
-    public class AgentEntity : ObjectBase, IStatementObjectEntity
+    public class AgentEntity : IStatementObjectEntity
     {
+        public EntityObjectType ObjectType { get; set; }
+
         /// <summary>
         /// MD5 hash of agent identifier
         /// </summary>
         public string AgentHash { get; set; }
-
-        public EntityObjectType ObjectType { get; set; }
 
         public string Name { get; set; }
 

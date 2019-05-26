@@ -6,6 +6,7 @@ namespace Doctrina.Domain.Entities.Documents
     {
         string ProfileId { get; set; }
         AgentEntity Agent { get; set; }
-        string AgentHash { get; set; }
+        DocumentEntity Document { get; set; }
+
     }
 }

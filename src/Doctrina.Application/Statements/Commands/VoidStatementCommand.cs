@@ -5,6 +5,6 @@ namespace Doctrina.Application.Statements.Commands
 {
     public class VoidStatementCommand : IRequest
     {
-        public StatementBaseEntity Statement { get; set; }
+        public IStatementBaseEntity Statement { get; set; }
     }
 }

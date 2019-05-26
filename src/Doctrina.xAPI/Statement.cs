@@ -10,11 +10,10 @@ namespace Doctrina.xAPI
     /// <summary>
     /// The Statement object
     /// </summary>
-    [JsonConverter(typeof(StatementConverter))]
+    [JsonConverter(typeof(StatementJsonConverter))]
     [JsonObject()]
     public class Statement : StatementBase
     {
-
         public Statement() { }
         public Statement(string jsonString) : this(JObject.Parse(jsonString)) { }
         public Statement(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
@@ -124,6 +123,12 @@ namespace Doctrina.xAPI
         {
             // Override default version
             return base.ToJson(Version, format);
+        }
+
+        public string ToJson()
+        {
+            // Override default version
+            return base.ToJson(Version, ResultFormat.Exact);
         }
 
         public static bool operator ==(Statement statement1, Statement statement2)

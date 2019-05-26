@@ -1,39 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Doctrina.Domain.Entities
 {
-    public class SubStatementEntity : StatementBaseEntity, IStatementObjectEntity
+    public class SubStatementEntity : IStatementObjectEntity, IStatementEntityBase
     {
         public SubStatementEntity()
         {
-            ObjectType = EntityObjectType.SubStatement;
+            Attachments = new HashSet<AttachmentEntity>();
         }
 
-        public EntityObjectType ObjectType { get; private set; }
+        public EntityObjectType ObjectType => EntityObjectType.SubStatement;
 
-        public Guid SubStatementId { get; set; }
-
-        /// <summary>
-        /// Gets the attached object
-        /// </summary>
-        public override IStatementObjectEntity Object
-        {
-            get
-            {
-                switch (ObjectType)
-                {
-                    case EntityObjectType.Agent:
-                    case EntityObjectType.Group:
-                        return ObjectAgent;
-                    case EntityObjectType.Activity:
-                        return ObjectActivity;
-                        // TODO: StatementRef is nullable
-                        //case EntityObjectType.StatementRef:
-                        //    return ObjectStatementRef;
-                }
-
-                return null;
-            }
-        }
+        //public Guid SubStatementId { get; set; }
+        public VerbEntity Verb { get; set; }
+        public AgentEntity Actor { get; set; }
+        public StatementObjectEntity Object { get; set; }
+        public ContextEntity Context { get; set; }
+        public ResultEntity Result { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ICollection<AttachmentEntity> Attachments { get; set; }
     }
 }

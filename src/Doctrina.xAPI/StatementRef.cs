@@ -25,10 +25,11 @@ namespace Doctrina.xAPI
 
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
-            return new JObject
-            {
-                ["id"] = Id.ToString()
-            };
+            var jobj = base.ToJToken(version, format);
+
+            jobj["id"] = Id.ToString();
+
+            return jobj;
         }
 
         public override bool Equals(object obj)

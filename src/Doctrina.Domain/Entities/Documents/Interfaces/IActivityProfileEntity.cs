@@ -4,12 +4,10 @@ namespace Doctrina.Domain.Entities.Documents
 {
     public interface IActivityProfileEntity
     {
-        ActivityEntity Activity { get; set; }
-
-        string ActivityHash { get; set; }
-
+        Guid ActivityProfileId { get; set; }
         string ProfileId { get; set; }
-
+        ActivityEntity Activity { get; set; }
         Guid? RegistrationId { get; set; }
+        DocumentEntity Document { get; set; }
     }
 }

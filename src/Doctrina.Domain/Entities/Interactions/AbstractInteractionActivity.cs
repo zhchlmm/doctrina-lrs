@@ -1,6 +1,6 @@
-﻿namespace Doctrina.Domain.Entities.Interactions
+﻿namespace Doctrina.Domain.Entities.InteractionActivities
 {
-    public abstract class AbstractInteractionType : ActivityDefinitionEntity
+    public abstract class InteractionActivityBase
     {
         public string InteractionType { get; set; }
 

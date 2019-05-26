@@ -4,6 +4,8 @@ using Doctrina.xAPI.LRS.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Doctrina.xAPI.LRS.Builder
 {
@@ -40,6 +42,7 @@ namespace Doctrina.xAPI.LRS.Builder
                 //opt.SerializerSettings.Converters.Insert(0, new UriJsonConverter());
                 //opt.SerializerSettings.Converters.Add(new LanguageMapJsonConverter());
                 opt.SerializerSettings.Converters.Add(new DateTimeJsonConverter());
+                opt.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.None;
                 opt.SerializerSettings.DateParseHandling = Newtonsoft.Json.DateParseHandling.None;
                 opt.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
                 //opt.SerializerSettings.DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore;
@@ -65,6 +68,13 @@ namespace Doctrina.xAPI.LRS.Builder
                     template: "xapi/{controller}"
                 );
             });
+
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                Formatting = Formatting.None,
+                DateParseHandling = DateParseHandling.None,
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc
+            };
 
             return builder;
         }

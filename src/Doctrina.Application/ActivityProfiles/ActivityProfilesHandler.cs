@@ -38,7 +38,7 @@ namespace Doctrina.Application.ActivityProfiles
         {
             ActivityProfileEntity profile = await GetProfile(request.ActivityId, request.ProfileId, request.Registration, cancellationToken);
 
-            profile.UpdateDocument(request.Content, request.ContentType);
+            profile.Document.UpdateDocument(request.Content, request.ContentType);
 
             _context.ActivityProfiles.Update(profile);
             await _context.SaveChangesAsync(cancellationToken);
@@ -55,8 +55,8 @@ namespace Doctrina.Application.ActivityProfiles
 
             var profile = new ActivityProfileEntity(request.Content, request.ContentType)
             {
-                ActivityHash = activity.ActivityHash,
                 ProfileId = request.ProfileId,
+                Activity = activity,
                 RegistrationId = request.Registration
             };
 
@@ -77,12 +77,12 @@ namespace Doctrina.Application.ActivityProfiles
         public async Task<ICollection<ActivityProfileDocument>> Handle(GetActivityProfilesQuery request, CancellationToken cancellationToken)
         {
             var activityHash = request.ActivityId.ComputeHash();
-            var query = _context.ActivityProfiles.Where(x => x.ActivityHash == activityHash);
+            var query = _context.ActivityProfiles.Where(x => x.Activity.ActivityHash == activityHash);
             if (request.Since.HasValue)
             {
-                query = query.Where(x => x.LastModified >= request.Since);
+                query = query.Where(x => x.Document.LastModified >= request.Since);
             }
-            query = query.OrderByDescending(x => x.LastModified);
+            query = query.OrderByDescending(x => x.Document.LastModified);
             return _mapper.Map<ICollection<ActivityProfileDocument>>(await query.ToListAsync(cancellationToken));
         }
 
@@ -100,7 +100,7 @@ namespace Doctrina.Application.ActivityProfiles
         {
             string activityHash = activityId.ComputeHash();
             ActivityProfileEntity profile = await _context.ActivityProfiles.FirstOrDefaultAsync(x =>
-                x.ActivityHash == activityHash &&
+                x.Activity.ActivityHash == activityHash &&
                 x.ProfileId == profileId &&
                 x.RegistrationId == registration,
                 cancellationToken);

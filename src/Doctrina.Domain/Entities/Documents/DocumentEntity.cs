@@ -8,12 +8,11 @@ namespace Doctrina.Domain.Entities.Documents
     /// <summary>
     /// Represents a stored document
     /// </summary>
-    [Owned]
-    public abstract class DocumentBaseEntity
+    public class DocumentEntity : IDocumentEntity
     {
-        public DocumentBaseEntity() { }
+        public DocumentEntity() { }
 
-        public DocumentBaseEntity(byte[] content, string contentType)
+        public DocumentEntity(byte[] content, string contentType)
         {
             Content = content;
             ContentType = contentType;
@@ -21,8 +20,6 @@ namespace Doctrina.Domain.Entities.Documents
             CreateDate = DateTimeOffset.UtcNow;
             Checksum = GenerateChecksum();
         }
-
-        public Guid Key { get; set; }
 
         /// <summary>
         /// Representation of the Content-Type header received

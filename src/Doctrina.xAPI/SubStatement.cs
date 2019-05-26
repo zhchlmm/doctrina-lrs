@@ -23,6 +23,7 @@ namespace Doctrina.xAPI
         public SubStatement(JObject jobj, ApiVersion version) : base(jobj, version)
         {
         }
+
         public override bool Equals(object obj)
         {
             var statement = obj as SubStatement;

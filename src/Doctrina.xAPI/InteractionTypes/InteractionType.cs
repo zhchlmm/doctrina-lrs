@@ -7,7 +7,7 @@ namespace Doctrina.xAPI.InteractionTypes
 {
     public class InteractionType
     {
-        public static readonly ICollection<InteractionType> Types = new HashSet<InteractionType>();
+        private static readonly ICollection<InteractionType> _types = new HashSet<InteractionType>();
 
         public static readonly InteractionType Choice = new InteractionType("choice", typeof(Choice));
         public static readonly InteractionType FillIn = new InteractionType("fill-in", typeof(FillIn));
@@ -27,7 +27,7 @@ namespace Doctrina.xAPI.InteractionTypes
         {
             Alias = strType;
             Type = type;
-            Types.Add(this);
+            _types.Add(this);
         }
 
         public ActivityDefinition CreateInstance()
@@ -62,7 +62,7 @@ namespace Doctrina.xAPI.InteractionTypes
 
         public static implicit operator InteractionType(string alias)
         {
-            var interactionType = Types.FirstOrDefault(x => x.Alias == alias);
+            var interactionType = _types.FirstOrDefault(x => x.Alias == alias);
             if (interactionType != null)
             {
                 return interactionType;

@@ -9,7 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Configurations\Documents\DocumentBaseConfiguration.cs" />
     <Compile Remove="Configurations\ScoreConfiguration.cs" />
+    <Compile Remove="Configurations\StatementBaseConfiguration.cs" />
+    <Compile Remove="Configurations\StatementObjectConfiguration.cs" />
   </ItemGroup>
 
   <ItemGroup>

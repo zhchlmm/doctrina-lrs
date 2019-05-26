@@ -44,10 +44,10 @@ namespace Doctrina.Application.AgentProfiles
 
             if (request.Since.HasValue)
             {
-                query = query.Where(x => x.LastModified >= request.Since.Value);
+                query = query.Where(x => x.Document.LastModified >= request.Since.Value);
             }
 
-            query = query.OrderByDescending(x => x.LastModified);
+            query = query.OrderByDescending(x => x.Document.LastModified);
 
             return _mapper.Map<ICollection<AgentProfileDocument>>(await query.ToListAsync(cancellationToken));
         }
@@ -93,7 +93,7 @@ namespace Doctrina.Application.AgentProfiles
             var profile = new AgentProfileEntity(request.Content, request.ContentType)
             {
                 ProfileId = request.ProfileId,
-                AgentHash = agent.AgentHash
+                Agent = agent
             };
 
             _context.AgentProfiles.Add(profile);
@@ -107,7 +107,7 @@ namespace Doctrina.Application.AgentProfiles
             var agentEntity = _mapper.Map<AgentEntity>(request.Agent);
 
             var profile = await GetAgentProfile(agentEntity, request.ProfileId, cancellationToken);
-            profile.UpdateDocument(request.Content, request.ContentType);
+            profile.Document.UpdateDocument(request.Content, request.ContentType);
 
             _context.AgentProfiles.Update(profile);
             await _context.SaveChangesAsync(cancellationToken);

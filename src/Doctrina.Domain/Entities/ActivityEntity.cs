@@ -2,8 +2,10 @@
 {
     public class ActivityEntity : IStatementObjectEntity
     {
+        public EntityObjectType ObjectType => EntityObjectType.Activity;
+
         /// <summary>
-        /// MD5 of <see cref="Id"/>
+        /// Hash of <see cref="Id"/>
         /// </summary>
         public string ActivityHash { get; set; }
 
@@ -11,8 +13,6 @@
         /// Actual Iri
         /// </summary>
         public string ActivityId { get; set; }
-
-        public EntityObjectType ObjectType { get; } = EntityObjectType.Activity;
 
         public ActivityDefinitionEntity Definition { get; set; }
     }

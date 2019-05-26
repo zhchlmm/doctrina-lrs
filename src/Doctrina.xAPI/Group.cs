@@ -45,6 +45,23 @@ namespace Doctrina.xAPI
             Required = Required.DisallowNull)]
         public ICollection<Agent> Member { get; set; }
 
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        {
+            var jobj = base.ToJToken(version, format);
+
+            if(Member != null && Member.Count > 0)
+            {
+                var jarr = new JArray();
+                foreach(var mem in Member)
+                {
+                    jarr.Add(mem.ToJToken(version, format));
+                }
+                jobj["member"] = jarr;
+            }
+
+            return jobj;
+        }
+
         public bool HasMember()
         {
             return Member != null && Member.Count() > 0;

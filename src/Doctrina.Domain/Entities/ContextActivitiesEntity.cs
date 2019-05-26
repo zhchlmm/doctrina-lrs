@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Doctrina.Domain.Entities
 {
@@ -7,24 +8,24 @@ namespace Doctrina.Domain.Entities
     {
         public ContextActivitiesEntity()
         {
-            Parent = new HashSet<ContextActivityTypeEntity>();
+            Parent = new ContextActivityCollection();
 
-            Grouping = new HashSet<ContextActivityTypeEntity>();
+            Grouping = new ContextActivityCollection();
 
-            Category = new HashSet<ContextActivityTypeEntity>();
+            Category = new ContextActivityCollection();
 
-            Other = new HashSet<ContextActivityTypeEntity>();
+            Other = new ContextActivityCollection();
         }
 
         public Guid ContextActivitiesId { get; set; }
 
-        public ICollection<ContextActivityTypeEntity> Parent { get; set; }
+        public ContextActivityCollection Parent { get; set; }
 
-        public ICollection<ContextActivityTypeEntity> Grouping { get; set; }
+        public ContextActivityCollection Grouping { get; set; }
 
-        public ICollection<ContextActivityTypeEntity> Category { get; set; }
+        public ContextActivityCollection Category { get; set; }
 
-        public ICollection<ContextActivityTypeEntity> Other { get; set; }
+        public ContextActivityCollection Other { get; set; }
     }
 
     public class ContextActivityTypeEntity
@@ -33,10 +34,13 @@ namespace Doctrina.Domain.Entities
         /// Activity IRL ID
         /// </summary>
         public string Id { get; set; }
+    }
 
-        /// <summary>
-        /// Activity IRL SHA-1 hash
-        /// </summary>
-        public string ActivityId { get; set; }
+    public class ContextActivityCollection : KeyedCollection<string, ContextActivityTypeEntity>
+    {
+        protected override string GetKeyForItem(ContextActivityTypeEntity item)
+        {
+            return item.Id;
+        }
     }
 }

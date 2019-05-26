@@ -1,6 +1,6 @@
-﻿namespace Doctrina.Domain.Entities.Interactions
+﻿namespace Doctrina.Domain.Entities.InteractionActivities
 {
-    public class LongFillInInteractionType : AbstractInteractionType
+    public class LongFillInInteractionActivity : InteractionActivityBase
     {
     }
 }

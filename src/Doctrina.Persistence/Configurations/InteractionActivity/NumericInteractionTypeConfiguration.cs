@@ -1,4 +1,4 @@
-﻿using Doctrina.Domain.Entities.Interactions;
+﻿using Doctrina.Domain.Entities.InteractionActivities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,7 +8,7 @@ namespace Doctrina.Persistence.Configurations.Interactions
     {
         public void Configure(EntityTypeBuilder<NumericInteractionType> builder)
         {
-            builder.HasBaseType<AbstractInteractionType>();
+            builder.HasBaseType<InteractionActivityBase>();
         }
     }
 }

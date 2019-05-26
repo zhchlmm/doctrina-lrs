@@ -23,9 +23,9 @@ namespace Doctrina.Persistence
 
         public DbSet<SubStatementEntity> SubStatements { get; set; }
 
-        public DbSet<ContextEntity> StatementContexts { get; set; }
+        //public DbSet<ContextEntity> StatementContexts { get; set; }
 
-        public DbSet<ContextActivitiesEntity> ContextActivities { get; set; }
+        //public DbSet<ContextActivitiesEntity> ContextActivities { get; set; }
 
         public DbSet<AgentProfileEntity> AgentProfiles { get; set; }
 
@@ -33,9 +33,9 @@ namespace Doctrina.Persistence
 
         public DbSet<ActivityStateEntity> ActivityStates { get; set; }
 
-        public DbSet<ResultEntity> Results { get; set; }
+        //public DbSet<ResultEntity> Results { get; set; }
 
-        public DbSet<AttachmentEntity> Attachments { get; set; }
+        //public DbSet<AttachmentEntity> Attachments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

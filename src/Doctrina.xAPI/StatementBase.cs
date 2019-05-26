@@ -6,7 +6,7 @@ using Doctrina.xAPI.Json.Converters;
 
 namespace Doctrina.xAPI
 {
-    public abstract class StatementBase : JsonModel, IStatementBase
+    public abstract class StatementBase : JsonModel<JObject>, IStatementBase
     {
         public StatementBase() { }
 

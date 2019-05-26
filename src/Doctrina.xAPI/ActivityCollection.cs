@@ -66,7 +66,7 @@ namespace Doctrina.xAPI
             var jarr = new JArray();
             foreach (var ac in activities)
             {
-                jarr.Add(ac.ToJToken(version, format));
+                jarr.Add(ac.ToJToken(version, ResultFormat.Ids));
             }
             return jarr;
         }

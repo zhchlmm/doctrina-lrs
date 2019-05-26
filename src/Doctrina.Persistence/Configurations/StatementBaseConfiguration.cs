@@ -8,21 +8,17 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<StatementBaseEntity> builder)
         {
-            builder.ToTable("StatementBase");
+            builder.ToTable("StatementBases");
 
-            builder.HasKey(e => e.StatementId);
-            builder.Property(e => e.StatementId)
+            builder.HasBaseType<StatementObjectBaseEntity>();
+
+            //builder.HasKey(e => e.StatementBaseId);
+            builder.Property(e => e.StatementBaseId)
                 .ValueGeneratedOnAdd();
-
-            builder.Property(e => e.ObjectObjectType)
-                .HasColumnType("nvarchar(12)")
-                .IsRequired()
-                .HasConversion<string>();
 
             // Actor
             builder.HasOne(e => e.Actor)
                 .WithMany()
-                .HasPrincipalKey(e=> e.AgentHash)
                 .IsRequired();
 
             // Verb
@@ -30,31 +26,20 @@ namespace Doctrina.Persistence.Configurations
                 .WithMany()
                 .IsRequired();
 
-            // Object Agent 
-            builder.HasOne(r => r.ObjectAgent)
+            builder.HasOne(p => p.Object)
                 .WithMany()
-                .HasPrincipalKey(x=> x.AgentHash);
-
-            // Object Activity 
-            builder.HasOne(r => r.ObjectActivity)
-                .WithMany()
-                .HasPrincipalKey(x=> x.ActivityHash);
-
-            // Object SubStatement 
-            //builder.HasOne(r => r.ObjectSubStatement)
-            //    .WithOne()
-            //    .HasForeignKey<StatementEntity>(e => e.ObjectSubStatementId);
+                .IsRequired();
 
             builder.HasOne(e => e.Result)
-                .WithOne(x=> x.Statement)
-                .HasForeignKey<ResultEntity>(x=> x.StatementId);
+                .WithOne();
 
             builder.Property(e => e.Timestamp)
                 .IsRequired();
 
             builder.HasMany(e => e.Attachments)
-                .WithOne(x=> x.Statement)
+                .WithOne(x => x.Statement)
                 .HasForeignKey(e => e.StatementId);
+
         }
     }
 }

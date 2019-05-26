@@ -9,17 +9,40 @@ namespace Doctrina.Persistence.Configurations.Documents
     {
         public void Configure(EntityTypeBuilder<ActivityProfileEntity> builder)
         {
-            builder.HasBaseType<DocumentBaseEntity>();
+            builder.ToTable("ActivityProfiles");
+
+            builder.Property(x => x.ActivityProfileId)
+                .ValueGeneratedOnAdd();
+            builder.HasKey(x => x.ActivityProfileId);
 
             builder.Property(e => e.ProfileId)
                 .IsRequired();
 
             builder.HasOne(e => e.Activity)
-                .WithMany()
-                .HasForeignKey(e => e.ActivityHash);
+                .WithMany();
 
-            builder.HasIndex(e => new { e.ProfileId, e.ActivityHash })
-               .IsUnique();
+            //builder.HasIndex(e => new { e.ProfileId, e.ActivityId })
+            //   .IsUnique();
+
+            builder.OwnsOne(x => x.Document, a =>
+            {
+                a.Property(e => e.ContentType)
+                    .HasMaxLength(255);
+
+                a.Property(e => e.Content);
+
+                a.Property(e => e.Checksum)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                a.Property(e => e.LastModified)
+                    .HasDefaultValue(DateTimeOffset.UtcNow)
+                    .IsRequired()
+                    .ValueGeneratedOnAddOrUpdate();
+
+                a.Property(e => e.CreateDate)
+                    .ValueGeneratedOnAdd();
+            });
         }
     }
 }

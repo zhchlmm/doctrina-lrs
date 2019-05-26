@@ -100,6 +100,38 @@ namespace Doctrina.xAPI
             NullValueHandling = NullValueHandling.Ignore)]
         public Account Account { get; set; }
 
+        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        {
+            var jobj = base.ToJToken(version, format);
+
+            if(Name != null)
+            {
+                jobj["name"] = Name;
+            }
+
+            if(Mbox != null)
+            {
+                jobj["mbox"] = Mbox.ToString();
+            }
+
+            if(Mbox_SHA1SUM != null)
+            {
+                jobj["mbox_sha1sum"] = Mbox_SHA1SUM;
+            }
+
+            if(OpenId != null)
+            {
+                jobj["openid"] = OpenId.ToString();
+            }
+
+            if(Account != null)
+            {
+                jobj["account"] = Account.ToJToken(version, format);
+            }
+
+            return jobj;
+        }
+
         public bool IsAnonymous()
         {
             return (Mbox == null

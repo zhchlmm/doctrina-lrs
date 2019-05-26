@@ -86,7 +86,7 @@ namespace Doctrina.xAPI
             var obj = new JObject();
             foreach (var val in _values)
             {
-                obj[val.Key] = val.Value;
+                obj.Add(val.Key.ToString(), val.Value);
             }
             return obj;
         }

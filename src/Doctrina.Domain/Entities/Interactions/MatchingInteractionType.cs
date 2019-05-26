@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace Doctrina.Domain.Entities.Interactions
+namespace Doctrina.Domain.Entities.InteractionActivities
 {
-    public class MatchingInteractionType : AbstractInteractionType
+    public class MatchingInteractionActivity : InteractionActivityBase
     {
-        public ICollection<InteractionComponent> Source { get; set; }
-        public ICollection<InteractionComponent> Target { get; set; }
+        public InteractionComponentCollection Source { get; set; }
+        public InteractionComponentCollection Target { get; set; }
     }
 }

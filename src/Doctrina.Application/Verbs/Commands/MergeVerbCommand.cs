@@ -32,7 +32,14 @@ namespace Doctrina.Application.Verbs.Commands
                     // TODO: Update verb Display language maps
                     foreach (var dis in request.Verb.Display)
                     {
-                        verb.Display.Add(dis);
+                        if (verb.Display.ContainsKey(dis.Key))
+                        {
+                            verb.Display[dis.Key] = dis.Value;
+                        }
+                        else
+                        {
+                            verb.Display.Add(dis);
+                        }
                     }
                 }
                 else

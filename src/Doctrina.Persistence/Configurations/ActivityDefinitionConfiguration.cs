@@ -1,4 +1,5 @@
 ﻿using Doctrina.Domain.Entities;
+using Doctrina.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -19,23 +20,17 @@ namespace Doctrina.Persistence.Configurations
 
             builder.Property(e => e.MoreInfo);
 
-            builder.OwnsMany(p => p.Names, a => {
-                a.HasForeignKey("ActivityDefinitionId");
-                a.Property<Guid>("NameId");
-                a.HasKey("NameId");
-            });
+            builder.Property(p => p.Names)
+                .HasConversion(new LanguageMapCollectionValueConverter())
+                .HasColumnType("ntext");
 
-            builder.OwnsMany(p => p.Descriptions,  a => {
-                a.HasForeignKey("ActivityDefinitionId");
-                a.Property<Guid>("DescriptionId");
-                a.HasKey("DescriptionId");
-            });
+            builder.Property(p => p.Descriptions)
+                .HasConversion(new LanguageMapCollectionValueConverter())
+                .HasColumnType("ntext");
 
-            builder.OwnsMany(p => p.Extensions, a => { 
-                a.HasForeignKey("ActivityDefinitionId");
-                a.Property<Guid>("ExtensionId");
-                a.HasKey("ExtensionId");
-            });
+            builder.Property(p => p.Extensions)
+                .HasConversion(new ExtensionsCollectionValueConverter())
+                .HasColumnType("ntext");
         }
     }
 }

@@ -37,72 +37,10 @@ namespace Doctrina.xAPI.Json.Converters
                 throw new JsonSerializationException("Statements that use an Agent or Group as an Object MUST specify an 'objectType' property.");
             }
 
-            // If Statement's SubStatement object
-            if (path == "object.object")
-            {
-                return ReadSubStatementObject(serializer, jobj, objType);
-            }
-
-            //// If Statement Object
-            //if (objType == ObjectType.Activity)
-            //{
-            //    target = new Activity();
-            //}
-            //else if (objType == ObjectType.Agent)
-            //{
-            //    target = new Agent();
-            //}
-            //else if (objType == ObjectType.Group)
-            //{
-            //    target = new Group();
-            //}
-            //else if (objType == ObjectType.SubStatement)
-            //{
-            //    target = new SubStatement();
-            //}
-            //else if (objType == ObjectType.StatementRef)
-            //{
-            //    target = new StatementRef();
-            //}
-            //else
-            //{
-            //    throw new NullReferenceException($"objectType '{objType}' is not valid. Path '{jobj.Path}'.");
-            //}
             IStatementObject target = objType.CreateInstance();
 
             serializer.Populate(jobj.CreateReader(), target);
             return target;
-        }
-
-        private object ReadSubStatementObject(Newtonsoft.Json.JsonSerializer serializer, JObject jobj, ObjectType objType)
-        {
-            StatementObjectBase target = null;
-
-            // If Statement Object
-            if (objType == ObjectType.Activity)
-            {
-                target = new Activity();
-            }
-            else if (objType == ObjectType.Agent)
-            {
-                target = new Agent();
-            }
-            else if (objType == ObjectType.Group)
-            {
-                target = new Group();
-            }
-            else if (objType == ObjectType.StatementRef)
-            {
-                target = new StatementRef();
-            }
-            else
-            {
-                throw new NullReferenceException($"objectType '{objType}' is not valid. Path '{jobj.Path}'.");
-            }
-
-            return serializer.Deserialize(jobj.CreateReader(), target.GetType());
-            //serializer.Populate(jobj.CreateReader(), target);
-            //return target;
         }
 
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)

@@ -41,8 +41,8 @@ namespace Doctrina.Application.ActivityStates
             var state = new ActivityStateEntity(request.Content, request.ContentType)
             {
                 StateId = request.StateId,
-                ActivityHash = activity.ActivityHash,
-                AgentHash = agent.AgentHash,
+                Activity = activity,
+                Agent = agent,
                 Registration = request.Registration
             };
 
@@ -90,7 +90,7 @@ namespace Doctrina.Application.ActivityStates
             if (state != null)
             {
                 // Update
-                state.UpdateDocument(request.Content, request.ContentType);
+                state.Document.UpdateDocument(request.Content, request.ContentType);
                 _context.ActivityStates.Update(state);
                 await _context.SaveChangesAsync(cancellationToken);
                 return _mapper.Map<ActivityStateDocument>(state);

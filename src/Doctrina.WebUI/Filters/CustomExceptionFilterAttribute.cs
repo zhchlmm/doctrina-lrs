@@ -15,8 +15,7 @@ namespace Doctrina.WebUI.Filters
             {
                 context.HttpContext.Response.ContentType = "application/json";
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                context.Result = new JsonResult(
-                    ((ValidationException)context.Exception).Failures);
+                context.Result = new JsonResult(new { failures = ((ValidationException)context.Exception).Failures });
 
                 return;
             }

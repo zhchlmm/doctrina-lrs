@@ -18,9 +18,9 @@ namespace Doctrina.Application.Interfaces
 
         DbSet<SubStatementEntity> SubStatements { get; set; }
 
-        DbSet<ContextEntity> StatementContexts { get; set; }
+        //DbSet<ContextEntity> StatementContexts { get; set; }
 
-        DbSet<ContextActivitiesEntity> ContextActivities { get; set; }
+        //DbSet<ContextActivitiesEntity> ContextActivities { get; set; }
 
         DbSet<AgentProfileEntity> AgentProfiles { get; set; }
 
@@ -28,7 +28,7 @@ namespace Doctrina.Application.Interfaces
 
         DbSet<ActivityStateEntity> ActivityStates { get; set; }
 
-        DbSet<AttachmentEntity> Attachments { get; set; }
+        //DbSet<AttachmentEntity> Attachments { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

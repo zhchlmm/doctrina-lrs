@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Doctrina.Domain.Entities.Interactions
+namespace Doctrina.Domain.Entities.InteractionActivities
 {
-    public class SequencingInteractionType : AbstractInteractionType
+    public class SequencingInteractionActivity : InteractionActivityBase
     {
-        public ICollection<InteractionComponent> Choices { get; set; }
+        public InteractionComponentCollection Choices { get; set; }
     }
 }

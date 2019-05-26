@@ -2,20 +2,20 @@
 
 namespace Doctrina.Domain.Entities.Documents
 {
-    public class AgentProfileEntity : DocumentBaseEntity, IAgentProfileEntity, IDocumentEntity
+    public class AgentProfileEntity : IAgentProfileEntity
     {
         public AgentProfileEntity()
         {
         }
 
-        public AgentProfileEntity(byte[] content, string contentType) : base(content, contentType)
+        public AgentProfileEntity(byte[] content, string contentType)
         {
+            Document = new DocumentEntity(content, contentType);
         }
 
+        public Guid AgentProfileId { get; set; }
         public string ProfileId { get; set; }
-
-        public string AgentHash { get; set; }
-
         public virtual AgentEntity Agent { get; set; }
+        public DocumentEntity Document { get; set; }
     }
 }

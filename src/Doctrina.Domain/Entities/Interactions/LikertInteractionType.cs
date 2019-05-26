@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Doctrina.Domain.Entities.Interactions
+namespace Doctrina.Domain.Entities.InteractionActivities
 {
-    public class LikertInteractionType : AbstractInteractionType
+    public class LikertInteractionActivity : InteractionActivityBase
     {
-        public ICollection<InteractionComponent> Scale { get; set; }
+        public InteractionComponentCollection Scale { get; set; }
     }
 }

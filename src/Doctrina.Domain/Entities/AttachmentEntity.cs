@@ -1,14 +1,16 @@
-﻿using System;
+﻿using Doctrina.Domain.Entities.OwnedTypes;
+using System;
 
 namespace Doctrina.Domain.Entities
 {
     public class AttachmentEntity
     {
         public Guid Id { get; set; }
-
         public string UsageType { get; set; }
 
-        public string CanonicalData { get; set; }
+        public LanguageMapCollection Description { get; set; }
+
+        public LanguageMapCollection Display { get; set; }
 
         public string ContentType { get; set; }
 
@@ -18,10 +20,9 @@ namespace Doctrina.Domain.Entities
 
         public string SHA2 { get; set; }
 
-        public long Length { get; set; }
+        public int Length { get; set; }
+        //public Guid StatementId { get; set; }
 
-        public Guid StatementId { get; set; }
-
-        public virtual StatementBaseEntity Statement { get; set; }
+        //public virtual StatementBaseEntity Statement { get; set; }
     }
 }

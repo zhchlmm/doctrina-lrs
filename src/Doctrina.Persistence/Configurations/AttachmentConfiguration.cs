@@ -1,4 +1,5 @@
 ﻿using Doctrina.Domain.Entities;
+using Doctrina.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,10 +9,6 @@ namespace Doctrina.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<AttachmentEntity> builder)
         {
-            builder.HasKey(e => e.Id);
-            builder.Property(e => e.Id)
-                .ValueGeneratedOnAdd();
-
             builder.Property(e => e.UsageType)
                 .IsRequired()
                 .HasMaxLength(Constants.MAX_URL_LENGTH);
@@ -23,15 +20,16 @@ namespace Doctrina.Persistence.Configurations
             builder.Property(e => e.SHA2)
                 .IsRequired();
 
-            builder.Property(e => e.CanonicalData)
+            builder.Property(e => e.Display)
+                .HasConversion(new LanguageMapCollectionValueConverter())
+                .HasColumnType("ntext");
+
+            builder.Property(e => e.Description)
+                .HasConversion(new LanguageMapCollectionValueConverter())
                 .HasColumnType("ntext");
 
             builder.Property(e => e.Length)
                 .IsRequired();
-
-            builder.HasOne(e => e.Statement)
-                .WithOne()
-                .HasForeignKey<AttachmentEntity>(e => e.StatementId);
         }
     }
 }

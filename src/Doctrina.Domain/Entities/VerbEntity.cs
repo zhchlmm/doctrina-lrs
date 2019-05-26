@@ -15,6 +15,6 @@ namespace Doctrina.Domain.Entities
         /// </summary>
         public string Id { get; set; }
 
-        public ICollection<LanguageMapEntity> Display { get; set; }
+        public LanguageMapCollection Display { get; set; }
     }
 }

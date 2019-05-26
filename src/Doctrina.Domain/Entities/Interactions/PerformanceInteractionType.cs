@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Doctrina.Domain.Entities.Interactions
+namespace Doctrina.Domain.Entities.InteractionActivities
 {
-    public class PerformanceInteractionType : AbstractInteractionType
+    public class PerformanceInteractionActivity : InteractionActivityBase
     {
-        public ICollection<InteractionComponent> Steps { get; set; }
+        public InteractionComponentCollection Steps { get; set; }
     }
 }

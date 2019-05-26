@@ -6,10 +6,12 @@ using Doctrina.Application.Statements.Queries;
 using Doctrina.Application.Verbs.Commands;
 using Doctrina.Domain.Entities;
 using Doctrina.xAPI;
+using Doctrina.xAPI.Json;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,25 +48,45 @@ namespace Doctrina.Application.Statements
 
         public async Task<Statement> Handle(GetStatementQuery request, CancellationToken cancellationToken)
         {
-            StatementEntity entity = null;
+            var query = _context.Statements
+                    .Where(x => x.StatementId == request.StatementId && x.Voided == false);
+
             if (request.IncludeAttachments)
             {
-                entity = await _context.Statements
-                    .Include(x => x.Attachments)
-                    .FirstOrDefaultAsync(x => x.StatementId == request.StatementId && x.Voided == false, cancellationToken);
+                query = query.Include(x => x.Attachments)
+                    .Select(x => new StatementEntity()
+                    {
+                        StatementId = x.StatementId,
+                        FullStatement = x.FullStatement,
+                        Attachments = x.Attachments
+                    });
             }
             else
             {
-                entity = await _context.Statements
-                    .FirstOrDefaultAsync(x => x.StatementId == request.StatementId && x.Voided == false, cancellationToken);
+                query = query.Select(x => new StatementEntity()
+                {
+                    StatementId = x.StatementId,
+                    FullStatement = x.FullStatement
+                });
             }
 
-            if (entity == null)
+            StatementEntity statementEntity = await query.FirstOrDefaultAsync(cancellationToken);
+
+            if (statementEntity == null)
             {
                 return null;
             }
 
-            return _mapper.Map<Statement>(entity);
+            var statement = JsonConvert.DeserializeObject<Statement>(statementEntity.FullStatement);
+            foreach (var attachmentEntity in statementEntity.Attachments)
+            {
+                if(statement.Attachments.TryGetAttachment(attachmentEntity.SHA2, out Attachment attachment))
+                {
+                    attachment.SetPayload(attachmentEntity.Payload);
+                }
+            }
+
+            return statement;
         }
 
         public async Task<DateTimeOffset?> Handle(GetConsistentThroughQuery request, CancellationToken cancellationToken)
@@ -87,20 +109,9 @@ namespace Doctrina.Application.Statements
         /// <returns>Guid of the created statement</returns>
         public async Task<Guid> Handle(CreateStatementCommand request, CancellationToken cancellationToken)
         {
-
-            // Prevent conflic
-            if (request.Statement.Id.HasValue)
+            if (!request.Statement.Id.HasValue)
             {
-                var savedStatement = await Handle(GetStatementQuery.Create(request.Statement.Id.Value), cancellationToken);
-                if (savedStatement != null &&
-                    !savedStatement.Equals(request.Statement))
-                {
-                    throw new ValidationException(new List<ValidationFailure>() {
-                        new ValidationFailure(nameof(request.Statement.Id), "Conflict") { ErrorCode = "409"}
-                    });
-                    // TODO: Statement Comparision Requirements
-                    /// https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#statement-comparision-requirements
-                }
+                request.Statement.Stamp();
             }
 
             StatementEntity statement = _mapper.Map<StatementEntity>(request.Statement);
@@ -110,6 +121,7 @@ namespace Doctrina.Application.Statements
             statement.Verb = await _mediator.Send(MergeVerbCommand.Create(statement.Verb), cancellationToken);
             statement.Actor = await _mediator.Send(MergeActorCommand.Create(statement.Actor), cancellationToken);
             statement.Version = !string.IsNullOrEmpty(statement.Version) ? statement.Version : ApiVersion.GetLatest().ToString();
+            statement.FullStatement = request.Statement.ToJson();
 
             _context.Statements.Add(statement);
 
@@ -135,17 +147,7 @@ namespace Doctrina.Application.Statements
 
             request.Statement.Id = request.StatementId;
 
-            if (savedStatement != null &&
-                !savedStatement.Equals(request.Statement))
-            {
-                throw new ValidationException(new List<ValidationFailure>() {
-                    new ValidationFailure(nameof(request.StatementId), "Conflict") { ErrorCode = "409"}
-                });
-            }
-            else
-            {
-                await Handle(CreateStatementCommand.Create(request.Statement), cancellationToken);
-            }
+            await Handle(CreateStatementCommand.Create(request.Statement), cancellationToken);
 
             await _context.SaveChangesAsync(cancellationToken);
 
@@ -154,10 +156,11 @@ namespace Doctrina.Application.Statements
 
         public async Task<Unit> Handle(VoidStatementCommand request, CancellationToken cancellationToken)
         {
-            var voidingStatement = request.Statement;
+            IStatementBaseEntity voidingStatement = request.Statement;
 
-            var statementRefId = voidingStatement.ObjectStatementRefId.Value;
-            var voidedStatement = _context.Statements
+            StatementRefEntity statementRef = voidingStatement.Object.StatementRef as StatementRefEntity;
+            Guid? statementRefId = statementRef.Id;
+            StatementEntity voidedStatement = _context.Statements
                 .FirstOrDefault(x => x.StatementId == statementRefId);
 
             // Upon receiving a Statement that voids another, the LRS SHOULD NOT* reject the request on the grounds of the Object of that voiding Statement not being present.
