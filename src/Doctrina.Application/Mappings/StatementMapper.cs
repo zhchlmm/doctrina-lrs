@@ -72,7 +72,7 @@ namespace Doctrina.Application.Mappings
 
 
             configuration.CreateMap<Agent, AgentEntity>()
-               .IncludeBase<StatementObjectBase, StatementObjectEntity>()
+                .ForMember(e => e.ObjectType, opt => opt.Ignore())
                .ForMember(ent => ent.Name, opt => opt.MapFrom(x => x.Name))
                .ForMember(ent => ent.Mbox, opt => opt.MapFrom(x => x.Mbox.ToString()))
                .ForMember(ent => ent.Mbox_SHA1SUM, opt => opt.MapFrom(x => x.Mbox_SHA1SUM))
@@ -126,7 +126,7 @@ namespace Doctrina.Application.Mappings
                 .ReverseMap();
 
             configuration.CreateMap<SubStatement, SubStatementEntity>()
-                .IncludeBase<StatementObjectBase, StatementObjectEntity>()
+                .ForMember(e=> e.ObjectType, opt => opt.Ignore())
                 .ForMember(x => x.Actor, opt => opt.MapFrom(x => x.Actor))
                 .ForMember(x => x.Verb, opt => opt.MapFrom(x => x.Verb))
                 .ForMember(x => x.Object, opt => opt.MapFrom<ObjectValueResolver, IStatementObject>(x => x.Object))
@@ -137,7 +137,7 @@ namespace Doctrina.Application.Mappings
                 .ReverseMap();
 
             configuration.CreateMap<StatementRef, StatementRefEntity>()
-                .IncludeBase<StatementObjectBase, StatementObjectEntity>()
+                .ForMember(e => e.ObjectType, opt => opt.Ignore())
                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.Id));
 
             configuration.CreateMap<Verb, VerbEntity>()
@@ -147,7 +147,7 @@ namespace Doctrina.Application.Mappings
                 .ReverseMap();
 
             configuration.CreateMap<Activity, ActivityEntity>()
-                .ForMember(e=> e.ObjectType, opt => opt.Ignore())
+                .ForMember(e => e.ObjectType, opt => opt.Ignore())
                 .ForMember(e => e.ActivityId, opt => opt.MapFrom(x => x.Id.ToString()))
                 .ForMember(e => e.ActivityHash, opt => opt.MapFrom(x => x.Id.ComputeHash()))
                 .ForMember(entity => entity.Definition, opt => opt.MapFrom(x => x.Definition))
@@ -184,19 +184,19 @@ namespace Doctrina.Application.Mappings
                 .ReverseMap();
 
             configuration.CreateMap<Attachment, AttachmentEntity>()
-                .ForMember(x=> x.Id, opt => opt.Ignore())
-                .ForMember(x=> x.ContentType, conf => conf.MapFrom(p=> p.ContentType))
-                .ForMember(x=> x.FileUrl, conf => conf.MapFrom(p=> p.FileUrl.ToString()))
-                .ForMember(x=> x.Length, opt => opt.MapFrom(p=> p.Length))
-                .ForMember(x=> x.Display, opt => opt.MapFrom<LanguageMapValueResolver, LanguageMap>(p=> p.Display))
-                .ForMember(x=> x.Description, opt => opt.MapFrom<LanguageMapValueResolver, LanguageMap>(p=> p.Description))
+                .ForMember(x => x.Id, opt => opt.Ignore())
+                .ForMember(x => x.ContentType, conf => conf.MapFrom(p => p.ContentType))
+                .ForMember(x => x.FileUrl, conf => conf.MapFrom(p => p.FileUrl.ToString()))
+                .ForMember(x => x.Length, opt => opt.MapFrom(p => p.Length))
+                .ForMember(x => x.Display, opt => opt.MapFrom<LanguageMapValueResolver, LanguageMap>(p => p.Display))
+                .ForMember(x => x.Description, opt => opt.MapFrom<LanguageMapValueResolver, LanguageMap>(p => p.Description))
                 .ReverseMap();
 
             configuration.CreateMap<ContextActivities, ContextActivitiesEntity>()
-                .ForMember(x => x.Category, opt => opt.MapFrom(x=> x.Category))
-                .ForMember(x => x.Parent, opt => opt.MapFrom(x=> x.Parent))
-                .ForMember(x => x.Grouping, opt => opt.MapFrom(x=> x.Grouping))
-                .ForMember(x => x.Other, opt => opt.MapFrom(x=> x.Other));
+                .ForMember(x => x.Category, opt => opt.MapFrom(x => x.Category))
+                .ForMember(x => x.Parent, opt => opt.MapFrom(x => x.Parent))
+                .ForMember(x => x.Grouping, opt => opt.MapFrom(x => x.Grouping))
+                .ForMember(x => x.Other, opt => opt.MapFrom(x => x.Other));
 
             configuration.CreateMap<ActivityCollection, ContextActivityCollection>();
         }
