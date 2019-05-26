@@ -10,6 +10,7 @@ using Doctrina.xAPI.Json;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
@@ -33,12 +34,14 @@ namespace Doctrina.Application.Statements
         private readonly IDoctrinaDbContext _context;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public StatementsHandler(IDoctrinaDbContext context, IMediator mediator, IMapper mapper)
+        public StatementsHandler(IDoctrinaDbContext context, IMediator mediator, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mediator = mediator;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public Task<ICollection<Statement>> Handle(GetStatementsQuery request, CancellationToken cancellationToken)
@@ -114,13 +117,28 @@ namespace Doctrina.Application.Statements
                 request.Statement.Stamp();
             }
 
+            // TODO: Move this logic elsewhere
+            var httpRequest = _httpContextAccessor.HttpContext.Request;
+            var url = new Uri($"{httpRequest.Scheme}://{httpRequest.Host.Value}");
+            request.Statement.Authority = new Agent()
+            {
+                Account = new xAPI.Account()
+                {
+                    HomePage = url,
+                    Name = "REPLACE ME"
+                }
+            };
+
+            // Ensure statement version
+            request.Statement.Version = request.Statement.Version ?? ApiVersion.GetLatest().ToString();
+
             StatementEntity statement = _mapper.Map<StatementEntity>(request.Statement);
             //statement.StatementId = statement.StatementId ?? Guid.NewGuid();
             //statement.Timestamp = DateTimeOffset.UtcNow;
             //statement.Stored = DateTimeOffset.UtcNow;
             statement.Verb = await _mediator.Send(MergeVerbCommand.Create(statement.Verb), cancellationToken);
             statement.Actor = await _mediator.Send(MergeActorCommand.Create(statement.Actor), cancellationToken);
-            statement.Version = !string.IsNullOrEmpty(statement.Version) ? statement.Version : ApiVersion.GetLatest().ToString();
+            statement.Version = !string.IsNullOrWhiteSpace(statement.Version) ? statement.Version : ApiVersion.GetLatest().ToString();
             statement.FullStatement = request.Statement.ToJson();
 
             _context.Statements.Add(statement);
