@@ -25,12 +25,19 @@ namespace Doctrina.xAPI.LRS.Routing
 
         public async Task Invoke(HttpContext context)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (context.Request.Path.HasValue && context.Request.Path.Value.StartsWith("/xapi/"))
+            {
+                if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var sw = Stopwatch.StartNew();
-            await LogRequestAsync(context.Request);
-            await _next.Invoke(context);
-            await LogResponseAsync(context, sw);
+                var sw = Stopwatch.StartNew();
+                await LogRequestAsync(context.Request);
+                await _next.Invoke(context);
+                await LogResponseAsync(context, sw);
+            }
+            else
+            {
+                await _next.Invoke(context);
+            }
         }
 
         private async Task LogRequestAsync(HttpRequest request)

@@ -38,16 +38,19 @@ namespace Doctrina.xAPI.LRS.Routing
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var requestParameters = context.Request.Query.Select(x => x.Key);
-
-            foreach (var requestParameter in requestParameters)
+            if (context.Request.Path.HasValue && context.Request.Path.Value.StartsWith("/xapi/"))
             {
-                if (string.IsNullOrWhiteSpace(requestParameter))
-                    continue;
+                var requestParameters = context.Request.Query.Select(x => x.Key);
 
-                if (!recognizedParameters.Contains(requestParameter))
+                foreach (var requestParameter in requestParameters)
                 {
-                    throw new Exception("Unrecognized parameter: " + requestParameter);
+                    if (string.IsNullOrWhiteSpace(requestParameter))
+                        continue;
+
+                    if (!recognizedParameters.Contains(requestParameter))
+                    {
+                        throw new Exception("Unrecognized parameter: " + requestParameter);
+                    }
                 }
             }
 

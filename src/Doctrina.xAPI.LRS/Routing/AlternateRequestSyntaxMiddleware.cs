@@ -24,7 +24,10 @@ namespace Doctrina.xAPI.LRS.Routing
 
         public async Task InvokeAsync(HttpContext context)
         {
-            await AlternateRequest(context);
+            if(context.Request.Path.HasValue && context.Request.Path.Value.StartsWith("/xapi/"))
+            {
+                await AlternateRequest(context);
+            }
             await _next.Invoke(context);
         }
 

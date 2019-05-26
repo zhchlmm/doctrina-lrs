@@ -18,15 +18,18 @@ namespace Doctrina.xAPI.LRS.Routing
 
         public async Task InvokeAsync(HttpContext context, IMediator mediator)
         {
-            string headerKey = Headers.XExperienceApiConsistentThrough;
-            var headers = context.Response.Headers;
-            // TODO: https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#user-content-2.1.3.s2.b5
-            if (!headers.ContainsKey(headerKey))
+            if (context.Request.Path.HasValue && context.Request.Path.Value.StartsWith("/xapi/"))
             {
-                DateTimeOffset? date = await mediator.Send(new GetConsistentThroughQuery());
+                string headerKey = Headers.XExperienceApiConsistentThrough;
+                var headers = context.Response.Headers;
+                // TODO: https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#user-content-2.1.3.s2.b5
                 if (!headers.ContainsKey(headerKey))
                 {
-                    headers.Add(headerKey, date?.ToString("o"));
+                    DateTimeOffset? date = await mediator.Send(new GetConsistentThroughQuery());
+                    if (!headers.ContainsKey(headerKey))
+                    {
+                        headers.Add(headerKey, date?.ToString("o"));
+                    }
                 }
             }
 
