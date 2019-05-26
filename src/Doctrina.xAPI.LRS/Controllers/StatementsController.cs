@@ -218,7 +218,6 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// <param name="statementId"></param>
         /// <param name="statement"></param>
         /// <returns></returns>
-        [RequiredVersionHeader]
         [AcceptVerbs("PUT", "POST", Order = 1)]
         public async Task<IActionResult> PutStatement([FromQuery]Guid statementId, [ModelBinder(typeof(StatementPutModelBinder))]Statement statement)
         {
@@ -232,7 +231,7 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns>Array of Statement id(s) (UUID) in the same order as the corresponding stored Statements.</returns>
-        [HttpPost(Order = 2)]
+        [HttpPost("", Order = 2)]
         [Produces("application/json")]
         public async Task<ActionResult<ICollection<Guid>>> PostStatements(StatementsPostContent model)
         {
