@@ -50,14 +50,14 @@ namespace Doctrina.xAPI.Validators
 
             RuleFor(x => x).Must(statement =>
             {
-                return string.IsNullOrWhiteSpace(statement.Context.Revision) ||
-                    statement.Object.ObjectType == ObjectType.Activity;
+                return string.IsNullOrWhiteSpace(statement.Context?.Revision) ||
+                    statement.Object?.ObjectType == ObjectType.Activity;
             }).WithMessage("A Statement cannot contain both a 'revision' property in its 'context' property and have the value of the 'object' property's 'objectType' be anything but 'Activity'");
 
             RuleFor(x => x).Must(statement =>
             {
-                return string.IsNullOrWhiteSpace(statement.Context.Platform) ||
-                    statement.Object.ObjectType == ObjectType.Activity;
+                return string.IsNullOrWhiteSpace(statement.Context?.Platform) ||
+                    statement.Object?.ObjectType == ObjectType.Activity;
             }).WithMessage("A Statement cannot contain both a 'platform' property in its 'context' property and have the value of the 'object' property's 'objectType' be anything but 'Activity'");
         }
     }
