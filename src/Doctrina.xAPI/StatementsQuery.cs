@@ -29,7 +29,7 @@ namespace Doctrina.xAPI
         /// Filter, only return Statements matching the specified Verb id.	
         /// </summary>
         [FromQuery(Name = "verb")]
-        public Uri VerbId { get; set; }
+        public Iri VerbId { get; set; }
 
         /// <summary>
         /// Filter, only return Statements for which the Object of the Statement is an Activity with the specified id.	
