@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Doctrina.xAPI.Helpers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
@@ -44,7 +45,7 @@ namespace Doctrina.xAPI
 
             if (jobj["fileUrl"] != null)
             {
-                FileUrl = jobj.Value<Uri>("fileUrl");
+                FileUrl = new Uri(jobj.Value<string>("fileUrl"));
             }
         }
 
@@ -72,7 +73,6 @@ namespace Doctrina.xAPI
 
         /// <summary>
         /// The length of the Attachment data in octets. (Content-Type)
-        /// 
         /// </summary>
         public int Length { get; set; }
 
@@ -91,7 +91,7 @@ namespace Doctrina.xAPI
         /// The byte array of Attachment data. 
         /// </summary>
         [JsonIgnore]
-        public byte[] Payload { get; private set; }
+        public byte[] Payload { get; set; }
 
 
         /// <summary>
@@ -102,19 +102,29 @@ namespace Doctrina.xAPI
         {
             Payload = bytes;
 
-            if (UsageType == new Iri("http://adlnet.gov/expapi/attachments/signature")
-                && ContentType == "application/octet-stream")
+            if (!string.IsNullOrEmpty(SHA2))
             {
-                // Verify signatures are well formed
-
-                // Decode the JWS signature, and load the signed serialization of the Statement from the JWS signature payload.
-
-                // Validate that the original Statement is logically equivalent to the received Statement.
-
-                // If the JWS header includes an X.509 certificate, validate the signature against that certificate as defined in JWS.
-
-                // Validate that the signature requirements outlined above have been met.
+                SHA2 = SHAHelper.ComputeHash(bytes);
             }
+
+            if(Length <= 0)
+            {
+                Length = bytes.Length;
+            }
+
+            //if (UsageType == new Iri("http://adlnet.gov/expapi/attachments/signature")
+            //    && ContentType == "application/octet-stream")
+            //{
+            //    // Verify signatures are well formed
+
+            //    // Decode the JWS signature, and load the signed serialization of the Statement from the JWS signature payload.
+
+            //    // Validate that the original Statement is logically equivalent to the received Statement.
+
+            //    // If the JWS header includes an X.509 certificate, validate the signature against that certificate as defined in JWS.
+
+            //    // Validate that the signature requirements outlined above have been met.
+            //}
         }
 
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
