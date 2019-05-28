@@ -7,10 +7,6 @@ namespace Doctrina.xAPI.Validators
         public StatementValidator()
         {
             Include(new StatementBaseValidator());
-
-            RuleFor(x => x.Actor).NotNull();
-            RuleFor(x => x.Verb).NotNull();
-            RuleFor(x => x.Object).NotNull();
         }
     }
 }
