@@ -104,7 +104,7 @@ namespace Doctrina.xAPI
 
             if (!string.IsNullOrEmpty(SHA2))
             {
-                SHA2 = SHAHelper.ComputeHash(bytes);
+                SHA2 = SHAHelper.SHA2.ComputeHash(bytes);
             }
 
             if(Length <= 0)

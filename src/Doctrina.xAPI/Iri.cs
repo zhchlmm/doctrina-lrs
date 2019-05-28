@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Doctrina.xAPI.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -30,15 +31,6 @@ namespace Doctrina.xAPI
             this._iriString = iriString;
         }
 
-        /// <summary>
-        /// Generates MD5 checksum
-        /// </summary>
-        /// <returns>MD5 Checksum</returns>
-        public string ComputeHash()
-        {
-            return ComputeHash(_iriString);
-        }
-
         public override string ToString()
         {
             return _iriString;
@@ -63,14 +55,13 @@ namespace Doctrina.xAPI
             }
         }
 
-        public static string ComputeHash(string s)
+        /// <summary>
+        /// Compute SHA1 hash converted to hex digits
+        /// </summary>
+        /// <returns></returns>
+        public string ComputeHash()
         {
-            using (var md5 = MD5.Create())
-            {
-                byte[] iriBytes = Encoding.UTF8.GetBytes(s);
-                byte[] hashValue = md5.ComputeHash(iriBytes);
-                return Encoding.UTF8.GetString(hashValue);
-            }
+            return SHAHelper.SHA1.ComputeHash(_iriString);
         }
 
         public override bool Equals(object obj)

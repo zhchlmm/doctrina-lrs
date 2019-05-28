@@ -5,28 +5,55 @@ namespace Doctrina.xAPI.Helpers
 {
     public class SHAHelper
     {
-        /// <summary>
-        /// Compute hash for string encoded as UTF8
-        /// </summary>
-        /// <param name="s">String to be hashed</param>
-        /// <returns>40-character hex string</returns>
-        public static string ComputeHash(string s)
+        public class SHA1
         {
-            byte[] bytes = Encoding.UTF8.GetBytes(s);
-            return ComputeHash(bytes);
-        }
-
-        /// <summary>
-        /// Compute hash for bytes
-        /// </summary>
-        /// <param name="s">String to be hashed</param>
-        /// <returns>40-character hex string</returns>
-        public static string ComputeHash(byte[] bytes)
-        {
-            using (var sha1 = SHA256.Create())
+            /// <summary>
+            /// Compute hash for string encoded as UTF8
+            /// </summary>
+            /// <param name="s">String to be hashed</param>
+            /// <returns>40-character hex string</returns>
+            public static string ComputeHash(string s)
             {
+                byte[] bytes = Encoding.UTF8.GetBytes(s);
+                return ComputeHash(bytes);
+            }
+
+            /// <summary>
+            /// Compute hash for bytes
+            /// </summary>
+            /// <param name="s">String to be hashed</param>
+            /// <returns>40-character hex string</returns>
+            public static string ComputeHash(byte[] bytes)
+            {
+                var sha1 = new SHA1Managed();
                 sha1.ComputeHash(bytes);
                 return HexStringFromBytes(sha1.Hash);
+            }
+        }
+
+        public class SHA2
+        {
+            /// <summary>
+            /// Compute hash for string encoded as UTF8
+            /// </summary>
+            /// <param name="s">String to be hashed</param>
+            /// <returns>40-character hex string</returns>
+            public static string ComputeHash(string s)
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(s);
+                return ComputeHash(bytes);
+            }
+
+            /// <summary>
+            /// Compute hash for bytes
+            /// </summary>
+            /// <param name="s">String to be hashed</param>
+            /// <returns>40-character hex string</returns>
+            public static string ComputeHash(byte[] bytes)
+            {
+                var sha2 = new SHA512Managed();
+                sha2.ComputeHash(bytes);
+                return HexStringFromBytes(sha2.Hash);
             }
         }
 
