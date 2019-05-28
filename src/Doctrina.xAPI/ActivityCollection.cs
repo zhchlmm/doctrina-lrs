@@ -9,7 +9,7 @@ namespace Doctrina.xAPI
         private readonly ICollection<Activity> activities = new HashSet<Activity>();
 
         public ActivityCollection() { }
-        public ActivityCollection(string jsonString) : this(JToken.Parse(jsonString)) { }
+        public ActivityCollection(JsonString jsonString) : this(jsonString.ToJToken()) { }
         public ActivityCollection(JToken jtoken) : this(jtoken, ApiVersion.GetLatest()) { }
         public ActivityCollection(JToken jtoken, ApiVersion version)
         {

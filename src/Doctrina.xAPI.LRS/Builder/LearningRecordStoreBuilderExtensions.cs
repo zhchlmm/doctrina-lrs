@@ -69,12 +69,7 @@ namespace Doctrina.xAPI.LRS.Builder
                 );
             });
 
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                Formatting = Formatting.None,
-                DateParseHandling = DateParseHandling.None,
-                DateTimeZoneHandling = DateTimeZoneHandling.Utc
-            };
+            
 
             return builder;
         }

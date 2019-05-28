@@ -9,7 +9,7 @@ namespace Doctrina.xAPI
     public class Result : JsonModel
     {
         public Result() { }
-        public Result(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Result(JsonString jsonString) : this(jsonString.ToJObject()) { }
         public Result(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
         public Result(JObject jobj, ApiVersion version)

@@ -52,7 +52,7 @@ namespace Doctrina.xAPI
 
             if (jobj["attachment"] != null)
             {
-                Attachments = new AttachmentCollection(jobj.Value<JObject>("attachment"), version);
+                Attachments = new AttachmentCollection(jobj.Value<JArray>("attachment"), version);
             }
         }
 

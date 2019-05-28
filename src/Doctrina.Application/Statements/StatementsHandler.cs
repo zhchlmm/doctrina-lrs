@@ -59,11 +59,11 @@ namespace Doctrina.Application.Statements
                 query = query.Where(x => x.Verb.Hash == verbHash);
             }
 
-            if(request.Agent != null)
+            if (request.Agent != null)
             {
                 var actor = _mapper.Map<AgentEntity>(request.Agent);
                 var currentAgent = await _context.Agents.WhereAgent(x => x, actor).FirstOrDefaultAsync(cancellationToken);
-                if(currentAgent != null)
+                if (currentAgent != null)
                 {
                     Guid agentId = currentAgent.AgentId;
                     if (request.RelatedAgents.GetValueOrDefault())
@@ -78,7 +78,7 @@ namespace Doctrina.Application.Statements
                                 statement.Object.ObjectType == EntityObjectType.SubStatement &&
                                 (
                                     statement.Object.SubStatement.Actor.AgentId == agentId ||
-                                    statement.Object.SubStatement.Object.ObjectType == EntityObjectType.Agent && 
+                                    statement.Object.SubStatement.Object.ObjectType == EntityObjectType.Agent &&
                                     statement.Object.SubStatement.Object.Agent.AgentId == agentId
                                 )
                             )
@@ -95,7 +95,7 @@ namespace Doctrina.Application.Statements
                 }
             }
 
-            if(request.ActivityId != null)
+            if (request.ActivityId != null)
             {
                 string activityHash = request.ActivityId.ComputeHash();
 
@@ -161,13 +161,15 @@ namespace Doctrina.Application.Statements
 
             if (request.Attachments.GetValueOrDefault())
             {
-                query = query.Select(p => new StatementEntity {
+                query = query.Select(p => new StatementEntity
+                {
                     FullStatement = p.FullStatement
                 });
             }
             else
             {
-                query = query.Select(p => new StatementEntity {
+                query = query.Select(p => new StatementEntity
+                {
                     FullStatement = p.FullStatement,
                     Attachments = p.Attachments
                 });
@@ -181,6 +183,7 @@ namespace Doctrina.Application.Statements
 
             int totalCount = pagedQuery.Key.TotalCount;
             int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
             List<Statement> statements = pagedQuery.Select(p => _mapper.Map<Statement>(p)).ToList();
 
             var statementCollection = new StatementCollection(statements);
@@ -222,16 +225,7 @@ namespace Doctrina.Application.Statements
                 return null;
             }
 
-            var statement = JsonConvert.DeserializeObject<Statement>(statementEntity.FullStatement);
-            foreach (var attachmentEntity in statementEntity.Attachments)
-            {
-                if(statement.Attachments.TryGetAttachment(attachmentEntity.SHA2, out Attachment attachment))
-                {
-                    attachment.SetPayload(attachmentEntity.Payload);
-                }
-            }
-
-            return statement;
+            return new Statement(statementEntity.FullStatement);
         }
 
         public async Task<DateTimeOffset?> Handle(GetConsistentThroughQuery request, CancellationToken cancellationToken)
@@ -262,14 +256,17 @@ namespace Doctrina.Application.Statements
             // TODO: Move this logic elsewhere
             var httpRequest = _httpContextAccessor.HttpContext.Request;
             var url = new Uri($"{httpRequest.Scheme}://{httpRequest.Host.Value}");
-            request.Statement.Authority = new Agent()
+            if (request.Statement.Authority == null)
             {
-                Account = new xAPI.Account()
+                request.Statement.Authority = new Agent()
                 {
-                    HomePage = url,
-                    Name = "REPLACE ME"
-                }
-            };
+                    Account = new xAPI.Account()
+                    {
+                        HomePage = url,
+                        Name = "REPLACE ME"
+                    }
+                };
+            }
 
             // Ensure statement version and stored date
             request.Statement.Version = request.Statement.Version ?? ApiVersion.GetLatest().ToString();
@@ -278,7 +275,6 @@ namespace Doctrina.Application.Statements
             StatementEntity statement = _mapper.Map<StatementEntity>(request.Statement);
             statement.Verb = await _mediator.Send(MergeVerbCommand.Create(statement.Verb), cancellationToken);
             statement.Actor = await _mediator.Send(MergeActorCommand.Create(statement.Actor), cancellationToken);
-            statement.Version = !string.IsNullOrWhiteSpace(statement.Version) ? statement.Version : ApiVersion.GetLatest().ToString();
             statement.FullStatement = request.Statement.ToJson();
 
             _context.Statements.Add(statement);

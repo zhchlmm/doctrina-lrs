@@ -17,7 +17,7 @@ namespace Doctrina.xAPI
         {
             Statements = statements;
         }
-        public StatementCollection(string jsonString) : this(JArray.Parse(jsonString)) { }
+        public StatementCollection(JsonString jsonString) : this(jsonString.ToJArray()) { }
         public StatementCollection(JArray jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public StatementCollection(JArray jobj, ApiVersion version)
         {

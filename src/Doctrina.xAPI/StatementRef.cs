@@ -9,7 +9,7 @@ namespace Doctrina.xAPI
     public class StatementRef : StatementObjectBase, IStatementObject
     {
         public StatementRef() { }
-        public StatementRef(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public StatementRef(JsonString jsonString) : this(jsonString.ToJObject()) { }
         public StatementRef(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public StatementRef(JObject jobj, ApiVersion version)
         {

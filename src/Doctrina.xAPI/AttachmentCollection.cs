@@ -26,11 +26,10 @@ namespace Doctrina.xAPI
             Attachments = new HashSet<Attachment>();
         }
 
-        public AttachmentCollection(string jsonString) : this(JObject.Parse(jsonString)) { }
-        public AttachmentCollection(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public AttachmentCollection(JObject jobj, ApiVersion version)
+        public AttachmentCollection(JsonString jsonString) : this(jsonString.ToJArray()) { }
+        public AttachmentCollection(JArray jarr) : this(jarr, ApiVersion.GetLatest()) { }
+        public AttachmentCollection(JArray jarr, ApiVersion version)
         {
-            var jarr = jobj.Value<JArray>("attachment");
             foreach (var item in jarr)
             {
                 Add(new Attachment(item.Value<JObject>(), version));

@@ -56,11 +56,19 @@ namespace Doctrina.Application.Mappings
                 // Database specfic
                 .ForMember(x => x.AuthorityId, opt => opt.Ignore())
                 .ForMember(x => x.Voided, opt => opt.Ignore())
-                .ForMember(x => x.FullStatement, opt => opt.Ignore());
-
-            configuration.CreateMap<StatementEntity, Statement>()
-                .ConstructUsing(x => JsonConvert.DeserializeObject<Statement>(x.FullStatement))
-                .ForMember(x => x.Attachments, opt => opt.MapFrom(x => x.Attachments));
+                .ForMember(x => x.FullStatement, opt => opt.Ignore())
+                .ReverseMap()
+                 // Statement base
+                .ForMember(x => x.Actor, opt => opt.MapFrom(x => x.Actor))
+                .ForMember(x => x.Verb, opt => opt.MapFrom(x => x.Verb))
+                .ForMember(x => x.Object, opt => opt.MapFrom<ObjectValueResolver, StatementObjectEntity>(x => x.Object))
+                .ForMember(x => x.Timestamp, opt => opt.MapFrom(x => x.Timestamp))
+                // Statement only
+                .ForMember(x => x.Result, opt => opt.MapFrom(x => x.Result))
+                .ForMember(x => x.Context, opt => opt.MapFrom(x => x.Context))
+                .ForMember(x => x.Authority, opt => opt.MapFrom(x => x.Authority))
+                .ForMember(x => x.Stored, opt => opt.MapFrom(x => x.Stored))
+                .ForMember(x => x.Version, opt => opt.MapFrom(x => x.Version));
 
             configuration.CreateMap<SubStatement, SubStatementEntity>()
                 .ForMember(e=> e.ObjectType, opt => opt.Ignore())
@@ -139,4 +147,6 @@ namespace Doctrina.Application.Mappings
         }
 
     }
+
+
 }

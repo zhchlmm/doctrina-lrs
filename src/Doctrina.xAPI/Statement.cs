@@ -15,19 +15,19 @@ namespace Doctrina.xAPI
     public class Statement : StatementBase
     {
         public Statement() { }
-        public Statement(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Statement(JsonString jsonString) : this(jsonString.ToJObject()) { }
         public Statement(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Statement(JObject jobj, ApiVersion version)
             : base(jobj, version)
         {
             if (jobj["id"] != null)
             {
-                Id = jobj.Value<Guid?>("id");
+                Id = Guid.Parse(jobj.Value<string>("id"));
             }
 
             if (jobj["stored"] != null)
             {
-                Stored = jobj.Value<DateTimeOffset?>("stored");
+                Stored = DateTimeOffset.Parse(jobj.Value<string>("stored"));
             }
 
             if (jobj["authority"] != null)
@@ -107,10 +107,26 @@ namespace Doctrina.xAPI
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = base.ToJToken(version, format);
-            obj["id"] = Id;
-            obj["stored"] = Stored;
-            obj["authority"] = Authority.ToJToken(version, format);
-            obj["version"] = Version.ToString();
+            if (Id != null)
+            {
+                obj["id"] = Id.ToString();
+            }
+
+            if (Stored != null)
+            {
+                obj["stored"] = Stored;
+            }
+
+            if (Authority != null)
+            {
+                obj["authority"] = Authority.ToJToken(version, format);
+            }
+
+            if (Version != null)
+            {
+                obj["version"] = Version.ToString();
+            }
+
             return obj;
         }
 

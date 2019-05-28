@@ -10,8 +10,7 @@ namespace Doctrina.xAPI
         public ActivityDefinition()
         {
         }
-        public ActivityDefinition(string jsonString) :
-            this(JObject.Parse(jsonString))
+        public ActivityDefinition(JsonString jsonString) : this(jsonString.ToJObject())
         {
         }
 

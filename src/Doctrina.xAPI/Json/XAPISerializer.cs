@@ -7,6 +7,11 @@ namespace Doctrina.xAPI.Json
         public ApiVersion Version { get; }
         public ResultFormat ResultFormat { get; }
 
+        public ApiJsonSerializer()
+            : this(ApiVersion.GetLatest())
+        {
+        }
+
         public ApiJsonSerializer(ApiVersion version)
             : this(version, ResultFormat.Exact)
         {

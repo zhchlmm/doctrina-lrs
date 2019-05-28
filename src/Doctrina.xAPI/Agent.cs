@@ -15,7 +15,7 @@ namespace Doctrina.xAPI
         protected override ObjectType OBJECT_TYPE => ObjectType.Agent;
 
         public Agent() : base() { }
-        public Agent(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Agent(JsonString jsonString) : this(jsonString.ToJObject()) { }
         public Agent(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Agent(JObject jobj, ApiVersion version) : base(jobj, version)
         {

@@ -9,7 +9,7 @@ namespace Doctrina.xAPI
     public class Attachment : JsonModel
     {
         public Attachment() { }
-        public Attachment(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Attachment(JsonString jsonString) : this(jsonString.ToJObject()) { }
         public Attachment(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Attachment(JObject jobj, ApiVersion version)
         {

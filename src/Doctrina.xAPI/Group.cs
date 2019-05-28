@@ -9,7 +9,7 @@ namespace Doctrina.xAPI
     public class Group : Agent
     {
         public Group() { }
-        public Group(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Group(JsonString jsonString) : this(jsonString.ToJObject()) { }
         public Group(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Group(JObject jobj, ApiVersion version)
             : base(jobj, version)

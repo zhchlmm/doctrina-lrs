@@ -102,12 +102,7 @@ namespace Doctrina.xAPI
         {
             var props = this.GetType().GetProperties();
             var fields = new Dictionary<string, string>();
-            //JObject obj = JObject.Parse(JsonConvert.SerializeObject(this));
-            //foreach (var token in obj)
-            //{
-            //    var value = HttpUtility.UrlEncode(obj[token.Key].Value<string>());
-            //    fields.Add(token.Key, value);
-            //}
+            
             foreach (var prop in props)
             {
                 var info = this.GetType().GetProperty(prop.Name);

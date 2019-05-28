@@ -7,7 +7,7 @@ namespace Doctrina.xAPI
     public class Activity : StatementObjectBase, IStatementObject
     {
         public Activity() { }
-
+        public Activity(JsonString jsonString) : this(jsonString.ToJObject()) { }
         public Activity(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Activity(JObject jobj, ApiVersion version)
             : base(jobj, version)

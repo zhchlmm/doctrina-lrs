@@ -21,6 +21,7 @@ namespace Doctrina.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(e => e.Display)
+                .IsRequired()
                 .HasConversion(new LanguageMapCollectionValueConverter())
                 .HasColumnType("ntext");
 

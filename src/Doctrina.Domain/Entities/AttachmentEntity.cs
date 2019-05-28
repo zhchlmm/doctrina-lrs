@@ -21,8 +21,5 @@ namespace Doctrina.Domain.Entities
         public string SHA2 { get; set; }
 
         public int Length { get; set; }
-        //public Guid StatementId { get; set; }
-
-        //public virtual StatementBaseEntity Statement { get; set; }
     }
 }

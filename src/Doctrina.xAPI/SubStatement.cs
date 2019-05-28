@@ -18,7 +18,7 @@ namespace Doctrina.xAPI
         public ObjectType ObjectType => ObjectType.SubStatement;
 
         public SubStatement() : base() { }
-        public SubStatement(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public SubStatement(JsonString jsonString) : this(jsonString.ToJObject()) { }
         public SubStatement(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public SubStatement(JObject jobj, ApiVersion version) : base(jobj, version)
         {

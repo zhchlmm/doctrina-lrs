@@ -11,7 +11,7 @@ namespace Doctrina.xAPI
     {
 
         public Account() { }
-        public Account(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public Account(JsonString jsonString) : this(jsonString.ToJObject()) { }
         public Account(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Account(JObject jobj, ApiVersion version)
         {

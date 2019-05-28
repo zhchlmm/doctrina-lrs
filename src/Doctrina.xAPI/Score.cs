@@ -13,7 +13,7 @@ namespace Doctrina.xAPI
         {
         }
 
-        public Score(string jsonString) : this(JObject.Parse(jsonString))
+        public Score(JsonString jsonString) : this(jsonString.ToJObject())
         {
         }
 

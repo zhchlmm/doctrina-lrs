@@ -47,9 +47,9 @@ namespace Doctrina.xAPI.Http
             if (!response.IsSuccessStatusCode)
                 throw new Exception(response.ReasonPhrase);
 
-            string str = await response.Content.ReadAsStringAsync();
+            JsonString jsonString = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<About>(str);
+            return jsonString.Deserialize<About>();
         }
 
         #region Statements
@@ -168,13 +168,13 @@ namespace Doctrina.xAPI.Http
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<Statement[]> SaveStatements(Statement[] statements)
+        public async Task<Statement[]> SaveStatements(params Statement[] statements)
         {
             var uriBuilder = new UriBuilder(BaseAddress);
             uriBuilder.Path += "/statements";
 
-            var serializedObject = JsonConvert.SerializeObject(statements);
-            var jsonContent = new StringContent(serializedObject, Encoding.UTF8, MediaTypes.Application.Json);
+            var statementCollection = new StatementCollection(statements);
+            var jsonContent = new StringContent(statementCollection.ToJson(), Encoding.UTF8, MediaTypes.Application.Json);
 
             HttpContent postContent = jsonContent;
 

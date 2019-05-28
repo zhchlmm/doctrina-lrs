@@ -6,7 +6,7 @@ namespace Doctrina.xAPI
     public class Verb : JsonModel, IVerb
     {
         public Verb() { }
-        public Verb(string jsonString) : this(JObject.Parse(jsonString))
+        public Verb(JsonString jsonString) : this(jsonString.ToJObject())
         {
         }
         public Verb(JObject jObject) : this(jObject, ApiVersion.GetLatest())

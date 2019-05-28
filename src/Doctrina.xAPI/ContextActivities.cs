@@ -10,7 +10,7 @@ namespace Doctrina.xAPI
     public class ContextActivities : JsonModel
     {
         public ContextActivities() { }
-        public ContextActivities(string jsonString) : this(JObject.Parse(jsonString)) { }
+        public ContextActivities(JsonString jsonString) : this(jsonString.ToJObject()) { }
         public ContextActivities(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
         public ContextActivities(JObject jobj, ApiVersion version)

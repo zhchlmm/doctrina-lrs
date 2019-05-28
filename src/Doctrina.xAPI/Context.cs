@@ -15,7 +15,7 @@ namespace Doctrina.xAPI
         {
         }
 
-        public Context(string jsonString) : this(JObject.Parse(jsonString))
+        public Context(JsonString jsonString) : this(jsonString.ToJObject())
         {
         }
 

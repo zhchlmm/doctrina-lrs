@@ -13,8 +13,7 @@ namespace Doctrina.xAPI
         public StatementsResult()
         {
         }
-        public StatementsResult(string jsonString)
-           : this(JObject.Parse(jsonString))
+        public StatementsResult(JsonString jsonString) : this(jsonString.ToJObject())
         {
         }
         public StatementsResult(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
