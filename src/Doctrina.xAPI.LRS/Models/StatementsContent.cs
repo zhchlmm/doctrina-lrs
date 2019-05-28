@@ -8,6 +8,6 @@ namespace Doctrina.xAPI.LRS.Models
     public class StatementsPostContent
     {
         [Required]
-        public Statement[] Statements { get; internal set; }
+        public Statement[] Statements { get; set; }
     }
 }

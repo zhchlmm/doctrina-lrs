@@ -1,4 +1,5 @@
 ﻿using Doctrina.Application.Statements.Commands;
+using Doctrina.Application.Statements.Models;
 using Doctrina.Application.Statements.Queries;
 using Doctrina.WebUI.Mvc.ModelBinders;
 using Doctrina.xAPI.Http;
@@ -6,6 +7,7 @@ using Doctrina.xAPI.LRS.Models;
 using Doctrina.xAPI.LRS.Mvc.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -90,7 +92,7 @@ namespace Doctrina.xAPI.LRS.Controllers
             if (statement == null)
                 return NotFound();
 
-            string fullStatement = statement.ToJson();
+            string fullStatement = statement.ToJson(format);
 
             if (includeAttachments && statement.Attachments.Any(x => x.Payload != null))
             {
@@ -132,6 +134,8 @@ namespace Doctrina.xAPI.LRS.Controllers
             if (parameters == null)
                 parameters = new PagedStatementsQuery();
 
+            ResultFormat format = parameters.Format ?? ResultFormat.Exact;
+
             // Validate parameters for combinations
             if (parameters.StatementId.HasValue || parameters.VoidedStatementId.HasValue)
             {
@@ -144,7 +148,6 @@ namespace Doctrina.xAPI.LRS.Controllers
                 }
 
                 bool attachments = parameters.Attachments.GetValueOrDefault();
-                ResultFormat format = parameters.Format ?? ResultFormat.Exact;
 
                 if (parameters.StatementId.HasValue)
                     return await GetStatement(
@@ -160,45 +163,34 @@ namespace Doctrina.xAPI.LRS.Controllers
             }
 
             StatementsResult result = new StatementsResult();
-            int totalCount = 0;
-            ICollection<Statement> statements = await _mediator.Send(parameters);
+            PagedStatementsResult pagedResult = await _mediator.Send(parameters);
 
             // Derserialize to json statement object
-            result.Statements = new StatementCollection(statements);
+            result.Statements = pagedResult.Statements;
 
             // Generate more url
-            if (result.Statements != null && parameters.Limit.HasValue)
+            if (!string.IsNullOrEmpty(pagedResult.MoreToken))
             {
-                parameters.Skip = (parameters.Skip.Value + parameters.Limit.Value);
-                if (parameters.Skip.Value < totalCount)
-                {
-                    string parameterMap = parameters.ToParameterMap(parameters.Version).ToString();
-                    result.More = new Uri(Url.Action("GetStatements") + "?" + parameterMap, UriKind.Relative);
-                }
+                result.More = new Uri(Url.Action("GetStatements") + $"?token={pagedResult.MoreToken}", UriKind.Relative);
             }
 
-            bool includeAttachements = parameters.Attachments.GetValueOrDefault();
-            if (includeAttachements)
+            if (parameters.Attachments.GetValueOrDefault())
             {
                 // TODO: If the "attachment" property of a GET Statement is used and is set to true, the LRS MUST use the multipart response format and include all Attachments as described in Part Two.
                 // Include attachment data, and return mutlipart/mixed
-                return await MultipartResult(result, statements);
+                return await MultipartResult(result, format, result.Statements);
             }
 
-            //var response = Request.CreateResponse(HttpStatusCode.OK);
-            //response.Content = new StringContent(result.ToJson(), Encoding.UTF8, MIMETypes.Application.Json);
-            Response.ContentType = MediaTypes.Application.Json;
-
-            return Ok(result);
+            return Content(result.ToJson(format), MediaTypes.Application.Json);
         }
 
-        private async Task<IActionResult> MultipartResult(JsonModel result, ICollection<Statement> statements)
+        private async Task<IActionResult> MultipartResult(JsonModel result, ResultFormat format, ICollection<Statement> statements)
         {
             Response.ContentType = MediaTypes.Multipart.Mixed;
             var attachmentsWithPayload = statements.SelectMany(x => x.Attachments.Where(a => a.Payload != null));
 
             var multipart = new MultipartContent("mixed");
-            multipart.Add(new StringContent(result.ToJson(), Encoding.UTF8, MediaTypes.Application.Json));
+            multipart.Add(new StringContent(result.ToJson(format), Encoding.UTF8, MediaTypes.Application.Json));
 
             foreach (var attachment in attachmentsWithPayload)
             {
@@ -213,12 +205,13 @@ namespace Doctrina.xAPI.LRS.Controllers
         }
 
         /// <summary>
-        /// Stores a single Statement with the given id.
+        /// Stores a single Statement with attachment(s) with the given id.
         /// </summary>
         /// <param name="statementId"></param>
         /// <param name="statement"></param>
         /// <returns></returns>
-        [AcceptVerbs("PUT", "POST", Order = 1)]
+        [HttpPut]
+        [Produces("application/json")]
         public async Task<IActionResult> PutStatement([FromQuery]Guid statementId, [ModelBinder(typeof(StatementPutModelBinder))]Statement statement)
         {
             await _mediator.Send(PutStatementCommand.Create(statementId, statement));
@@ -231,7 +224,7 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns>Array of Statement id(s) (UUID) in the same order as the corresponding stored Statements.</returns>
-        [HttpPost("", Order = 2)]
+        [HttpPost]
         [Produces("application/json")]
         public async Task<ActionResult<ICollection<Guid>>> PostStatements(StatementsPostContent model)
         {
