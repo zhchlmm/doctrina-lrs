@@ -13,7 +13,7 @@ namespace Doctrina.Domain.Entities
         /// <summary>
         /// MD5 hash of agent identifier
         /// </summary>
-        public string AgentHash { get; set; }
+        public Guid AgentId { get; set; }
 
         public string Name { get; set; }
 
@@ -24,17 +24,6 @@ namespace Doctrina.Domain.Entities
         public string OpenId { get; set; }
 
         public Account Account { get; set; }
-
-        public string ComputeHash()
-        {
-            using (var md5 = MD5.Create())
-            {
-                string key = GetInverseFunctionalIndentifier();
-                byte[] bytes = Encoding.UTF8.GetBytes(key);
-                byte[] hash = md5.ComputeHash(bytes);
-                return Encoding.UTF8.GetString(hash);
-            }
-        }
 
         public string GetInverseFunctionalIndentifier()
         {

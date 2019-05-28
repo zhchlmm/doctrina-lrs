@@ -11,16 +11,25 @@ namespace Doctrina.Persistence.Configurations
         {
             builder.ToTable("Activities");
 
-            builder.Property(e => e.ActivityId)
+            builder.Property(x => x.ActivityId)
+                .ValueGeneratedOnAdd();
+            builder.HasKey(x => x.ActivityId);
+
+            builder.Property(e => e.Id)
                .HasMaxLength(Constants.MAX_URL_LENGTH)
                .IsRequired();
 
-            builder.Property(x => x.ActivityHash)
+            builder.Property(x => x.Hash)
                 .HasMaxLength(Constants.HASH_LENGTH)
                 .IsRequired();
-            builder.HasKey(x => x.ActivityHash);
 
             builder.HasOne(x => x.Definition);
+
+            builder.HasIndex(x => x.Id)
+               .IsUnique();
+
+            builder.HasIndex(x => x.Hash)
+                .IsUnique();
         }
     }
 }

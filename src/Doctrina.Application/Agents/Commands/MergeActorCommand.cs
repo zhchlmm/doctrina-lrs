@@ -6,6 +6,7 @@ using MediatR;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Doctrina.Domain.Entities.Extensions;
 
 namespace Doctrina.Application.Agents.Commands
 {
@@ -43,10 +44,27 @@ namespace Doctrina.Application.Agents.Commands
             private AgentEntity MergeActor(AgentEntity agent)
             {
                 // Get from db
-                if (TryGetAgent(agent, out AgentEntity currentAgent))
+                var currentAgent = _context.Agents.WhereAgent(x => x, agent).FirstOrDefault();
+
+                if (currentAgent != null)
                 {
-                    //TOOD: Perform agent update logic, add group member etc.
-                    HandleMergeActor(agent, currentAgent);
+                    GroupEntity group = currentAgent as GroupEntity;
+                    if(group != null)
+                    {
+                        // Perform group update logic, add group member etc.
+                        foreach (var member in group.Members)
+                        {
+                            // Ensure Agent exist
+                            var grpAgent = MergeActor(member);
+
+                            // Check if the relation exist
+                            var isMember = group.Members.WhereAgent(x => x, grpAgent).Count() > 0;
+                            if (!isMember)
+                            {
+                                group.Members.Add(grpAgent);
+                            }
+                        }
+                    }
 
                     return currentAgent;
                 }
@@ -55,68 +73,6 @@ namespace Doctrina.Application.Agents.Commands
                 _context.Agents.Add(agent);
 
                 return agent;
-            }
-
-            private void HandleMergeActor(AgentEntity agent, AgentEntity currentAgent)
-            {
-
-            }
-
-            private AgentEntity HandleGroup(GroupEntity group)
-            {
-                CreateGroupMembers(group);
-
-                return group;
-            }
-
-            private void CreateGroupMembers(GroupEntity group)
-            {
-                foreach (var member in group.Members)
-                {
-                    // Ensure Agent exist
-                    var grpAgent = MergeActor(member);
-
-                    // Check if the relation exist
-                    CreateGroupMemberRelation(group, grpAgent);
-                }
-            }
-
-            /// <summary>
-            /// Creates group and member relation
-            /// </summary>
-            /// <param name="group"></param>
-            /// <param name="actor"></param>
-            /// <returns></returns>
-            private void CreateGroupMemberRelation(GroupEntity group, AgentEntity actor)
-            {
-                var isMember = group.Members.Any(x => x.AgentHash == actor.ComputeHash());
-                if (!isMember)
-                {
-                    group.Members.Add(actor);
-                }
-            }
-
-            private bool TryGetAgent(AgentEntity agentFiler, out AgentEntity entity)
-            {
-                entity = GetEntity(agentFiler);
-
-                if (entity != null)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-
-            public AgentEntity GetEntity(AgentEntity agentEntity)
-            {
-                if (string.IsNullOrEmpty(agentEntity.AgentHash))
-                {
-                    agentEntity.AgentHash = agentEntity.ComputeHash();
-                }
-
-                return _context.Agents.FirstOrDefault(x => x.AgentHash == agentEntity.AgentHash &&
-                    x.ObjectType == agentEntity.ObjectType);
             }
         }
 

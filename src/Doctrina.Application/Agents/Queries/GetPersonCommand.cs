@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Doctrina.Application.Interfaces;
 using Doctrina.Domain.Entities;
+using Doctrina.Domain.Entities.Extensions;
 using Doctrina.xAPI;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +32,7 @@ namespace Doctrina.Application.Agents.Queries
 
                 var agentEntity = _mapper.Map<AgentEntity>(request.Agent);
 
-                agentEntity = await _context.Agents.FirstOrDefaultAsync(x => x.AgentHash == agentEntity.AgentHash, cancellationToken);
+                agentEntity = await _context.Agents.WhereAgent(x=>x, agentEntity).FirstOrDefaultAsync(cancellationToken);
 
                 if (agentEntity != null)
                 {

@@ -2,6 +2,7 @@
 using Doctrina.Domain.Entities;
 using Doctrina.xAPI;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,9 +25,9 @@ namespace Doctrina.Application.Verbs.Commands
 
             public async Task<VerbEntity> Handle(MergeVerbCommand request, CancellationToken cancellationToken)
             {
-                string verbHash = Iri.ComputeHash(request.Verb.Id);
+                string verbHash = request.Verb.Hash ?? new Iri(request.Verb.Id).ComputeHash();
 
-                var verb = await _context.Verbs.FindAsync(request.Verb.Id);
+                var verb = await _context.Verbs.FirstOrDefaultAsync(x=> x.Hash == verbHash, cancellationToken);
                 if (verb != null)
                 {
                     // TODO: Update verb Display language maps
@@ -45,7 +46,7 @@ namespace Doctrina.Application.Verbs.Commands
                 else
                 {
                     verb = request.Verb;
-                    verb.VerbHash = verbHash;
+                    verb.Hash = verbHash;
 
                     _context.Verbs.Add(verb);
                 }

@@ -59,7 +59,7 @@ namespace Doctrina.Application.ActivityStates
             AgentEntity agent = _mapper.Map<AgentEntity>(request.Agent);
 
             var query = _context.ActivityStates
-                .Where(x => x.Activity.ActivityHash == activityHash)
+                .Where(x => x.Activity.Hash == activityHash)
                 .WhereAgent(x => x.Agent, agent);
 
             if (request.Registration.HasValue)
@@ -77,7 +77,7 @@ namespace Doctrina.Application.ActivityStates
             AgentEntity agent = _mapper.Map<AgentEntity>(request.Agent);
             string activityHash = request.ActivityId.ComputeHash();
             var query = _context.ActivityStates
-                .Where(x => x.Activity.ActivityHash == activityHash)
+                .Where(x => x.Activity.Hash == activityHash)
                 .WhereAgent(x => x.Agent, agent);
 
             if (request.Registration.HasValue)
@@ -115,7 +115,7 @@ namespace Doctrina.Application.ActivityStates
             string activityHash = request.ActivityId.ComputeHash();
             var agent = _mapper.Map<AgentEntity>(request.Agent);
             var activity = await _context.ActivityStates
-                .Where(x => x.StateId == request.StateId && x.Activity.ActivityHash == activityHash &&
+                .Where(x => x.StateId == request.StateId && x.Activity.Hash == activityHash &&
                 (!request.Registration.HasValue || x.Registration == request.Registration))
                 .WhereAgent(x => x.Agent, agent)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -133,7 +133,7 @@ namespace Doctrina.Application.ActivityStates
         {
             var agent = _mapper.Map<AgentEntity>(request.Agent);
             string activityHash = request.ActivityId.ComputeHash();
-            var activities = _context.ActivityStates.Where(x => x.Activity.ActivityHash == activityHash)
+            var activities = _context.ActivityStates.Where(x => x.Activity.Hash == activityHash)
                 .WhereAgent(x => x.Agent, agent);
 
             _context.ActivityStates.RemoveRange(activities);

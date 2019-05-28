@@ -22,8 +22,8 @@ namespace Doctrina.Application.Activities
         }
         public async Task<Activity> Handle(GetActivityQuery request, CancellationToken cancellationToken)
         {
-            string hash = request.ActivityId.ComputeHash();
-            var activity = await _context.Activities.FirstOrDefaultAsync(x => x.ActivityHash == hash);
+            string activityHash = request.ActivityId.ComputeHash();
+            var activity = await _context.Activities.FirstOrDefaultAsync(x => x.Hash == activityHash);
             return _mapper.Map<Activity>(activity);
         }
     }

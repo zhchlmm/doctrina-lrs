@@ -77,7 +77,7 @@ namespace Doctrina.Application.ActivityProfiles
         public async Task<ICollection<ActivityProfileDocument>> Handle(GetActivityProfilesQuery request, CancellationToken cancellationToken)
         {
             var activityHash = request.ActivityId.ComputeHash();
-            var query = _context.ActivityProfiles.Where(x => x.Activity.ActivityHash == activityHash);
+            var query = _context.ActivityProfiles.Where(x => x.Activity.Hash == activityHash);
             if (request.Since.HasValue)
             {
                 query = query.Where(x => x.Document.LastModified >= request.Since);
@@ -100,7 +100,7 @@ namespace Doctrina.Application.ActivityProfiles
         {
             string activityHash = activityId.ComputeHash();
             ActivityProfileEntity profile = await _context.ActivityProfiles.FirstOrDefaultAsync(x =>
-                x.Activity.ActivityHash == activityHash &&
+                x.Activity.Hash == activityHash &&
                 x.ProfileId == profileId &&
                 x.RegistrationId == registration,
                 cancellationToken);

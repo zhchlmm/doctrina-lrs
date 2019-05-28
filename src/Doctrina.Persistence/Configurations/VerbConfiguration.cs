@@ -12,10 +12,13 @@ namespace Doctrina.Persistence.Configurations
         {
             builder.ToTable("Verbs");
 
-            builder.Property(e => e.VerbHash)
+            builder.Property(x => x.VerbId)
+                .ValueGeneratedOnAdd();
+            builder.HasKey(e => e.VerbId);
+
+            builder.Property(e => e.Hash)
                 .IsRequired()
-                .HasMaxLength(32);
-            builder.HasKey(e => e.VerbHash);
+                .HasMaxLength(Constants.HASH_LENGTH);
 
             builder.Property(e => e.Id)
                 .IsRequired()
@@ -24,6 +27,12 @@ namespace Doctrina.Persistence.Configurations
             builder.Property(p => p.Display)
                 .HasConversion(new LanguageMapCollectionValueConverter())
                 .HasColumnType("ntext");
+
+            builder.HasIndex(x => x.Hash)
+               .IsUnique();
+
+            builder.HasIndex(x => x.Id)
+               .IsUnique();
         }
     }
 }
