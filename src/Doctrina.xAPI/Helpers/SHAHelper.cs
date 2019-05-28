@@ -13,11 +13,7 @@ namespace Doctrina.xAPI.Helpers
         public static string ComputeHash(string s)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(s);
-
-            var sha1 = SHA1.Create();
-            byte[] hashBytes = sha1.ComputeHash(bytes);
-
-            return HexStringFromBytes(hashBytes);
+            return ComputeHash(bytes);
         }
 
         /// <summary>
@@ -27,10 +23,11 @@ namespace Doctrina.xAPI.Helpers
         /// <returns>40-character hex string</returns>
         public static string ComputeHash(byte[] bytes)
         {
-            var sha1 = SHA1.Create();
-            byte[] hashBytes = sha1.ComputeHash(bytes);
-
-            return HexStringFromBytes(hashBytes);
+            using (var sha1 = SHA256.Create())
+            {
+                sha1.ComputeHash(bytes);
+                return HexStringFromBytes(sha1.Hash);
+            }
         }
 
         /// <summary>
