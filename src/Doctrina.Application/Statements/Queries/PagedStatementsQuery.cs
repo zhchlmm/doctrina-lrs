@@ -1,4 +1,5 @@
-﻿using Doctrina.xAPI;
+﻿using Doctrina.Application.Statements.Models;
+using Doctrina.xAPI;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -7,10 +8,10 @@ using System.Collections.Specialized;
 
 namespace Doctrina.Application.Statements.Queries
 {
-    public class PagedStatementsQuery : StatementsQuery, IRequest<ICollection<Statement>>
+    public class PagedStatementsQuery : StatementsQuery, IRequest<PagedStatementsResult>
     {
-        [FromQuery(Name = "skip")]
-        public int? Skip { get; set; }
+        [FromQuery(Name = "token")]
+        public string Token { get; set; }
 
         [FromHeader(Name = xAPI.Http.Headers.XExperienceApiVersion)]
         public string Version { get; set; }
@@ -26,9 +27,9 @@ namespace Doctrina.Application.Statements.Queries
             }
 
             var values = base.ToParameterMap(version);
-            if (Skip.HasValue)
+            if (!string.IsNullOrEmpty(Token))
             {
-                values.Add("skip", Skip.Value.ToString());
+                values.Add("token", Token);
             }
             return values;
         }
