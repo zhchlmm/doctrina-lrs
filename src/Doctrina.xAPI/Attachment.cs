@@ -111,25 +111,12 @@ namespace Doctrina.xAPI
             {
                 Length = bytes.Length;
             }
-
-            //if (UsageType == new Iri("http://adlnet.gov/expapi/attachments/signature")
-            //    && ContentType == "application/octet-stream")
-            //{
-            //    // Verify signatures are well formed
-
-            //    // Decode the JWS signature, and load the signed serialization of the Statement from the JWS signature payload.
-
-            //    // Validate that the original Statement is logically equivalent to the received Statement.
-
-            //    // If the JWS header includes an X.509 certificate, validate the signature against that certificate as defined in JWS.
-
-            //    // Validate that the signature requirements outlined above have been met.
-            //}
         }
 
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
+
             obj["usageType"] = UsageType.ToString();
 
             if (Display != null)
@@ -150,7 +137,7 @@ namespace Doctrina.xAPI
 
             if (FileUrl != null)
             {
-                obj["fileUrl"] = FileUrl;
+                obj["fileUrl"] = FileUrl.ToString();
             }
 
             return obj;
