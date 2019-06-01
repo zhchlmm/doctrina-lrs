@@ -29,17 +29,17 @@ namespace Doctrina.xAPI
 
             if (DisallowNull(obj["name"]))
             {
-                Description = new LanguageMap(obj.Value<JToken>("name"), version);
+                Name = new LanguageMap(obj["name"], version);
             }
 
             if (DisallowNull(obj["description"]))
             {
-                Description = new LanguageMap(obj.Value<JToken>("description"), version);
+                Description = new LanguageMap(obj["description"], version);
             }
 
             if (obj["extensions"] != null)
             {
-                Extensions = new Extensions(obj.Value<JToken>("extensions"), version);
+                Extensions = new Extensions(obj["extensions"], version);
             }
         }
 
