@@ -17,13 +17,13 @@ namespace Doctrina.xAPI
         {
             Statements = statements;
         }
-        public StatementCollection(JsonString jsonString) : this(jsonString.ToJArray()) { }
-        public StatementCollection(JArray jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public StatementCollection(JArray jobj, ApiVersion version)
+        public StatementCollection(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public StatementCollection(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public StatementCollection(JToken jobj, ApiVersion version)
         {
             foreach (var item in jobj)
             {
-                Add(new Statement(item.Value<JObject>(), version));
+                Add(new Statement(item, version));
             }
         }
 
@@ -63,7 +63,12 @@ namespace Doctrina.xAPI
 
         public override JArray ToJToken(ApiVersion version, ResultFormat format)
         {
-            throw new NotImplementedException();
+            var jarr = new JArray();
+            foreach(var stmt in Statements)
+            {
+                jarr.Add(stmt.ToJToken(version, format));
+            }
+            return jarr;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

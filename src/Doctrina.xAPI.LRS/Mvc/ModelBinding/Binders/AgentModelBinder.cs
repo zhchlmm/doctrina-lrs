@@ -11,7 +11,9 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
                 bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
             if (valueProviderResult == ValueProviderResult.None)
+            {
                 return Task.CompletedTask;
+            }
 
             try
             {

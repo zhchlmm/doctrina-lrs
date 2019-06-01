@@ -13,6 +13,16 @@ namespace Doctrina.xAPI.Validators
 
             RuleFor(x => x).Must(MustHaveSingleIdentifier)
                 .WithMessage("An Agent MUST NOT include more than one (1) Inverse Functional Identifier;");
+
+            RuleFor(x => x.Account).SetValidator(new AccountValidator()).When(x => x.Account != null);
+
+            RuleFor(x => x.Failures).Custom((x, context) =>
+            {
+                foreach (var failure in x)
+                {
+                    context.AddFailure(failure.Name, failure.Message);
+                }
+            });
         }
 
         private bool MustHaveSingleIdentifier(Agent arg)
@@ -30,10 +40,7 @@ namespace Doctrina.xAPI.Validators
 
             if (arg.Account != null)
             {
-                if (!string.IsNullOrEmpty(arg.Account.Name) && arg.Account.HomePage != null)
-                {
-                    count++;
-                }
+                count++;
             }
 
             return count == 1;

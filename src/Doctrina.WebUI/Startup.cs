@@ -12,11 +12,13 @@ using MediatR;
 using MediatR.Pipeline;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using NSwag.AspNetCore;
 using System.Reflection;
@@ -46,8 +48,11 @@ namespace Doctrina.WebUI
             //services.AddTransient<INotificationService, NotificationService>();
             //services.AddTransient<IDateTime, MachineDateTime>();
 
+            // Add httpcontext
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             // Add MediatR
-            services.AddMediatR(typeof(StatementsHandler).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(CreateStatementCommand).GetTypeInfo().Assembly);
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));

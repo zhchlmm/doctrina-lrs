@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
+using Doctrina.Application.Infrastructure.Automapper.Mappings.TypeConverters;
 using Doctrina.Application.Interfaces.Mapping;
 using Doctrina.Application.Mappings.ValueResolvers;
 using Doctrina.Domain.Entities;
 using Doctrina.xAPI;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Doctrina.Application.Mappings
 {
@@ -58,17 +55,18 @@ namespace Doctrina.Application.Mappings
                 .ForMember(x => x.Voided, opt => opt.Ignore())
                 .ForMember(x => x.FullStatement, opt => opt.Ignore())
                 .ReverseMap()
+                .ConvertUsing<StatementTypeConverter>();
                  // Statement base
-                .ForMember(x => x.Actor, opt => opt.MapFrom(x => x.Actor))
-                .ForMember(x => x.Verb, opt => opt.MapFrom(x => x.Verb))
-                .ForMember(x => x.Object, opt => opt.MapFrom<ObjectValueResolver, StatementObjectEntity>(x => x.Object))
-                .ForMember(x => x.Timestamp, opt => opt.MapFrom(x => x.Timestamp))
+                //.ForMember(x => x.Actor, opt => opt.MapFrom(x => x.Actor))
+                //.ForMember(x => x.Verb, opt => opt.MapFrom(x => x.Verb))
+                //.ForMember(x => x.Object, opt => opt.MapFrom<ObjectValueResolver, StatementObjectEntity>(x => x.Object))
+                //.ForMember(x => x.Timestamp, opt => opt.MapFrom(x => x.Timestamp))
                 // Statement only
-                .ForMember(x => x.Result, opt => opt.MapFrom(x => x.Result))
-                .ForMember(x => x.Context, opt => opt.MapFrom(x => x.Context))
-                .ForMember(x => x.Authority, opt => opt.MapFrom(x => x.Authority))
-                .ForMember(x => x.Stored, opt => opt.MapFrom(x => x.Stored))
-                .ForMember(x => x.Version, opt => opt.MapFrom(x => x.Version));
+                //.ForMember(x => x.Result, opt => opt.MapFrom(x => x.Result))
+                //.ForMember(x => x.Context, opt => opt.MapFrom(x => x.Context))
+                //.ForMember(x => x.Authority, opt => opt.MapFrom(x => x.Authority))
+                //.ForMember(x => x.Stored, opt => opt.MapFrom(x => x.Stored))
+                //.ForMember(x => x.Version, opt => opt.MapFrom(x => x.Version));
 
             configuration.CreateMap<SubStatement, SubStatementEntity>()
                 .ForMember(e=> e.ObjectType, opt => opt.Ignore())
@@ -103,7 +101,7 @@ namespace Doctrina.Application.Mappings
                 .ForMember(ent => ent.ActivityDefinitionId, opt => opt.Ignore())
                 .ForMember(ent => ent.Type, opt => opt.MapFrom(x => x.Type.ToString()))
                 .ForMember(ent => ent.Descriptions, opt => opt.MapFrom<LanguageMapValueResolver, LanguageMap>(x => x.Description))
-                .ForMember(ent => ent.Extensions, opt => opt.MapFrom<ExtenstionsValueResolver, xAPI.Extensions>(x => x.Extentions))
+                .ForMember(ent => ent.Extensions, opt => opt.MapFrom<ExtenstionsValueResolver, xAPI.Extensions>(x => x.Extensions))
                 .ForMember(ent => ent.MoreInfo, opt => opt.MapFrom(x => x.MoreInfo.ToString()))
                 .ForMember(ent => ent.Names, opt => opt.MapFrom<LanguageMapValueResolver, LanguageMap>(src => src.Name))
                 .ReverseMap();
@@ -115,7 +113,7 @@ namespace Doctrina.Application.Mappings
                 .ForMember(x => x.Duration, opt => opt.Ignore()/*MapFrom(x => (string)x.Duration.ToString())*/)
                 .ForMember(x => x.Response, opt => opt.MapFrom(x => x.Response))
                 .ForMember(x => x.Success, opt => opt.MapFrom(x => x.Success))
-                .ForMember(x => x.Extensions, opt => opt.MapFrom<ExtenstionsValueResolver, xAPI.Extensions>(x => x.Extentions))
+                .ForMember(x => x.Extensions, opt => opt.MapFrom<ExtenstionsValueResolver, xAPI.Extensions>(x => x.Extensions))
                 .ReverseMap();
 
             configuration.CreateMap<Score, ScoreEntity>()

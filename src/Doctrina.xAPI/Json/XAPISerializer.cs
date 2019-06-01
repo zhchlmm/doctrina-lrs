@@ -29,6 +29,8 @@ namespace Doctrina.xAPI.Json
             Converters.Insert(2, new DateTimeJsonConverter());
             Converters.Insert(3, new StatementObjectConverter());
             Converters.Insert(4, new AgentJsonConverter());
+            Converters.Insert(4, new ActivityDefinitionJsonConverter());
+            Converters.Insert(4, new ActivityJsonConverter());
             DateParseHandling = Newtonsoft.Json.DateParseHandling.None;
             DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat;
         }

@@ -13,32 +13,37 @@ namespace Doctrina.xAPI
         {
         }
 
-        public Score(JsonString jsonString) : this(jsonString.ToJObject())
+        public Score(JsonString jsonString) : this(jsonString.ToJToken())
         {
         }
 
-        public Score(JObject jobj) : this(jobj, ApiVersion.GetLatest())
+        public Score(JToken jobj) : this(jobj, ApiVersion.GetLatest())
         {
         }
 
-        public Score(JObject jobj, ApiVersion version)
+        public Score(JToken jobj, ApiVersion version)
         {
-            if (jobj["scaled"] != null)
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
+            if (DisallowNull(jobj["scaled"]) && AllowNumber(jobj["scaled"]))
             {
                 Scaled = jobj.Value<double?>("scaled");
             }
 
-            if (jobj["raw"] != null)
+            if (DisallowNull(jobj["raw"]) && AllowNumber(jobj["raw"]))
             {
                 Raw = jobj.Value<double?>("raw");
             }
 
-            if (jobj["min"] != null)
+            if (DisallowNull(jobj["min"]) && AllowNumber(jobj["min"]))
             {
                 Min = jobj.Value<double?>("min");
             }
 
-            if (jobj["max"] != null)
+            if (DisallowNull(jobj["max"]) && AllowNumber(jobj["max"]))
             {
                 Max = jobj.Value<double?>("max");
             }

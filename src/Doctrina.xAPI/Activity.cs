@@ -7,11 +7,15 @@ namespace Doctrina.xAPI
     public class Activity : StatementObjectBase, IStatementObject
     {
         public Activity() { }
-        public Activity(JsonString jsonString) : this(jsonString.ToJObject()) { }
-        public Activity(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public Activity(JObject jobj, ApiVersion version)
-            : base(jobj, version)
+        public Activity(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public Activity(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Activity(JToken jobj, ApiVersion version) : base(jobj, version)
         {
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
             if (jobj["id"] != null)
             {
                 Id = (Iri)jobj.Value<string>("id");

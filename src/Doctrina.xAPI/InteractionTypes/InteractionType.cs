@@ -57,7 +57,7 @@ namespace Doctrina.xAPI.InteractionTypes
 
         public static bool operator !=(InteractionType type1, InteractionType type2)
         {
-            return type1.Alias != type2.Alias;
+            return type1?.Alias != type2?.Alias;
         }
 
         public static implicit operator InteractionType(string alias)

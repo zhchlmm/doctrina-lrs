@@ -9,91 +9,80 @@ namespace Doctrina.xAPI
     public class Result : JsonModel
     {
         public Result() { }
-        public Result(JsonString jsonString) : this(jsonString.ToJObject()) { }
-        public Result(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Result(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public Result(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
-        public Result(JObject jobj, ApiVersion version)
+        public Result(JToken token, ApiVersion version)
         {
-            if (jobj["score"] != null)
+            if (!AllowObject(token))
+            {
+                return;
+            }
+
+            JObject jobj = token as JObject;
+
+            if (DisallowNull(jobj["score"]))
             {
                 Score = new Score(jobj.Value<JObject>("score"), version);
             }
-            if (jobj["success"] != null)
+            if (DisallowNull(jobj["success"]) && AllowBoolean(jobj["success"]))
             {
                 Success = jobj.Value<bool?>("success");
             }
-            if (jobj["completion"] != null)
+            if (DisallowNull(jobj["completion"]) && AllowBoolean(jobj["completion"]))
             {
                 Completion = jobj.Value<bool?>("completion");
             }
 
-            if (jobj["response"] != null)
+            if (DisallowNull(jobj["response"]))
             {
                 Response = jobj.Value<string>("response");
             }
 
-            if (jobj["duration"] != null)
+            if (DisallowNull(jobj["duration"]))
             {
                 Duration = new Duration(jobj.Value<string>("duration"));
             }
 
-            if (jobj["extentions"] != null)
+            if (jobj["extensions"] != null)
             {
-                Extentions = new Extensions(jobj.Value<JObject>("extentions"), version);
+                Extensions = new Extensions(jobj.Value<JToken>("extensions"), version);
             }
+
+            DisallowAdditionalProps(jobj, "score", "success", "completion", "response", "duration", "extensions");
         }
 
         /// <summary>
         /// The score of the Agent in relation to the success or quality of the experience. See: <seealso cref="Models.Score"/>
         /// </summary>
         /// 
-        [JsonProperty("score",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public Score Score { get; set; }
 
         /// <summary>
         /// Indicates whether or not the attempt on the Activity was successful
         /// </summary>
-        [JsonProperty("success",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
-        [JsonConverter(typeof(BooleanConverter))]
         public bool? Success { get; set; }
 
         /// <summary>
         /// Indicates whether or not the Activity was completed.
         /// </summary>
-        [JsonProperty("completion",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
-        [JsonConverter(typeof(BooleanConverter))]
         public bool? Completion { get; set; }
 
 
         /// <summary>
         /// A response appropriately formatted for the given Activity.
         /// </summary>
-        [JsonProperty("response",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public string Response { get; set; }
 
         /// <summary>
         /// Period of time over which the Statement occurred.
         /// </summary>
-        [JsonProperty("duration",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public Duration Duration { get; set; }
 
         /// <summary>
         /// A map of other properties as needed. See: <seealso cref="Models.Extensions"/>
         /// </summary>
-        [JsonProperty("extensions",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.Default)]
-        public Extensions Extentions { get; set; }
+        public Extensions Extensions { get; set; }
 
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
@@ -124,9 +113,9 @@ namespace Doctrina.xAPI
                 jobj["duration"] = Duration.ToString();
             }
 
-            if (jobj["extentions"] != null)
+            if (jobj["extensions"] != null)
             {
-                Extentions = new Extensions(jobj.Value<JObject>("extentions"), version);
+                Extensions = new Extensions(jobj.Value<JObject>("extenions"), version);
             }
 
             return jobj;
@@ -142,7 +131,7 @@ namespace Doctrina.xAPI
                    EqualityComparer<bool?>.Default.Equals(Completion, result.Completion) &&
                    Response == result.Response &&
                    EqualityComparer<Duration>.Default.Equals(Duration, result.Duration) &&
-                   EqualityComparer<Extensions>.Default.Equals(Extentions, result.Extentions);
+                   EqualityComparer<Extensions>.Default.Equals(Extensions, result.Extensions);
         }
 
         public override int GetHashCode()
@@ -153,7 +142,7 @@ namespace Doctrina.xAPI
             hashCode = hashCode * -1521134295 + EqualityComparer<bool?>.Default.GetHashCode(Completion);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Response);
             hashCode = hashCode * -1521134295 + EqualityComparer<Duration>.Default.GetHashCode(Duration);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Extensions>.Default.GetHashCode(Extentions);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Extensions>.Default.GetHashCode(Extensions);
             return hashCode;
         }
 

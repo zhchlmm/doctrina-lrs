@@ -6,17 +6,27 @@ namespace Doctrina.xAPI
     public class Verb : JsonModel, IVerb
     {
         public Verb() { }
-        public Verb(JsonString jsonString) : this(jsonString.ToJObject())
+        public Verb(JsonString jsonString) : this(jsonString.ToJToken())
         {
         }
-        public Verb(JObject jObject) : this(jObject, ApiVersion.GetLatest())
+        public Verb(JToken jObject) : this(jObject, ApiVersion.GetLatest())
         {
         }
-        public Verb(JObject jobj, ApiVersion version)
+        public Verb(JToken jobj, ApiVersion version)
         {
-            if (jobj["id"] != null)
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
+            if (DisallowNull(jobj["id"]) && AllowString(jobj["id"]))
             {
                 Id = new Iri(jobj.Value<string>("id"));
+            }
+
+            if (DisallowNull(jobj["display"]))
+            {
+                Display = new LanguageMap(jobj.Value<JObject>("display"), version);
             }
         }
 

@@ -97,6 +97,11 @@ namespace Doctrina.xAPI
 
         public override JArray ToJToken(ApiVersion version, ResultFormat format)
         {
+            if(Attachments.Count == 0)
+            {
+                return null;
+            }
+
             var jArray = new JArray();
 
             foreach (var attachment in Attachments)

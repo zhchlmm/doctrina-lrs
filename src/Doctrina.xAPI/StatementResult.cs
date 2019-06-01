@@ -7,18 +7,23 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI
 {
-    [JsonObject]
+    /// <summary>
+    /// A collection of Statements can be retrieved by performing a query on the Statement Resource, see Statement Resource for details.
+    /// </summary>
     public class StatementsResult : JsonModel, IStatementsResult
     {
-        public StatementsResult()
+        public StatementsResult() {}
+
+        public StatementsResult(string jsonString) : this((JsonString)jsonString) {}
+        public StatementsResult(JsonString jsonString) : this(jsonString.ToJToken()) {}
+        public StatementsResult(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public StatementsResult(JToken jobj, ApiVersion version)
         {
-        }
-        public StatementsResult(JsonString jsonString) : this(jsonString.ToJObject())
-        {
-        }
-        public StatementsResult(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public StatementsResult(JObject jobj, ApiVersion version)
-        {
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
             if (jobj["statements"] != null)
             {
                 Statements = new StatementCollection(jobj.Value<JArray>("statements"), version);
@@ -26,18 +31,8 @@ namespace Doctrina.xAPI
 
             if (jobj["more"] != null)
             {
-                More = jobj.Value<Uri>("more");
+                More = new Uri(jobj.Value<string>("more"));
             }
-        }
-
-        public StatementsResult(string json, ApiVersion version, ResultFormat format)
-        {
-            var apiSerializer = new xAPI.Json.ApiJsonSerializer(version, format);
-            var reader = new JsonTextReader(new System.IO.StringReader(json));
-
-            var result = apiSerializer.Deserialize<StatementsResult>(reader);
-            Statements = result.Statements;
-            More = result.More;
         }
 
         /// <summary>
@@ -49,33 +44,6 @@ namespace Doctrina.xAPI
         /// Relative IRL that can be used to fetch more results, including the full path and optionally a query string but excluding scheme, host, and port. Empty string if there are no more results to fetch.
         /// </summary>
         public Uri More { get; set; }
-
-        //public string ToJson()
-        //{
-        //    StringWriter sw = new StringWriter();
-        //    JsonTextWriter writer = new JsonTextWriter(sw);
-
-        //    // {
-        //    writer.WriteStartObject();
-
-        //    // "statements": [ ... ]
-        //    writer.WritePropertyName("statements");
-        //    writer.WriteStartArray();
-        //    foreach (var statement in Statements)
-        //    {
-        //        writer.WriteRawValue(statement.ToJson());
-        //    }
-        //    writer.WriteEndArray();
-
-        //    // "more": " ... "
-        //    writer.WritePropertyName("more");
-        //    writer.WriteValue(More);
-
-        //    // }
-        //    writer.WriteEndObject();
-
-        //    return sw.ToString();
-        //}
 
         public static async Task<StatementsResult> ReadAsMultipartAsync(string boundary, Stream stream)
         {
@@ -90,7 +58,7 @@ namespace Doctrina.xAPI
                 {
                     // StatementsResult
                     string jsonString = await section.ReadAsStringAsync();
-                    result = new StatementsResult(jsonString);
+                    result = new StatementsResult((JsonString)jsonString);
                 }
                 else
                 {
@@ -122,11 +90,9 @@ namespace Doctrina.xAPI
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
-            obj["statements"] = Statements.ToJToken(version, format);
-            obj["more"] = More.ToString();
+            obj["statements"] = Statements?.ToJToken(version, format);
+            obj["more"] = More?.ToString();
             return obj;
         }
-
-
     }
 }

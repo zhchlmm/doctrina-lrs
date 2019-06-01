@@ -18,10 +18,16 @@ namespace Doctrina.xAPI
         public ObjectType ObjectType => ObjectType.SubStatement;
 
         public SubStatement() : base() { }
-        public SubStatement(JsonString jsonString) : this(jsonString.ToJObject()) { }
-        public SubStatement(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public SubStatement(JObject jobj, ApiVersion version) : base(jobj, version)
+        public SubStatement(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public SubStatement(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public SubStatement(JToken jobj, ApiVersion version) : base(jobj, version)
         {
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
+            DisallowAdditionalProps(jobj as JObject, "objectType", "actor", "object", "verb", "result", "context", "timestamp", "attachment");
         }
 
         public override bool Equals(object obj)

@@ -13,7 +13,7 @@ using System.Web;
 
 namespace Doctrina.xAPI.Http
 {
-    public class RemoteLRS : IRemoteLRS
+    public class LRSClient : ILRSClient
     {
         private readonly HttpClient client = new HttpClient();
         private readonly string _auth;
@@ -21,12 +21,12 @@ namespace Doctrina.xAPI.Http
         public Uri BaseAddress { get; }
         public ApiVersion Version { get; }
 
-        public RemoteLRS(string endpoint, string username, string password)
+        public LRSClient(string endpoint, string username, string password)
             : this(endpoint, username, password, ApiVersion.GetLatest())
         {
         }
 
-        public RemoteLRS(string endpoint, string username, string password, ApiVersion version)
+        public LRSClient(string endpoint, string username, string password, ApiVersion version)
         {
             BaseAddress = new Uri(endpoint.TrimEnd('/'));
 
@@ -198,9 +198,9 @@ namespace Doctrina.xAPI.Http
 
             response.EnsureSuccessStatusCode();
 
-            string strResponse = await response.Content.ReadAsStringAsync();
+            JsonString strResponse = await response.Content.ReadAsStringAsync();
 
-            var ids = JsonConvert.DeserializeObject<Guid[]>(strResponse);
+            var ids = strResponse.Deserialize<Guid[]>();
 
             for (int i = 0; i < statements.Count(); i++)
             {
@@ -237,7 +237,7 @@ namespace Doctrina.xAPI.Http
             if (contentType.MediaType == MediaTypes.Application.Json)
             {
                 string strResponse = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Statement>(strResponse);
+                return new Statement((JsonString)strResponse);
             }
             else if (contentType.MediaType == MediaTypes.Multipart.Mixed)
             {
@@ -298,7 +298,7 @@ namespace Doctrina.xAPI.Http
             if (contentType.MediaType == MediaTypes.Application.Json)
             {
                 string strResponse = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Statement>(strResponse);
+                return new Statement((JsonString)strResponse);
             }
             else if (contentType.MediaType == MediaTypes.Multipart.Mixed)
             {
@@ -379,9 +379,9 @@ namespace Doctrina.xAPI.Http
 
             response.EnsureSuccessStatusCode();
 
-            string strResponse = await response.Content.ReadAsStringAsync();
+            JsonString strResponse = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<Guid[]>(strResponse);
+            return strResponse.Deserialize<Guid[]>();
         }
 
         public async Task<ActivityStateDocument> GetState(string stateId, Iri activityId, Agent agent, Guid? registration = null)
@@ -392,10 +392,12 @@ namespace Doctrina.xAPI.Http
             var query = HttpUtility.ParseQueryString(string.Empty);
             query.Add("stateId", stateId);
             query.Add("activityId", activityId.ToString());
-            query.Add("agent", agent.ToString());
+            query.Add("agent", agent.ToJson());
 
             if (registration.HasValue)
+            {
                 query.Add("registration", registration.Value.ToString("o"));
+            }
 
             builder.Query = query.ToString();
 
@@ -557,9 +559,9 @@ namespace Doctrina.xAPI.Http
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException(response.ReasonPhrase);
 
-            string strResponse = await response.Content.ReadAsStringAsync();
+            JsonString strResponse = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<Guid[]>(strResponse);
+            return strResponse.Deserialize<Guid[]>();
         }
 
         public async Task<ActivityProfileDocument> GetActivityProfile(string profileId, Iri activityId)
@@ -681,9 +683,9 @@ namespace Doctrina.xAPI.Http
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException(response.ReasonPhrase);
 
-            string strResponse = await response.Content.ReadAsStringAsync();
+            JsonString strResponse = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<Guid[]>(strResponse);
+            return strResponse.Deserialize<Guid[]>();
         }
 
         public async Task<AgentProfileDocument> GetAgentProfile(string profileId, Agent agent)

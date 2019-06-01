@@ -9,10 +9,9 @@ namespace Doctrina.xAPI
     public class Group : Agent
     {
         public Group() { }
-        public Group(JsonString jsonString) : this(jsonString.ToJObject()) { }
-        public Group(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public Group(JObject jobj, ApiVersion version)
-            : base(jobj, version)
+        public Group(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public Group(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Group(JToken jobj, ApiVersion version) : base(jobj, version)
         {
             if (jobj["member"] != null)
             {

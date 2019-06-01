@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Doctrina.xAPI\Doctrina.xAPI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Validation\" />
+  </ItemGroup>
+
 </Project>

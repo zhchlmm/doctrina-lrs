@@ -21,10 +21,17 @@ namespace Doctrina.xAPI
             }
         }
 
-        public Extensions(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Extensions(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
-        public Extensions(JObject jobj, ApiVersion version)
+        public Extensions(JToken jtoken, ApiVersion version)
         {
+            if (!AllowObject(jtoken))
+            {
+                return;
+            }
+
+            var jobj = jtoken as JObject;
+
             foreach (var token in jobj)
             {
                 Add(new Uri(token.Key), token.Value);
@@ -83,12 +90,16 @@ namespace Doctrina.xAPI
 
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
-            var obj = new JObject();
-            foreach (var val in _values)
+            if(_values.Count > 0)
             {
-                obj.Add(val.Key.ToString(), val.Value);
+                var obj = new JObject();
+                foreach (var val in _values)
+                {
+                    obj.Add(val.Key.ToString(), val.Value);
+                }
+                return obj;
             }
-            return obj;
+            return null;
         }
 
         public bool ContainsKey(Uri key)

@@ -24,11 +24,6 @@ namespace Doctrina.xAPI
             return Deserialize<JToken>();
         }
 
-        public JObject ToJObject()
-        {
-            return Deserialize<JObject>();
-        }
-
         public JArray ToJArray()
         {
             return Deserialize<JArray>();

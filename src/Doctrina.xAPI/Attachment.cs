@@ -9,23 +9,28 @@ namespace Doctrina.xAPI
     public class Attachment : JsonModel
     {
         public Attachment() { }
-        public Attachment(JsonString jsonString) : this(jsonString.ToJObject()) { }
-        public Attachment(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public Attachment(JObject jobj, ApiVersion version)
+        public Attachment(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public Attachment(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Attachment(JToken jobj, ApiVersion version)
         {
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
             if (jobj["usageType"] != null)
             {
-                UsageType = jobj.Value<Iri>("usageType");
+                UsageType = new Iri(jobj.Value<string>("usageType"));
             }
 
             if (jobj["display"] != null)
             {
-                Display = new LanguageMap(jobj.Value<JObject>("display"), version);
+                Display = new LanguageMap(jobj["display"], version);
             }
 
             if (jobj["description"] != null)
             {
-                Description = new LanguageMap(jobj.Value<JObject>("description"), version);
+                Description = new LanguageMap(jobj["description"], version);
             }
 
             if (jobj["contentType"] != null)

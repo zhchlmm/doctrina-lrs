@@ -9,6 +9,11 @@ namespace Doctrina.Application.Mappings.ValueResolvers
     {
         public ExtensionsCollection Resolve(object source, object destination, xAPI.Extensions sourceMember, ExtensionsCollection destMember, ResolutionContext context)
         {
+            if(sourceMember == null)
+            {
+                return null;
+            }
+
             var collection = new ExtensionsCollection();
 
             foreach (var p in sourceMember)

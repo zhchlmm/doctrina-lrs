@@ -44,7 +44,7 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
-            var xapiSerializer = (ApiJsonSerializer)serializer;
+            ApiJsonSerializer xapiSerializer = (ApiJsonSerializer)serializer;
             var format = xapiSerializer.ResultFormat;
             writer.WriteStartObject();
             // TODO: Write Agent result based on result format.

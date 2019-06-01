@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class ActivityDefinitionConverter : ApiJsonConverter
+    public class ActivityDefinitionJsonConverter : ApiJsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -21,18 +21,13 @@ namespace Doctrina.xAPI.Json.Converters
             JToken tokenInteractionType = jobj["interactionType"];
             if (tokenInteractionType != null)
             {
-                if (tokenInteractionType.Type != JTokenType.String)
-                {
-                    throw new JsonSerializationException($"interactionType must be a string");
-                }
+                IsString(tokenInteractionType);
 
-                string strInteractionType = tokenInteractionType.Value<string>();
-                if (strInteractionType.Any(x => char.IsUpper(x)))
-                {
-                    throw new JsonSerializationException($"interactionType '{strInteractionType}' contains uppercase charactors, which is not allowed.");
-                }
-
-                InteractionType interactionType = strInteractionType;
+                InteractionType interactionType = tokenInteractionType.Value<string>();
+                //if (strInteractionType.Any(x => char.IsUpper(x)))
+                //{
+                //    throw new JsonSerializationException($"interactionType '{strInteractionType}' contains uppercase charactors, which is not allowed.");
+                //}
 
                 //if (!interactionType.HasValue)
                 //{

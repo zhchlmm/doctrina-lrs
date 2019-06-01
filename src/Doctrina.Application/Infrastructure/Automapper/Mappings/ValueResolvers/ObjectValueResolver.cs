@@ -47,37 +47,44 @@ namespace Doctrina.Application.Mappings.ValueResolvers
                 return null;
             }
 
-            var obj = new StatementObjectEntity();
+            try
+            {
+                var obj = new StatementObjectEntity();
 
-            if (sourceMember.ObjectType == ObjectType.Agent)
-            {
-                obj.ObjectType = EntityObjectType.Agent;
-                obj.Agent = context.Mapper.Map<AgentEntity>((xAPI.Agent)sourceMember);
-                return obj;
+                if (sourceMember.ObjectType == ObjectType.Agent)
+                {
+                    obj.ObjectType = EntityObjectType.Agent;
+                    obj.Agent = context.Mapper.Map<AgentEntity>((xAPI.Agent)sourceMember);
+                    return obj;
+                }
+                else if (sourceMember.ObjectType == ObjectType.Group)
+                {
+                    obj.ObjectType = EntityObjectType.Group;
+                    obj.Agent = context.Mapper.Map<GroupEntity>((xAPI.Group)sourceMember);
+                    return obj;
+                }
+                else if (sourceMember.ObjectType == ObjectType.Activity)
+                {
+                    obj.ObjectType = EntityObjectType.Activity;
+                    obj.Activity = context.Mapper.Map<ActivityEntity>((xAPI.Activity)sourceMember);
+                    return obj;
+                }
+                else if (sourceMember.ObjectType == ObjectType.SubStatement)
+                {
+                    obj.ObjectType = EntityObjectType.SubStatement;
+                    obj.SubStatement = context.Mapper.Map<SubStatementEntity>((xAPI.SubStatement)sourceMember);
+                    return obj;
+                }
+                else if (sourceMember.ObjectType == ObjectType.StatementRef)
+                {
+                    obj.ObjectType = EntityObjectType.StatementRef;
+                    obj.StatementRef = context.Mapper.Map<StatementRefEntity>((xAPI.StatementRef)sourceMember);
+                    return obj;
+                }
             }
-            else if (sourceMember.ObjectType == ObjectType.Group)
+            catch (Exception)
             {
-                obj.ObjectType = EntityObjectType.Group;
-                obj.Agent = context.Mapper.Map<GroupEntity>((xAPI.Group)sourceMember);
-                return obj;
-            }
-            else if (sourceMember.ObjectType == ObjectType.Activity)
-            {
-                obj.ObjectType = EntityObjectType.Activity;
-                obj.Activity = context.Mapper.Map<ActivityEntity>((xAPI.Activity)sourceMember);
-                return obj;
-            }
-            else if (sourceMember.ObjectType == ObjectType.SubStatement)
-            {
-                obj.ObjectType = EntityObjectType.SubStatement;
-                obj.SubStatement = context.Mapper.Map<SubStatementEntity>((xAPI.SubStatement)sourceMember);
-                return obj;
-            }
-            else if (sourceMember.ObjectType == ObjectType.StatementRef)
-            {
-                obj.ObjectType = EntityObjectType.StatementRef;
-                obj.StatementRef = context.Mapper.Map<StatementRefEntity>((xAPI.StatementRef)sourceMember);
-                return obj;
+                throw;
             }
 
             throw new NotImplementedException();

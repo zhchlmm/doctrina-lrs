@@ -11,16 +11,21 @@ namespace Doctrina.xAPI
     {
 
         public Account() { }
-        public Account(JsonString jsonString) : this(jsonString.ToJObject()) { }
-        public Account(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public Account(JObject jobj, ApiVersion version)
+        public Account(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public Account(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Account(JToken jobj, ApiVersion version)
         {
-            if (jobj["homePage"] != null)
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
+            if (DisallowNull(jobj["homePage"]) && AllowString(jobj["homePage"]))
             {
                 HomePage = new Uri(jobj.Value<string>("homePage"));
             }
 
-            if (jobj["name"] != null)
+            if (DisallowNull(jobj["name"]) && AllowString(jobj["name"]))
             {
                 Name = jobj.Value<string>("name");
             }

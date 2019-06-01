@@ -10,29 +10,34 @@ namespace Doctrina.xAPI
     public class ContextActivities : JsonModel
     {
         public ContextActivities() { }
-        public ContextActivities(JsonString jsonString) : this(jsonString.ToJObject()) { }
-        public ContextActivities(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public ContextActivities(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public ContextActivities(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
-        public ContextActivities(JObject jobj, ApiVersion version)
+        public ContextActivities(JToken jobj, ApiVersion version)
         {
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
             if (jobj["parent"] != null)
             {
-                Parent = new ActivityCollection(jobj.Value<JToken>("parent"), version);
+                Parent = new ActivityCollection(jobj["parent"], version);
             }
 
             if (jobj["category"] != null)
             {
-                Category = new ActivityCollection(jobj.Value<JToken>("category"), version);
+                Category = new ActivityCollection(jobj["category"], version);
             }
 
             if (jobj["grouping"] != null)
             {
-                Grouping = new ActivityCollection(jobj.Value<JToken>("grouping"), version);
+                Grouping = new ActivityCollection(jobj["grouping"], version);
             }
 
             if (jobj["other"] != null)
             {
-                Other = new ActivityCollection(jobj.Value<JToken>("other"), version);
+                Other = new ActivityCollection(jobj["other"], version);
             }
         }
 

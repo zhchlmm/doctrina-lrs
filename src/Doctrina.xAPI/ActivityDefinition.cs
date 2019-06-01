@@ -7,65 +7,54 @@ namespace Doctrina.xAPI
 {
     public class ActivityDefinition : JsonModel
     {
-        public ActivityDefinition()
+        public ActivityDefinition() {}
+        public ActivityDefinition(JsonString jsonString) : this(jsonString.ToJToken()) {}
+        public ActivityDefinition(JToken jobj) : this(jobj, ApiVersion.GetLatest()) {}
+        public ActivityDefinition(JToken obj, ApiVersion version)
         {
-        }
-        public ActivityDefinition(JsonString jsonString) : this(jsonString.ToJObject())
-        {
-        }
-
-        public ActivityDefinition(JObject jobj) :
-           this(jobj, ApiVersion.GetLatest())
-        {
-        }
-
-        public ActivityDefinition(JObject obj, ApiVersion version)
-        {
-            if (obj["type"] != null)
+            if (!AllowObject(obj))
             {
-                Type = (Iri)obj["type"].Value<string>();
+                return;
             }
 
-            if (obj["moreInfo"] != null)
+            if (DisallowNull(obj["type"]) && AllowString(obj["type"]))
+            {
+                Type = new Iri(obj["type"].Value<string>());
+            }
+
+            if (DisallowNull(obj["moreInfo"]) && AllowString(obj["moreInfo"]))
             {
                 MoreInfo = new Uri(obj["moreInfo"].Value<string>());
             }
 
-            if (obj["description"] != null)
+            if (DisallowNull(obj["name"]))
             {
-                Description = new LanguageMap(obj.Value<JObject>("description"), version);
+                Description = new LanguageMap(obj.Value<JToken>("name"), version);
+            }
+
+            if (DisallowNull(obj["description"]))
+            {
+                Description = new LanguageMap(obj.Value<JToken>("description"), version);
+            }
+
+            if (obj["extensions"] != null)
+            {
+                Extensions = new Extensions(obj.Value<JToken>("extensions"), version);
             }
         }
 
-
-
-        [JsonProperty("name",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public LanguageMap Name { get; set; }
 
-        [JsonProperty("description",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public LanguageMap Description { get; set; }
 
-        [JsonProperty("type",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public virtual Iri Type { get; set; }
 
         /// <summary>
         /// Resolves to a document with human-readable information about the Activity, which could include a way to launch the activity.
         /// </summary>
-        [JsonProperty("moreInfo",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public Uri MoreInfo { get; set; }
 
-        [JsonProperty("extensions",
-            NullValueHandling = NullValueHandling.Include,
-            Required = Required.Default)]
-        public Extensions Extentions { get; set; }
+        public Extensions Extensions { get; set; }
 
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
@@ -91,15 +80,14 @@ namespace Doctrina.xAPI
                 obj["moreInfo"] = MoreInfo.ToString();
             }
 
-            obj["extentions"] = Extentions?.ToJToken(version, format);
+            if(Extensions != null)
+            {
+                obj["extensions"] = Extensions.ToJToken(version, format);
+            }
 
             return obj;
         }
 
-        internal static ActivityDefinition Parse(JObject jObject, ApiVersion version)
-        {
-            throw new NotImplementedException();
-        }
         public override bool Equals(object obj)
         {
             var definition = obj as ActivityDefinition;
@@ -110,6 +98,7 @@ namespace Doctrina.xAPI
                    EqualityComparer<Iri>.Default.Equals(Type, definition.Type) &&
                    EqualityComparer<Uri>.Default.Equals(MoreInfo, definition.MoreInfo);
         }
+
         public override int GetHashCode()
         {
             var hashCode = -1346148704;

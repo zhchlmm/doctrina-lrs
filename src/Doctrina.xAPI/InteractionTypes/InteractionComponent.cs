@@ -21,14 +21,16 @@ namespace Doctrina.xAPI.InteractionTypes
 
         public InteractionComponent(JObject jobj, ApiVersion version)
         {
-            if (jobj["id"] != null)
+            var id = jobj["id"];
+            if (id != null && AllowString(id))
             {
                 Id = jobj.Value<string>("id");
             }
 
-            if (jobj["id"] != null)
+            var desc = jobj["description"];
+            if (desc != null && DisallowNull(desc))
             {
-                Description = new LanguageMap(jobj.Value<JObject>("id"), version);
+                Description = new LanguageMap(desc.Value<JObject>(), version);
             }
         }
 

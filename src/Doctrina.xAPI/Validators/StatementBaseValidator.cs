@@ -7,46 +7,41 @@ namespace Doctrina.xAPI.Validators
     {
         public StatementBaseValidator()
         {
-            RuleFor(x => x.Actor).NotEmpty();
-            RuleFor(x => x.Verb).NotEmpty();
-            RuleFor(x => x.Object).NotNull().Custom((target, context) =>
+            RuleFor(x => x.Actor).NotEmpty().DependentRules(() =>
             {
-                ValidationResult result = null;
+                RuleFor(x => x.Actor)
+                    .SetValidator(new AgentValidator())
+                    .When(x => x.Actor.ObjectType == ObjectType.Agent);
 
-                if (target.ObjectType == ObjectType.Agent)
-                {
-                    var agentValidator = new AgentValidator();
-                    result = agentValidator.Validate((Agent)target);
-                }
-                else if (target.ObjectType == ObjectType.Group)
-                {
-                    var groupValidator = new GroupValidator();
-                    result = groupValidator.Validate((Group)target);
-                }
-                else if (target.ObjectType == ObjectType.Activity)
-                {
-                    var ActivityValidator = new ActivityValidator();
-                    result = ActivityValidator.Validate((Activity)target);
-                }
-                else if (target.ObjectType == ObjectType.SubStatement)
-                {
-                    var SubStatementValidator = new SubStatementValidator();
-                    result = SubStatementValidator.Validate((SubStatement)target);
-                }
-                else if (target.ObjectType == ObjectType.StatementRef)
-                {
-                    var statementRefValidator = new StatementRefValidator();
-                    result = statementRefValidator.Validate((StatementRef)target);
-                }
-
-                foreach (var failure in result.Errors)
-                {
-                    context.AddFailure(failure);
-                }
+                RuleFor(x => x.Actor as Group)
+                    .SetValidator(new GroupValidator())
+                    .When(x => x.Actor.ObjectType == ObjectType.Group);
             });
-            RuleFor(x => x.Result).SetValidator(new ResultValidator());
-            RuleFor(x => x.Context).SetValidator(new ContextValidator());
-            RuleForEach(x => x.Attachments).SetValidator(new AttachmentValidator());
+
+            RuleFor(x => x.Verb).NotEmpty().SetValidator(new VerbValidator());
+
+            RuleFor(x => x.Object).NotEmpty().DependentRules(() =>
+            {
+                RuleFor(x => x.Object as Agent)
+                    .SetValidator(new AgentValidator())
+                    .When(x => x.Object.ObjectType == ObjectType.Agent);
+
+                RuleFor(x => x.Object as Group)
+                    .SetValidator(new GroupValidator())
+                    .When(x => x.Object.ObjectType == ObjectType.Group);
+
+                RuleFor(x => x.Object as Activity)
+                    .SetValidator(new ActivityValidator())
+                    .When(x => x.Object.ObjectType == ObjectType.Activity);
+
+                RuleFor(stmt => stmt.Object as StatementRef)
+                    .SetValidator(new StatementRefValidator())
+                    .When(x => x.Object.ObjectType == ObjectType.StatementRef);
+            });
+
+            RuleFor(x => x.Result).SetValidator(new ResultValidator()).When(stmt => stmt.Result != null);
+            RuleFor(x => x.Context).SetValidator(new ContextValidator()).When(stmt => stmt.Context != null);
+            RuleForEach(x => x.Attachments).SetValidator(new AttachmentValidator()).When(stmt => stmt.Attachments != null);
 
             RuleFor(x => x).Must(statement =>
             {

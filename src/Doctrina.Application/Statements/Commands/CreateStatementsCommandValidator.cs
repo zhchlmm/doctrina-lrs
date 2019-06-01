@@ -7,7 +7,8 @@ namespace Doctrina.Application.Statements.Commands
     {
         public CreateStatementsCommandValidator()
         {
-            RuleForEach(x => x.Statements).SetValidator(new StatementValidator());
+            // Too much validation, each statement is validated through CreateStatementCommand
+            //RuleForEach(x => x.Statements).SetValidator(new StatementValidator());
         }
     }
 }

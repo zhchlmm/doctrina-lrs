@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Http
 {
-    public interface IRemoteLRS
+    public interface ILRSClient
     {
         Task<About> GetAbout();
 

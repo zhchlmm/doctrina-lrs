@@ -15,31 +15,42 @@ namespace Doctrina.xAPI
         protected override ObjectType OBJECT_TYPE => ObjectType.Agent;
 
         public Agent() : base() { }
-        public Agent(JsonString jsonString) : this(jsonString.ToJObject()) { }
-        public Agent(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public Agent(JObject jobj, ApiVersion version) : base(jobj, version)
+        public Agent(string jsonString) : this((JsonString)jsonString) { }
+        public Agent(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public Agent(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Agent(JToken jobj, ApiVersion version) : base(jobj, version)
         {
-            if (jobj["name"] != null)
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
+            if (DisallowNull(jobj["objectType"]) && AllowString(jobj["objectType"]))
+            {
+                Name = jobj.Value<string>("objectType");
+            }
+
+            if (DisallowNull(jobj["name"]) && AllowString(jobj["name"]))
             {
                 Name = jobj.Value<string>("name");
             }
 
-            if (jobj["mbox"] != null)
+            if (DisallowNull(jobj["mbox"]) && AllowString(jobj["mbox"]))
             {
                 Mbox = new Mbox(jobj.Value<string>("mbox"));
             }
 
-            if (jobj["mbox_sha1sum"] != null)
+            if (DisallowNull(jobj["mbox_sha1sum"]) && AllowString(jobj["mbox_sha1sum"]))
             {
                 Mbox_SHA1SUM = jobj.Value<string>("mbox_sha1sum");
             }
 
-            if (jobj["openid"] != null)
+            if (DisallowNull(jobj["openid"]) && AllowString(jobj["openid"]))
             {
                 OpenId = new Iri(jobj.Value<string>("openid"));
             }
 
-            if (jobj["account"] != null)
+            if (DisallowNull(jobj["account"]) && AllowObject(jobj["account"]))
             {
                 Account = new Account(jobj.Value<JObject>("account"), version);
             }
@@ -48,56 +59,32 @@ namespace Doctrina.xAPI
         /// <summary>
         /// Agent. This property is optional except when the Agent is used as a Statement's object.
         /// </summary>
-        [JsonProperty("objectType",
-            Order = 1,
-            Required = Required.DisallowNull)]
-        [JsonConverter(typeof(ObjectTypeConverter))]
         public new ObjectType ObjectType { get { return OBJECT_TYPE; } }
 
         /// <summary>
         /// Full name of the Agent. (Optional)
         /// </summary>
-        [JsonProperty("name",
-            Order = 2,
-            Required = Required.DisallowNull,
-            NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
         /// <summary>
         /// The required format is "mailto:email address". 
         /// Only email addresses that have only ever been and will ever be assigned to this Agent, but no others, SHOULD be used for this property and mbox_sha1sum.
         /// </summary>
-        [JsonProperty("mbox",
-            Order = 3,
-            Required = Required.DisallowNull,
-            NullValueHandling = NullValueHandling.Ignore)]
         public Mbox Mbox { get; set; }
 
         /// <summary>
         /// The hex-encoded SHA1 hash of a mailto IRI (i.e. the value of an mbox property). An LRS MAY include Agents with a matching hash when a request is based on an mbox.
         /// </summary>
-        [JsonProperty("mbox_sha1sum",
-            Order = 4,
-            Required = Required.DisallowNull,
-            NullValueHandling = NullValueHandling.Ignore)]
         public string Mbox_SHA1SUM { get; set; }
 
         /// <summary>
         /// An openID that uniquely identifies the Agent.
         /// </summary>
-        [JsonProperty("openid",
-            Order = 5,
-            Required = Required.DisallowNull,
-            NullValueHandling = NullValueHandling.Ignore)]
         public Iri OpenId { get; set; }
 
         /// <summary>
         /// A user account on an existing system e.g. an LMS or intranet.
         /// </summary>
-        [JsonProperty("account",
-            Order = 6,
-            Required = Required.DisallowNull,
-            NullValueHandling = NullValueHandling.Ignore)]
         public Account Account { get; set; }
 
         public override JObject ToJToken(ApiVersion version, ResultFormat format)

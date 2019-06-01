@@ -4,7 +4,7 @@ using System;
 
 namespace Doctrina.xAPI.Json.Converters
 {
-    public class StatementsResultConverter : ApiJsonConverter
+    public class ResultJsonConverter : ApiJsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -13,7 +13,6 @@ namespace Doctrina.xAPI.Json.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var jobj = JObject.Load(reader);
             var target = new StatementsResult();
             serializer.Populate(reader, target);
             return target;

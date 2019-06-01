@@ -9,11 +9,20 @@ namespace Doctrina.xAPI
     public class StatementRef : StatementObjectBase, IStatementObject
     {
         public StatementRef() { }
-        public StatementRef(JsonString jsonString) : this(jsonString.ToJObject()) { }
-        public StatementRef(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public StatementRef(JObject jobj, ApiVersion version)
+        public StatementRef(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public StatementRef(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public StatementRef(JToken jobj, ApiVersion version)
         {
-            Id = Guid.Parse(jobj.Value<string>("id"));
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
+            if (DisallowNull(jobj["id"]) && AllowString(jobj["id"]))
+            {
+                // TODO: Required
+                Id = Guid.Parse(jobj.Value<string>("id"));
+            }
         }
 
         protected override ObjectType OBJECT_TYPE => ObjectType.StatementRef;

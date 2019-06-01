@@ -1,7 +1,10 @@
-﻿using Doctrina.xAPI;
+﻿using Doctrina.Application.Interfaces;
+using Doctrina.xAPI;
 using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Doctrina.Application.Statements.Commands
 {
@@ -9,17 +12,42 @@ namespace Doctrina.Application.Statements.Commands
     {
         public CreateStatementsCommand()
         {
-            Statements = new HashSet<Statement>();
+            Statements = new StatementCollection();
         }
 
         public ICollection<Statement> Statements { get; internal set; }
 
-        public static CreateStatementsCommand Create(params Statement[] statements)
+        public static CreateStatementsCommand Create(StatementCollection statements)
         {
             return new CreateStatementsCommand()
             {
                 Statements = statements
             };
+        }
+
+        public class Handler : IRequestHandler<CreateStatementsCommand, ICollection<Guid>>
+        {
+            private readonly IMediator _mediator;
+            private readonly IDoctrinaDbContext _context;
+
+            public Handler(IDoctrinaDbContext context, IMediator mediator)
+            {
+                _context = context;
+                _mediator = mediator;
+            }
+
+            public async Task<ICollection<Guid>> Handle(CreateStatementsCommand request, CancellationToken cancellationToken)
+            {
+                var ids = new HashSet<Guid>();
+                foreach (var statement in request.Statements)
+                {
+                    ids.Add(await _mediator.Send(CreateStatementCommand.Create(statement), cancellationToken));
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return ids;
+            }
         }
     }
 }

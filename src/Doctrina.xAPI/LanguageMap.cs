@@ -1,13 +1,10 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Doctrina.xAPI
 {
-    [JsonDictionary()]
-    [JsonConverter(typeof(LanguageMapJsonConverter))]
     public class LanguageMap : JsonModel, IDictionary<string, string>
     {
         public IDictionary<string, string> _values = new Dictionary<string, string>();
@@ -15,30 +12,68 @@ namespace Doctrina.xAPI
         public LanguageMap() { }
         public LanguageMap(IEnumerable<KeyValuePair<string, string>> values)
         {
-            
-        }
-
-        public LanguageMap(string jsonString) : this(JObject.Parse(jsonString)) { }
-
-        public LanguageMap(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-
-        public LanguageMap(JObject jobj, ApiVersion version)
-        {
-            foreach (var item in jobj)
+            foreach(var item in values)
             {
-                Add(item.Key, item.Value.Value<string>());
+                Add(item);
             }
         }
 
-        public string this[string key] { get => _values[key]; set => _values[key] = value; }
+        public LanguageMap(JsonString jsonString) : this(jsonString.ToJToken()) { }
 
-        public int Count => _values.Count;
+        public LanguageMap(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
-        public bool IsReadOnly => throw new System.NotImplementedException();
+        public LanguageMap(JToken jtoken, ApiVersion version)
+        {
+            if (!AllowObject(jtoken))
+            {
+                return;
+            }
 
-        public ICollection<string> Keys => _values.Keys;
+            var jobj = jtoken as JObject;
 
-        public ICollection<string> Values => _values.Values;
+            foreach (var item in jobj)
+            {
+                if (DisallowNull(item.Value) && AllowCultureName(item))
+                {
+                    if (ContainsKey(item.Key))
+                    {
+                        Failures.Add(item.Value.Path, "Duplicate language code key.");
+                        continue;
+                    }
+
+                    Add(item.Key, item.Value.Value<string>());
+                }
+            }
+        }
+
+        private bool AllowCultureName(KeyValuePair<string, JToken> item)
+        {
+            var token = item.Value;
+            if (token != null && token.Type == JTokenType.String)
+            {
+                if(item.Key == "und" || IsValidCultureName(item.Key))
+                {
+                    return true;
+                }
+            }
+
+            Failures.Add(token.Path, "Invalid language code.");
+            return false;
+        }
+
+        private bool IsValidCultureName(string cultureName)
+        {
+            CultureInfo[] cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+            foreach (CultureInfo culture in cultures)
+            {
+                if (culture.Name == cultureName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public override JObject ToJToken(ApiVersion version, ResultFormat format)
         {
@@ -50,40 +85,23 @@ namespace Doctrina.xAPI
             return obj;
         }
 
-        //public static LanguageMap Parse(string jsonString)
-        //{
-        //    return Parse(jsonString, ApiVersion.GetLatest());
-        //}
+        public static implicit operator LanguageMap(JObject jobj)
+        {
+            return new LanguageMap(jobj);
+        }
 
-        //public static LanguageMap Parse(string jsonString, ApiVersion version)
-        //{
-        //    var obj = JObject.Parse(jsonString);
-        //    var languageMap = new LanguageMap();
-        //    foreach (var item in obj)
-        //    {
-        //        languageMap.Add(item.Key, item.Value.Value<string>());
-        //    }
-        //    return languageMap;
-        //}
+        #region Implementation
+        public string this[string key] { get => _values[key]; set => _values[key] = value; }
 
-        //public static bool TryParse(string jsonString, out LanguageMap result)
-        //{
-        //    return TryParse(jsonString, ApiVersion.GetLatest(), out result);
-        //}
+        public int Count => _values.Count;
 
-        //public static bool TryParse(string json, ApiVersion version, out LanguageMap result)
-        //{
-        //    result = null;
-        //    try
-        //    {
-        //        result = Parse(json, version);
-        //        return true;
-        //    }
-        //    catch (System.Exception)
-        //    {
-        //        return false;
-        //    }
-        //}
+        public bool IsReadOnly => throw new System.NotImplementedException();
+
+        public ICollection<string> Keys => _values.Keys;
+
+        public ICollection<string> Values => _values.Values;
+
+        
 
         public void Add(string key, string value)
         {
@@ -139,10 +157,6 @@ namespace Doctrina.xAPI
         {
             return _values.GetEnumerator();
         }
-
-        public static implicit operator LanguageMap(JObject jobj)
-        {
-            return new LanguageMap(jobj);
-        }
+        #endregion
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Doctrina.xAPI;
 using MediatR;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Doctrina.Application.Statements.Queries
 {
@@ -18,6 +20,14 @@ namespace Doctrina.Application.Statements.Queries
                 IncludeAttachments = includeAttachments,
                 Format = format
             };
+        }
+
+        public class Handler :IRequestHandler<GetVoidedStatemetQuery, Statement>
+        {
+            public Task<Statement> Handle(GetVoidedStatemetQuery request, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Doctrina.xAPI
     public abstract class StatementObjectBase : JsonModel
     {
         protected StatementObjectBase() { }
-        protected StatementObjectBase(JObject jobj, ApiVersion version)
+        protected StatementObjectBase(JToken jobj, ApiVersion version)
         {
         }
 

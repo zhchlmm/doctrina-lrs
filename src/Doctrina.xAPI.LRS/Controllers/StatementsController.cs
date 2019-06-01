@@ -214,6 +214,11 @@ namespace Doctrina.xAPI.LRS.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> PutStatement([FromQuery]Guid statementId, [ModelBinder(typeof(StatementPutModelBinder))]Statement statement)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             await _mediator.Send(PutStatementCommand.Create(statementId, statement));
 
             return NoContent();
@@ -226,8 +231,13 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// <returns>Array of Statement id(s) (UUID) in the same order as the corresponding stored Statements.</returns>
         [HttpPost]
         [Produces("application/json")]
-        public async Task<ActionResult<ICollection<Guid>>> PostStatements(StatementsPostContent model)
+        public async Task<ActionResult<ICollection<Guid>>> PostStatements(PostStatementContent model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             ICollection<Guid> guids = await _mediator.Send(CreateStatementsCommand.Create(model.Statements));
 
             return Ok(guids);

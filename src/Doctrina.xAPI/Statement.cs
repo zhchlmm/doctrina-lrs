@@ -15,46 +15,46 @@ namespace Doctrina.xAPI
     public class Statement : StatementBase
     {
         public Statement() { }
-        public Statement(JsonString jsonString) : this(jsonString.ToJObject()) { }
-        public Statement(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public Statement(JObject jobj, ApiVersion version)
-            : base(jobj, version)
+        public Statement(string jsonString) : this((JsonString)jsonString) { }
+        public Statement(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public Statement(JToken jtoken) : this(jtoken, ApiVersion.GetLatest()) { }
+        public Statement(JToken jtoken, ApiVersion version) : base(jtoken, version)
         {
-            if (jobj["id"] != null)
+            if (!AllowObject(jtoken))
+            {
+                return;
+            }
+
+            var jobj = jtoken as JObject;
+
+            if (DisallowNull(jobj["id"]))
             {
                 Id = Guid.Parse(jobj.Value<string>("id"));
             }
 
-            if (jobj["stored"] != null)
+            if (DisallowNull(jobj["stored"]))
             {
                 Stored = DateTimeOffset.Parse(jobj.Value<string>("stored"));
             }
 
-            if (jobj["authority"] != null)
+            if (DisallowNull(jobj["authority"]))
             {
-                var auth = jobj.Value<JObject>("authority");
+                var auth = jtoken.Value<JObject>("authority");
                 ObjectType objType = auth.Value<string>("objectType");
                 Authority = (Agent)objType.CreateInstance(auth, version);
             }
+
+            DisallowAdditionalProps(jobj, "id", "stored", "authority", "version", "object", "actor", "verb", "result", "context", "timestamp", "attachment");
         }
 
         /// <summary>
         /// UUID assigned by LRS if not set by the Learning Record Provider.
         /// </summary>
-        [JsonProperty("id",
-            Order = 1,
-            Required = Required.DisallowNull,
-            NullValueHandling = NullValueHandling.Ignore)]
         public Guid? Id { get; set; }
 
         /// <summary>
         /// Timestamp of when this Statement was recorded. Set by LRS.
         /// </summary>
-        [JsonProperty("stored",
-            Order = 10,
-            Required = Required.DisallowNull,
-            NullValueHandling = NullValueHandling.Ignore)]
-        [DataType(DataType.DateTime)]
         public DateTimeOffset? Stored { get; set; }
 
         /// <summary>
@@ -62,20 +62,11 @@ namespace Doctrina.xAPI
         /// TODO: Verified by the LRS based on authentication. 
         /// TODO: Set by LRS if not provided or if a strong trust relationship between the Learning Record Provider and LRS has not been established.
         /// </summary>
-        [JsonProperty("authority",
-            Order = 11,
-            Required = Required.DisallowNull,
-            NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(AgentJsonConverter))]
         public Agent Authority { get; set; }
 
         /// <summary>
         /// The Statement’s associated xAPI version, formatted according to Semantic Versioning 1.0.0.
         /// </summary>
-        [JsonProperty("version",
-            Order = 12,
-            Required = Required.DisallowNull,
-            NullValueHandling = NullValueHandling.Ignore)]
         public ApiVersion Version { get; set; }
 
         public void Stamp()

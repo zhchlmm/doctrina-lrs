@@ -1,38 +1,23 @@
 ﻿using AutoMapper;
-using Doctrina.Application.Agents.Commands;
 using Doctrina.Application.Interfaces;
-using Doctrina.Application.Statements.Commands;
 using Doctrina.Application.Statements.Models;
-using Doctrina.Application.Statements.Queries;
-using Doctrina.Application.Verbs.Commands;
 using Doctrina.Domain.Entities;
 using Doctrina.Domain.Entities.Extensions;
 using Doctrina.xAPI;
-using Doctrina.xAPI.Json;
-using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Doctrina.Application.Statements
+namespace Doctrina.Application.Statements.Queries
 {
-    public class StatementsHandler :
-        IRequestHandler<PagedStatementsQuery, PagedStatementsResult>,
-        IRequestHandler<GetStatementQuery, Statement>,
-        IRequestHandler<GetConsistentThroughQuery, DateTimeOffset?>,
-        IRequestHandler<GetVoidedStatemetQuery, Statement>,
-        IRequestHandler<CreateStatementCommand, Guid>,
-        IRequestHandler<CreateStatementsCommand, ICollection<Guid>>,
-        IRequestHandler<PutStatementCommand>,
-        IRequestHandler<VoidStatementCommand>
+    public class PagedStatementsQueryHandler : IRequestHandler<PagedStatementsQuery, PagedStatementsResult>
     {
         private readonly IDoctrinaDbContext _context;
         private readonly IMediator _mediator;
@@ -40,7 +25,7 @@ namespace Doctrina.Application.Statements
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMemoryCache _cache;
 
-        public StatementsHandler(IDoctrinaDbContext context, IMediator mediator, IMapper mapper, IHttpContextAccessor httpContextAccessor, IMemoryCache cache)
+        public PagedStatementsQueryHandler(IDoctrinaDbContext context, IMediator mediator, IMapper mapper, IHttpContextAccessor httpContextAccessor, IMemoryCache cache)
         {
             _context = context;
             _mediator = mediator;
@@ -163,6 +148,7 @@ namespace Doctrina.Application.Statements
             {
                 query = query.Select(p => new StatementEntity
                 {
+                    StatementId = p.StatementId,
                     FullStatement = p.FullStatement
                 });
             }
@@ -170,6 +156,7 @@ namespace Doctrina.Application.Statements
             {
                 query = query.Select(p => new StatementEntity
                 {
+                    StatementId = p.StatementId,
                     FullStatement = p.FullStatement,
                     Attachments = p.Attachments
                 });
@@ -180,6 +167,11 @@ namespace Doctrina.Application.Statements
             var pagedQuery = await query.Skip(skipRows).Take(pageSize)
                 .GroupBy(p => new { TotalCount = query.Count() })
                 .FirstOrDefaultAsync(cancellationToken);
+
+            if(pagedQuery == null)
+            {
+                return new PagedStatementsResult();
+            }
 
             int totalCount = pagedQuery.Key.TotalCount;
             int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
@@ -192,148 +184,6 @@ namespace Doctrina.Application.Statements
             // TODO: Save query
 
             return new PagedStatementsResult(statementCollection, moreToken);
-        }
-
-        public async Task<Statement> Handle(GetStatementQuery request, CancellationToken cancellationToken)
-        {
-            var query = _context.Statements
-                    .Where(x => x.StatementId == request.StatementId && x.Voided == false);
-
-            if (request.IncludeAttachments)
-            {
-                query = query.Include(x => x.Attachments)
-                    .Select(x => new StatementEntity()
-                    {
-                        StatementId = x.StatementId,
-                        FullStatement = x.FullStatement,
-                        Attachments = x.Attachments
-                    });
-            }
-            else
-            {
-                query = query.Select(x => new StatementEntity()
-                {
-                    StatementId = x.StatementId,
-                    FullStatement = x.FullStatement
-                });
-            }
-
-            StatementEntity statementEntity = await query.FirstOrDefaultAsync(cancellationToken);
-
-            if (statementEntity == null)
-            {
-                return null;
-            }
-
-            return new Statement(statementEntity.FullStatement);
-        }
-
-        public async Task<DateTimeOffset?> Handle(GetConsistentThroughQuery request, CancellationToken cancellationToken)
-        {
-            var first = await _context.Statements.OrderByDescending(x => x.Stored)
-                .FirstOrDefaultAsync(cancellationToken);
-            return first?.Stored;
-        }
-
-        public Task<Statement> Handle(GetVoidedStatemetQuery request, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Creates statement without saving to database
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>Guid of the created statement</returns>
-        public async Task<Guid> Handle(CreateStatementCommand request, CancellationToken cancellationToken)
-        {
-            if (!request.Statement.Id.HasValue)
-            {
-                request.Statement.Stamp();
-            }
-
-            // TODO: Move this logic elsewhere
-            var httpRequest = _httpContextAccessor.HttpContext.Request;
-            var url = new Uri($"{httpRequest.Scheme}://{httpRequest.Host.Value}");
-            if (request.Statement.Authority == null)
-            {
-                request.Statement.Authority = new Agent()
-                {
-                    Account = new xAPI.Account()
-                    {
-                        HomePage = url,
-                        Name = "REPLACE ME"
-                    }
-                };
-            }
-
-            // Ensure statement version and stored date
-            request.Statement.Version = request.Statement.Version ?? ApiVersion.GetLatest().ToString();
-            request.Statement.Stored = request.Statement.Stored ?? DateTimeOffset.UtcNow;
-
-            StatementEntity statement = _mapper.Map<StatementEntity>(request.Statement);
-            statement.Verb = await _mediator.Send(MergeVerbCommand.Create(statement.Verb), cancellationToken);
-            statement.Actor = await _mediator.Send(MergeActorCommand.Create(statement.Actor), cancellationToken);
-            statement.FullStatement = request.Statement.ToJson();
-
-            _context.Statements.Add(statement);
-
-            return statement.StatementId.Value;
-        }
-
-        public async Task<ICollection<Guid>> Handle(CreateStatementsCommand request, CancellationToken cancellationToken)
-        {
-            var ids = new HashSet<Guid>();
-            foreach (var statement in request.Statements)
-            {
-                ids.Add(await Handle(CreateStatementCommand.Create(statement), cancellationToken));
-            }
-
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return ids;
-        }
-
-        public async Task<Unit> Handle(PutStatementCommand request, CancellationToken cancellationToken)
-        {
-            Statement savedStatement = await Handle(GetStatementQuery.Create(request.StatementId), cancellationToken);
-
-            request.Statement.Id = request.StatementId;
-
-            await Handle(CreateStatementCommand.Create(request.Statement), cancellationToken);
-
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return await Unit.Task;
-        }
-
-        public async Task<Unit> Handle(VoidStatementCommand request, CancellationToken cancellationToken)
-        {
-            IStatementBaseEntity voidingStatement = request.Statement;
-
-            StatementRefEntity statementRef = voidingStatement.Object.StatementRef as StatementRefEntity;
-            Guid? statementRefId = statementRef.Id;
-            StatementEntity voidedStatement = _context.Statements
-                .FirstOrDefault(x => x.StatementId == statementRefId);
-
-            // Upon receiving a Statement that voids another, the LRS SHOULD NOT* reject the request on the grounds of the Object of that voiding Statement not being present.
-            if (voidedStatement == null)
-                return await Unit.Task; // Soft
-
-            // Any Statement that voids another cannot itself be voided.
-            if (voidedStatement.Verb.Id == xAPI.Verbs.Voided)
-                return await Unit.Task; // Soft
-
-            // voidedStatement has been voided, return.
-            if (voidedStatement.Voided)
-                return await Unit.Task; // Soft
-
-            voidedStatement.Voided = true;
-
-            _context.Statements.Update(voidedStatement);
-
-            return await Unit.Task;
         }
     }
 }

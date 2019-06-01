@@ -26,6 +26,14 @@ namespace Doctrina.xAPI.Validators
 
             //    // Validate that the signature requirements outlined above have been met.
             //}
+
+            RuleFor(x => x.Failures).Custom((x, context) =>
+            {
+                foreach (var failure in x)
+                {
+                    context.AddFailure(failure.Name, failure.Message);
+                }
+            });
         }
     }
 }

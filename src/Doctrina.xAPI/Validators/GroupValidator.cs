@@ -30,6 +30,14 @@ namespace Doctrina.xAPI.Validators
                 .SetValidator(new AgentValidator())
                 .When(IsIdentifiedGroup)
                 .WithMessage("An Identified Group MUST NOT contain Group Objects in the \"member\" property.");
+
+            RuleFor(x => x.Failures).Custom((x, context) =>
+            {
+                foreach (var failure in x)
+                {
+                    context.AddFailure(failure.Name, failure.Message);
+                }
+            });
         }
 
         private bool MustHaveSingleIdentifier(Group arg)

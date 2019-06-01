@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Doctrina.xAPI.LRS.Models
 {
-    [ModelBinder(BinderType = typeof(StatementsPostModelBinder))]
-    public class StatementsPostContent
+    [ModelBinder(BinderType = typeof(PostStatementsModelBinder))]
+    public class PostStatementContent
     {
         [Required]
-        public Statement[] Statements { get; set; }
+        public StatementCollection Statements { get; set; }
     }
 }

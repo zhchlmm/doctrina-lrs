@@ -3,7 +3,6 @@ using Doctrina.xAPI;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace Doctrina.Application.Statements.Queries

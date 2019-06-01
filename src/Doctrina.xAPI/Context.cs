@@ -15,59 +15,64 @@ namespace Doctrina.xAPI
         {
         }
 
-        public Context(JsonString jsonString) : this(jsonString.ToJObject())
+        public Context(JsonString jsonString) : this(jsonString.ToJToken())
         {
         }
 
-        public Context(JObject jobj) : this(jobj, ApiVersion.GetLatest())
+        public Context(JToken jobj) : this(jobj, ApiVersion.GetLatest())
         {
         }
 
-        public Context(JObject jobj, ApiVersion version)
+        public Context(JToken jobj, ApiVersion version)
         {
-            if (jobj["registration"] != null)
+            if (!AllowObject(jobj))
+            {
+                return;
+            }
+
+            if (DisallowNull(jobj["registration"]) && AllowString(jobj["registration"]))
             {
                 Registration = Guid.Parse(jobj.Value<string>("registration"));
             }
 
-            if (jobj["instructor"] != null)
+            if (DisallowNull(jobj["instructor"]))
             {
-                Instructor = new Agent(jobj.Value<JObject>("instructor"), version);
+                Instructor = new Agent(jobj["instructor"], version);
             }
 
-            if (jobj["team"] != null)
+            if (DisallowNull(jobj["team"]))
             {
-                Instructor = new Group(jobj.Value<JObject>("team"), version);
+                Instructor = new Group(jobj["team"], version);
             }
 
-            if (jobj["contextActivities"] != null)
+            if (DisallowNull(jobj["contextActivities"]))
             {
-                ContextActivities = new ContextActivities(jobj.Value<JObject>("contextActivities"), version);
+                ContextActivities = new ContextActivities(jobj["contextActivities"], version);
             }
 
-            if (jobj["revision"] != null)
+            if (DisallowNull(jobj["revision"]) && AllowString(jobj["revision"]))
             {
                 Revision = jobj.Value<string>("revision");
             }
 
-            if (jobj["platform"] != null)
+            if (DisallowNull(jobj["platform"]) && AllowString(jobj["platform"]))
             {
                 Platform = jobj.Value<string>("platform");
             }
 
-            if (jobj["language"] != null)
+            if (DisallowNull(jobj["language"]) && AllowString(jobj["language"]))
             {
                 Language = jobj.Value<string>("language");
             }
 
-            if (jobj["statement"] != null)
+            if (DisallowNull(jobj["statement"]))
             {
-                Statement = new StatementRef(jobj.Value<JObject>("statement"), version);
+                Statement = new StatementRef(jobj["statement"], version);
             }
 
-            if (jobj["extensions"] != null)
+            if (DisallowNull(jobj["extensions"]))
             {
-                Extensions = new Extensions(jobj.Value<JObject>("extensions"), version);
+                Extensions = new Extensions(jobj["extensions"], version);
             }
         }
 

@@ -2,10 +2,10 @@
 using Doctrina.xAPI.LRS.Mvc.ModelBinding.Providers;
 using Doctrina.xAPI.LRS.Routing;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Doctrina.xAPI.LRS.Builder
 {
@@ -13,18 +13,7 @@ namespace Doctrina.xAPI.LRS.Builder
     {
         public static IServiceCollection AddLearningRecordStore(this IServiceCollection services)
         {
-            //_logger.LogInformation("Configuring DB");
-            //services.AddDbContext<DoctrinaDbContext>(options =>
-            //        //options.UseSqlServer(Configuration.GetConnectionString("DoctrinaContext"))
-            //        options.UseInMemoryDatabase("Doctrina")
-            //    );
-
-            //_logger.LogInformation("Configuring Identity");
-            //services.AddIdentity<DoctrinaUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<DoctrinaDbContext>()
-            //    .AddDefaultTokenProviders();
-
-            //services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddMvc(opt =>
             {

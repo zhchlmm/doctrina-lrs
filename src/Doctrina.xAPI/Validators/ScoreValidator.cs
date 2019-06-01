@@ -6,8 +6,8 @@ namespace Doctrina.xAPI.Validators
     {
         public ScoreValidator()
         {
-            RuleFor(x => x.Raw).LessThanOrEqualTo(x => x.Min)
-                .Unless(x => x.Raw == null || x.Min == null);
+            RuleFor(x => x.Raw).LessThanOrEqualTo(x => x.Max)
+                .Unless(x => x.Raw == null || x.Max == null);
 
             RuleFor(x => x.Max).GreaterThan(x => x.Min)
                 .Unless(x => x.Max == null || x.Min == null);
@@ -18,6 +18,14 @@ namespace Doctrina.xAPI.Validators
             RuleFor(x => x.Scaled).GreaterThanOrEqualTo(-1)
                 .LessThanOrEqualTo(1)
                 .Unless(x => x.Scaled == null);
+
+            RuleFor(x => x.Failures).Custom((x, context) =>
+            {
+                foreach (var failure in x)
+                {
+                    context.AddFailure(failure.Name, failure.Message);
+                }
+            });
         }
     }
 }

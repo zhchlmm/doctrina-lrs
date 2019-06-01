@@ -16,16 +16,18 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
 {
-    public class StatementsPostModelBinder : IModelBinder
+    public class PostStatementsModelBinder : IModelBinder
     {
         public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
             try
             {
-                if (bindingContext.ModelType != typeof(StatementsPostContent))
+                if (bindingContext.ModelType != typeof(PostStatementContent))
+                {
                     return;
+                }
 
-                var model = new StatementsPostContent();
+                var model = new PostStatementContent();
 
                 var request = bindingContext.ActionContext.HttpContext.Request;
 
@@ -38,7 +40,7 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
                 var contentType = MediaTypeHeaderValue.Parse(request.ContentType);
                 if (contentType.MediaType == MediaTypes.Application.Json)
                 {
-                    model.Statements = DeserializeStatement(bindingContext, request.Body, strVersion).ToArray();
+                    model.Statements = DeserializeStatement(bindingContext, request.Body, strVersion);
                 }
                 else if (contentType.MediaType == MediaTypes.Multipart.Mixed)
                 {
@@ -58,14 +60,7 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
                             if (sectionContentType.MediaType != MediaTypes.Application.Json)
                                 throw new Exception("First document part must have a Content-Type header value of \"application/json\"");
 
-                            model.Statements = DeserializeStatement(bindingContext, section.Body, strVersion).ToArray();
-                            //foreach (var stmt in model.Statements)
-                            //{
-                            //    foreach (var attachment in stmt.Attachments)
-                            //    {
-
-                            //    }
-                            //}
+                            model.Statements = DeserializeStatement(bindingContext, section.Body, strVersion);
                         }
                         else
                         {
@@ -77,6 +72,7 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
 
                             if (attachment == null)
                             {
+                                // TODO: Failure
                                 throw new Exception($"No attachment match found for '{hash}'");
                             }
                             attachment.SetPayload(await attachmentSection.ReadAsByteArrayAsync());
@@ -100,46 +96,63 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
             }
         }
 
-        private IEnumerable<Statement> DeserializeStatement(ModelBindingContext bindingContext, Stream jsonStream, ApiVersion version)
+        private StatementCollection DeserializeStatement(ModelBindingContext bindingContext, Stream jsonStream, ApiVersion version)
         {
-            var serializer = new ApiJsonSerializer(version);
+            //var serializer = new ApiJsonSerializer(version);
 
             using (StreamReader streamReader = new StreamReader(jsonStream, Encoding.UTF8))
             {
-                using (JsonReader jsonReader = new JsonTextReader(streamReader))
+                JsonString jsonString = streamReader.ReadToEnd();
+
+                JToken token = jsonString.ToJToken();
+                if(token.Type == JTokenType.Array)
                 {
-                    if (!jsonReader.Read())
-                    {
-                        // Empty
-                        return null;
-                    }
-
-                    if (!(jsonReader.TokenType == JsonToken.StartArray || jsonReader.TokenType == JsonToken.StartObject))
-                    {
-                        throw new JsonSerializationException("Expected JSON start with Start Object or Start Array.");
-                    }
-                    bool isArray = jsonReader.TokenType == JsonToken.StartArray;
-
-                    serializer.Error += delegate (object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
-                    {
-                        bindingContext.ModelState.AddModelError(args.ErrorContext.Path, args.ErrorContext.Error.Message);
-                        args.ErrorContext.Handled = true;
-                    };
-
-                    if (isArray)
-                    {
-                        serializer.Deserialize<Statement[]>(jsonReader);
-                        return serializer.Deserialize<Statement[]>(jsonReader);
-                    }
-                    else
-                    {
-                        var statement = serializer.Deserialize<Statement>(jsonReader);
-                        if (statement == null)
-                            return null;
-
-                        return new Statement[] { statement };
-                    }
+                    return new StatementCollection((JArray)token);    
                 }
+                else if(token.Type == JTokenType.Object)
+                {
+                    return new StatementCollection
+                    {
+                        new Statement((JObject)token)
+                    };
+                }
+
+                return new StatementCollection();
+
+                //using (JsonReader jsonReader = new JsonTextReader(streamReader))
+                //{
+                //    if (!jsonReader.Read())
+                //    {
+                //        // Empty
+                //        return null;
+                //    }
+
+                //    if (!(jsonReader.TokenType == JsonToken.StartArray || jsonReader.TokenType == JsonToken.StartObject))
+                //    {
+                //        throw new JsonSerializationException("Expected JSON start with Start Object or Start Array.");
+                //    }
+                //    bool isArray = jsonReader.TokenType == JsonToken.StartArray;
+
+                //    serializer.Error += delegate (object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
+                //    {
+                //        bindingContext.ModelState.AddModelError(args.ErrorContext.Path, args.ErrorContext.Error.Message);
+                //        args.ErrorContext.Handled = true;
+                //    };
+
+                //    if (isArray)
+                //    {
+                //        serializer.Deserialize<Statement[]>(jsonReader);
+                //        return serializer.Deserialize<Statement[]>(jsonReader);
+                //    }
+                //    else
+                //    {
+                //        var statement = serializer.Deserialize<Statement>(jsonReader);
+                //        if (statement == null)
+                //            return null;
+
+                //        return new Statement[] { statement };
+                //    }
+                //}
             }
         }
 

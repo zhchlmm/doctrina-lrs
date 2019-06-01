@@ -10,8 +10,12 @@ namespace Doctrina.Application.Mappings.ValueResolvers
     {
         public LanguageMapCollection Resolve(object source, object destination, LanguageMap sourceMember, LanguageMapCollection destMember, ResolutionContext context)
         {
-            var collection = new LanguageMapCollection();
+            if(sourceMember == null)
+            {
+                return null;
+            }
 
+            var collection = new LanguageMapCollection();
             foreach (var p in sourceMember)
             {
                 collection.Add(p);
