@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Helpers;
+using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Doctrina.xAPI
 {
@@ -51,30 +53,13 @@ namespace Doctrina.xAPI
             var token = item.Value;
             if (token != null && token.Type == JTokenType.String)
             {
-                if(item.Key == "und" || 
-                    item.Key == "zh-Hans-CN" || // should pass given zh-Hans-CN language-script-region code
-                    item.Key  == "ase" ||  // should pass given ase three letter language code
-                    IsValidCultureName(item.Key))
+                if(CultureHelper.IsValidCultureName(item.Key))
                 {
                     return true;
                 }
             }
 
             ParsingErrors.Add(token.Path, "Invalid language code.");
-            return false;
-        }
-
-        private bool IsValidCultureName(string cultureName)
-        {
-            CultureInfo[] cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
-            foreach (CultureInfo culture in cultures)
-            {
-                if (culture.Name == cultureName)
-                {
-                    return true;
-                }
-            }
-
             return false;
         }
 

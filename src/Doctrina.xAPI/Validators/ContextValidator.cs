@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Doctrina.xAPI.Helpers;
+using FluentValidation;
 
 namespace Doctrina.xAPI.Validators
 {
@@ -26,6 +27,10 @@ namespace Doctrina.xAPI.Validators
 
             RuleFor(x => x.ContextActivities).SetValidator(new ContextActivitiesValidator())
                 .When(x => x.ContextActivities != null);
+
+            RuleFor(x => x.Language).Must(x => CultureHelper.IsValidCultureName(x))
+                .When(x => !string.IsNullOrEmpty(x.Language))
+                .WithMessage("Invalid ");
 
             RuleFor(x => x.ParsingErrors).Custom((x, context) =>
             {

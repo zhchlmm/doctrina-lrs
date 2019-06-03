@@ -32,9 +32,21 @@ namespace Doctrina.xAPI
                 Registration = Guid.Parse(jobj.Value<string>("registration"));
             }
 
-            if (DisallowNullValue(jobj["instructor"]))
+            var instructor = jobj["instructor"];
+            if (DisallowNullValue(instructor))
             {
-                Instructor = new Agent(jobj["instructor"], version);
+                ObjectType objectType = instructor["objectType"] != null ? 
+                    (ObjectType)instructor["objectType"].Value<string>() : 
+                    ObjectType.Agent;
+
+                if(objectType != null && objectType == ObjectType.Group)
+                {
+                    Instructor = new Group(instructor, version);
+                }
+                else
+                {
+                    Instructor = new Agent(instructor, version);
+                }
             }
 
             if (DisallowNullValue(jobj["team"]))

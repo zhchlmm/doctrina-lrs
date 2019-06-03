@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Doctrina.xAPI.Helpers;
+using FluentValidation;
 
 namespace Doctrina.xAPI.Validators
 {
@@ -13,6 +14,9 @@ namespace Doctrina.xAPI.Validators
                     context.AddFailure(failure.Name, failure.ErrorMessage);
                 }
             });
+
+            RuleForEach(x => x).Must(x => CultureHelper.IsValidCultureName(x.Key))
+                .WithMessage("Invalid culture name.");
         }
     }
 }
