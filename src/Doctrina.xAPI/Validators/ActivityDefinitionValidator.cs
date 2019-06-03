@@ -11,11 +11,11 @@ namespace Doctrina.xAPI.Validators
             RuleFor(x => x.Name).SetValidator(new LanguageMapValidator()).When(x => x.Name != null);
             RuleFor(x => x.Extensions).SetValidator(new ExtensionsValidator()).When(x => x.Extensions != null);
 
-            RuleFor(x => x.Failures).Custom((x, context) =>
+            RuleFor(x => x.ParsingErrors).Custom((x, context) =>
             {
                 foreach (var failure in x)
                 {
-                    context.AddFailure(failure.Name, failure.Message);
+                    context.AddFailure(failure.Name, failure.ErrorMessage);
                 }
             });
         }

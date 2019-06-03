@@ -36,7 +36,7 @@ namespace Doctrina.xAPI.Http
             else
             {
                 // MUST include a Content-Transfer-Encoding parameter with a value of binary in each part's header after the first (Statements) part.
-                throw new MultipartSectionException($"'{Http.Headers.XExperienceApiHash}' is missing.");
+                throw new MultipartSectionException($"'{Headers.XExperienceApiHash}' is missing.");
             }
         }
 

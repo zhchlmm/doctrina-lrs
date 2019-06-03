@@ -8,8 +8,7 @@ namespace Doctrina.xAPI
     public class ActivityDefinition : JsonModel
     {
         public ActivityDefinition() {}
-        public ActivityDefinition(JsonString jsonString) : this(jsonString.ToJToken()) {}
-        public ActivityDefinition(JToken jobj) : this(jobj, ApiVersion.GetLatest()) {}
+        public ActivityDefinition(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) {}
         public ActivityDefinition(JToken obj, ApiVersion version)
         {
             if (!AllowObject(obj))
@@ -17,22 +16,22 @@ namespace Doctrina.xAPI
                 return;
             }
 
-            if (DisallowNull(obj["type"]) && AllowString(obj["type"]))
+            if (DisallowNullValue(obj["type"]) && AllowString(obj["type"]))
             {
                 Type = new Iri(obj["type"].Value<string>());
             }
 
-            if (DisallowNull(obj["moreInfo"]) && AllowString(obj["moreInfo"]))
+            if (DisallowNullValue(obj["moreInfo"]) && AllowString(obj["moreInfo"]))
             {
                 MoreInfo = new Uri(obj["moreInfo"].Value<string>());
             }
 
-            if (DisallowNull(obj["name"]))
+            if (DisallowNullValue(obj["name"]))
             {
                 Name = new LanguageMap(obj["name"], version);
             }
 
-            if (DisallowNull(obj["description"]))
+            if (DisallowNullValue(obj["description"]))
             {
                 Description = new LanguageMap(obj["description"], version);
             }
@@ -56,7 +55,7 @@ namespace Doctrina.xAPI
 
         public Extensions Extensions { get; set; }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
 
@@ -107,11 +106,6 @@ namespace Doctrina.xAPI
             hashCode = hashCode * -1521134295 + EqualityComparer<Iri>.Default.GetHashCode(Type);
             hashCode = hashCode * -1521134295 + EqualityComparer<Uri>.Default.GetHashCode(MoreInfo);
             return hashCode;
-        }
-
-        public static implicit operator ActivityDefinition(JObject jobj)
-        {
-            return new ActivityDefinition(jobj);
         }
 
         public static bool operator ==(ActivityDefinition definition1, ActivityDefinition definition2)

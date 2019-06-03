@@ -1,5 +1,4 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Doctrina.xAPI.LRS.Mvc.ModelBinding.Providers;
+﻿using Doctrina.xAPI.LRS.Mvc.ModelBinding.Providers;
 using Doctrina.xAPI.LRS.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -30,7 +29,6 @@ namespace Doctrina.xAPI.LRS.Builder
                 // TODO: Are these Converters required?
                 //opt.SerializerSettings.Converters.Insert(0, new UriJsonConverter());
                 //opt.SerializerSettings.Converters.Add(new LanguageMapJsonConverter());
-                opt.SerializerSettings.Converters.Add(new DateTimeJsonConverter());
                 opt.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.None;
                 opt.SerializerSettings.DateParseHandling = Newtonsoft.Json.DateParseHandling.None;
                 opt.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;

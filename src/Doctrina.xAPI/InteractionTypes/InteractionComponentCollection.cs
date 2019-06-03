@@ -12,21 +12,15 @@ namespace Doctrina.xAPI.InteractionTypes
         {
         }
 
-        public InteractionComponentCollection(string jsonString)
-            : this(JArray.Parse(jsonString))
+        public InteractionComponentCollection(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest())
         {
         }
 
-        public InteractionComponentCollection(JArray jarr)
-           : this(jarr, ApiVersion.GetLatest())
-        {
-        }
-
-        public InteractionComponentCollection(JArray jarr, ApiVersion version)
+        public InteractionComponentCollection(JToken jarr, ApiVersion version)
         {
             foreach (var item in jarr)
             {
-                Add(new InteractionComponent(item.Value<JObject>(), version));
+                Add(new InteractionComponent(item, version));
             }
         }
 

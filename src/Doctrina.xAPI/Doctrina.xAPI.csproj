@@ -5,15 +5,11 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright></Copyright>
-    <Company>REM Solutions</Company>
-    <Authors>Rasmus Møller</Authors>
+    <Company>Doctrina Solutions</Company>
+    <Authors>Rasmus Eeg Møller</Authors>
     <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.html</PackageLicenseUrl>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Json\Converters\CaseSensitiveJsonConverter.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="schema.json" />

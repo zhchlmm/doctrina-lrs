@@ -8,7 +8,7 @@ namespace Doctrina.xAPI
     /// <summary>
     /// A collection of <see cref="Statement"/> objects.
     /// </summary>
-    public class StatementCollection : JsonModel<JArray>, ICollection<Statement>
+    public class StatementCollection : JsonModel, ICollection<Statement>, IAttachmentByHash
     {
         private readonly ICollection<Statement> Statements = new HashSet<Statement>();
 
@@ -17,13 +17,19 @@ namespace Doctrina.xAPI
         {
             Statements = statements;
         }
-        public StatementCollection(JsonString jsonString) : this(jsonString.ToJToken()) { }
-        public StatementCollection(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public StatementCollection(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
         public StatementCollection(JToken jobj, ApiVersion version)
         {
-            foreach (var item in jobj)
+            if (jobj.Type == JTokenType.Array)
             {
-                Add(new Statement(item, version));
+                foreach (var item in jobj)
+                {
+                    Add(new Statement(item, version));
+                }
+            }
+            else if (jobj.Type == JTokenType.Object)
+            {
+                Add(new Statement(jobj, version));
             }
         }
 
@@ -51,6 +57,20 @@ namespace Doctrina.xAPI
             Statements.CopyTo(array, arrayIndex);
         }
 
+        public Attachment GetAttachmentByHash(string hash)
+        {
+            foreach (var statement in Statements)
+            {
+                var attachment = statement.GetAttachmentByHash(hash);
+                if (attachment != null)
+                {
+                    return attachment;
+                }
+            }
+
+            return null;
+        }
+
         public IEnumerator<Statement> GetEnumerator()
         {
             return Statements.GetEnumerator();
@@ -61,10 +81,10 @@ namespace Doctrina.xAPI
             return Statements.Remove(item);
         }
 
-        public override JArray ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jarr = new JArray();
-            foreach(var stmt in Statements)
+            foreach (var stmt in Statements)
             {
                 jarr.Add(stmt.ToJToken(version, format));
             }

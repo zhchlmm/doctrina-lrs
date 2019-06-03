@@ -1,11 +1,9 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    [JsonConverter(typeof(ApiVersionConverter))]
     public sealed class ApiVersion
     {
         private string _version;

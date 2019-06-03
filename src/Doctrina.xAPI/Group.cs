@@ -13,22 +13,23 @@ namespace Doctrina.xAPI
         public Group(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Group(JToken jobj, ApiVersion version) : base(jobj, version)
         {
-            if (jobj["member"] != null)
+            if (DisallowNullValue(jobj["member"]))
             {
                 Member = new HashSet<Agent>();
 
-                var members = jobj["member"].Value<JArray>();
+                var members = jobj["member"];
+
                 foreach (var member in members)
                 {
-                    var memberJobj = member.ToObject<JObject>();
+                    ObjectType objType = member.Value<string>("objectType");
 
-                    if (memberJobj.Value<string>("objectType") == ObjectType.Group)
+                    if (objType != null && objType == ObjectType.Group)
                     {
-                        Member.Add(new Group(memberJobj, version));
+                        Member.Add(new Group(member, version));
                     }
                     else
                     {
-                        Member.Add(new Agent(memberJobj, version));
+                        Member.Add(new Agent(member, version));
                     }
                 }
             }
@@ -39,12 +40,9 @@ namespace Doctrina.xAPI
         /// <summary>
         /// The members of this Group. This is an unordered list.
         /// </summary>
-        [JsonProperty("member",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public ICollection<Agent> Member { get; set; }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = base.ToJToken(version, format);
 

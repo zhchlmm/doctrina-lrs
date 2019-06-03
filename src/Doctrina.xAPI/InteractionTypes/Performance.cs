@@ -6,13 +6,16 @@ namespace Doctrina.xAPI.InteractionTypes
     {
         protected override InteractionType INTERACTION_TYPE => InteractionType.Performance;
 
-        public Performance(JObject jobj, ApiVersion version) : base(jobj, version)
+        public Performance() { }
+
+        public Performance(JToken jobj, ApiVersion version) : base(jobj, version)
         {
             if (jobj["steps"] != null)
             {
                 Steps = new InteractionComponentCollection(jobj.Value<JArray>("steps"), version);
             }
         }
+
         public InteractionComponentCollection Steps { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace Doctrina.xAPI
                 return;
             }
 
-            if (DisallowNull(jobj["id"]) && AllowString(jobj["id"]))
+            if (DisallowNullValue(jobj["id"]) && AllowString(jobj["id"]))
             {
                 // TODO: Required
                 Id = Guid.Parse(jobj.Value<string>("id"));
@@ -32,7 +32,7 @@ namespace Doctrina.xAPI
         /// </summary>
         public Guid Id { get; set; }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = base.ToJToken(version, format);
 

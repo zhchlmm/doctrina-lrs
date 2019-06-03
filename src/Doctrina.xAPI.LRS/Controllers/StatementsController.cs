@@ -212,7 +212,7 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// <returns></returns>
         [HttpPut]
         [Produces("application/json")]
-        public async Task<IActionResult> PutStatement([FromQuery]Guid statementId, [ModelBinder(typeof(StatementPutModelBinder))]Statement statement)
+        public async Task<IActionResult> PutStatement([FromQuery]Guid statementId, [ModelBinder(typeof(PutStatementModelBinder))]Statement statement)
         {
             if (!ModelState.IsValid)
             {

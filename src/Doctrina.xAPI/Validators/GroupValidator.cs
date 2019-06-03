@@ -10,9 +10,11 @@ namespace Doctrina.xAPI.Validators
             // Requirements for Groups
             RuleFor(x => x.ObjectType).Equal(ObjectType.Group);
 
+
             // Requirements for Anonymous Groups
             RuleFor(x => x.Member)
-                .Must(x => x.Count() > 1)
+                .NotEmpty()
+                .Must(x => x.Count() > 0)
                 .Unless(IsIdentifiedGroup)
                 .WithMessage("An Anonymous Group MUST include a \"member\" property listing constituent Agents.");
 
@@ -31,11 +33,13 @@ namespace Doctrina.xAPI.Validators
                 .When(IsIdentifiedGroup)
                 .WithMessage("An Identified Group MUST NOT contain Group Objects in the \"member\" property.");
 
-            RuleFor(x => x.Failures).Custom((x, context) =>
+            RuleFor(x => x.Account).SetValidator(new AccountValidator()).When(x => x.Account != null);
+
+            RuleFor(x => x.ParsingErrors).Custom((x, context) =>
             {
                 foreach (var failure in x)
                 {
-                    context.AddFailure(failure.Name, failure.Message);
+                    context.AddFailure(failure.Name, failure.ErrorMessage);
                 }
             });
         }

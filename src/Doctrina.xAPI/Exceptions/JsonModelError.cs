@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Exceptions
 {
-    public class JsonModelFailure
+    public class JsonModelError
     {
-        public JsonModelFailure() { }
-        public JsonModelFailure(string name, string message)
+        public JsonModelError() { }
+        public JsonModelError(string name, string message)
         {
             Name = name;
-            Message = message;
+            ErrorMessage = message;
         }
 
         public string Name { get; private set; }
-        public string Message { get; private set; }
+        public string ErrorMessage { get; private set; }
     }
 }

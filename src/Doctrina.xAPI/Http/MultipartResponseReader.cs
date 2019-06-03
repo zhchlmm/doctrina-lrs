@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Doctrina.xAPI.Http
 {
+    [Obsolete]
     public class MultipartResponseReader
     {
         private readonly int _lenghtLimit = 70;

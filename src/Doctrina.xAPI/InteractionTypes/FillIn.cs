@@ -10,14 +10,7 @@ namespace Doctrina.xAPI.InteractionTypes
         {
         }
 
-        public FillIn(string jsonString) : base(jsonString)
-        {
-        }
-
-        public FillIn(JObject jobj) : base(jobj)
-        {
-        }
-        public FillIn(JObject jobj, ApiVersion version) : base(jobj, version)
+        public FillIn(JToken jobj, ApiVersion version) : base(jobj, version)
         {
         }
 

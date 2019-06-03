@@ -14,7 +14,6 @@ namespace Doctrina.xAPI
         public static readonly ObjectType Activity = new ObjectType("Activity", typeof(Activity));
         public static readonly ObjectType SubStatement = new ObjectType("SubStatement", typeof(SubStatement));
         public static readonly ObjectType StatementRef = new ObjectType("StatementRef", typeof(StatementRef));
-        private static readonly ObjectType Statement = new ObjectType("Statement", typeof(Statement));
 
         public readonly string Alias;
         public readonly Type Type;
@@ -25,25 +24,35 @@ namespace Doctrina.xAPI
             Type = type;
             _types.Add(this);
         }
-        public IStatementObject CreateInstance()
-        {
-            return (IStatementObject)Activator.CreateInstance(Type);
-        }
 
-        public IStatementObject CreateInstance(JObject jobj, ApiVersion version)
+        public IStatementObject CreateInstance(JToken jsonToken, ApiVersion version)
         {
-            return (IStatementObject)Activator.CreateInstance(Type, jobj, version);
-        }
-
-        public static implicit operator ObjectType(string type)
-        {
-            var objectType = _types.FirstOrDefault(x => x.Alias == type);
-            if (objectType != null)
+            if(Type == typeof(Agent))
             {
-                return objectType;
+                return new Agent(jsonToken, version);
             }
 
-            throw new KeyNotFoundException();
+            else if (Type == typeof(Group))
+            {
+                return new Group(jsonToken, version);
+            }
+
+            else if (Type == typeof(Activity))
+            {
+                return new Activity(jsonToken, version);
+            }
+
+            else if (Type == typeof(SubStatement))
+            {
+                return new SubStatement(jsonToken, version);
+            }
+
+            else if (Type == typeof(StatementRef))
+            {
+                return new StatementRef(jsonToken, version);
+            }
+
+            throw new NotImplementedException("objectType");
         }
 
         public override string ToString()
@@ -67,6 +76,22 @@ namespace Doctrina.xAPI
         public static implicit operator string(ObjectType type)
         {
             return type.ToString();
+        }
+
+        public static implicit operator ObjectType(string type)
+        {
+            if (string.IsNullOrEmpty(type))
+            {
+                return null;
+            }
+
+            var objectType = _types.FirstOrDefault(x => x.Alias == type);
+            if (objectType != null)
+            {
+                return objectType;
+            }
+
+            return null;
         }
 
         public static bool operator ==(ObjectType left, ObjectType right)

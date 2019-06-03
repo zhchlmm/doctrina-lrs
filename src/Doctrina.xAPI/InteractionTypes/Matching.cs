@@ -10,7 +10,7 @@ namespace Doctrina.xAPI.InteractionTypes
         public Matching()
         {
         }
-        public Matching(JObject jobj, ApiVersion version) : base(jobj, version)
+        public Matching(JToken jobj, ApiVersion version) : base(jobj, version)
         {
             if (jobj["source"] != null)
             {

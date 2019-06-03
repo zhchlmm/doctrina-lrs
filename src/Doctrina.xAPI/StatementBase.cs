@@ -1,48 +1,64 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Doctrina.xAPI.Json.Converters;
 
 namespace Doctrina.xAPI
 {
-    public abstract class StatementBase : JsonModel<JObject>, IStatementBase
+    public abstract class StatementBase : JsonModel<JToken>, IStatementBase, IAttachmentByHash
     {
-        public StatementBase() { }
+        public StatementBase() : base(null, null) { }
 
         public StatementBase(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public StatementBase(JToken jobj, ApiVersion version)
+        public StatementBase(JToken jobj, ApiVersion version) : base(jobj, version)
         {
-            if (jobj["actor"] != null)
+            if (DisallowNullValue(jobj["actor"]))
             {
-                if (jobj["actor"]["objectType"] != null && (string)jobj["actor"]["objectType"] == ObjectType.Group)
+                var actor = jobj["actor"];
+                if (actor["objectType"] != null && (string)actor["objectType"] == ObjectType.Group)
                 {
-                    Actor = new Group(jobj.Value<JObject>("actor"), version);
+                    Actor = new Group(actor, version);
                 }
                 else
                 {
-                    Actor = new Agent(jobj.Value<JObject>("actor"), version);
+                    Actor = new Agent(actor, version);
                 }
             }
 
-            if (jobj["verb"] != null)
+            if (DisallowNullValue(jobj["verb"]))
             {
-                Verb = new Verb(jobj.Value<JObject>("verb"), version);
+                Verb = new Verb(jobj["verb"], version);
             }
 
-            if (jobj["object"] != null)
+            var jObject = jobj["object"];
+            if (DisallowNullValue(jObject) && AllowObject(jObject))
             {
-                Object = StatementObjectBase.Parse(jobj.Value<JObject>("object"), version);
+                if (jObject["objectType"] != null)
+                {
+                    ObjectType objectType = jObject.Value<string>("objectType");
+                    if(objectType != null)
+                    {
+                        Object = objectType.CreateInstance(jObject, version);
+                    }
+                    else
+                    {
+                        ParsingErrors.Add(jObject.Path, $"Is not a valid objectType.");
+                    }
+                }
+                else if(jObject["id"] != null)
+                {
+                    // Assume activity
+                    Object = ObjectType.Activity.CreateInstance(jObject, version);
+                }
             }
 
             if (jobj["result"] != null)
             {
-                Result = new Result(jobj.Value<JObject>("result"), version);
+                Result = new Result(jobj["result"], version);
             }
 
             if (jobj["context"] != null)
             {
-                Context = new Context(jobj.Value<JObject>("context"), version);
+                Context = new Context(jobj["context"], version);
             }
 
             if (jobj["timestamp"] != null)
@@ -50,9 +66,9 @@ namespace Doctrina.xAPI
                 Timestamp = DateTimeOffset.Parse(jobj.Value<string>("timestamp"));
             }
 
-            if (jobj["attachment"] != null)
+            if (jobj["attachments"] != null)
             {
-                Attachments = new AttachmentCollection(jobj.Value<JArray>("attachment"), version);
+                Attachments = new AttachmentCollection(jobj["attachments"], version);
             }
         }
 
@@ -111,7 +127,7 @@ namespace Doctrina.xAPI
             return hashCode;
         }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = new JObject();
 
@@ -151,6 +167,24 @@ namespace Doctrina.xAPI
             }
 
             return jobj;
+        }
+
+        public Attachment GetAttachmentByHash(string sha2)
+        {
+            if (Attachments == null || Attachments.Count <= 0)
+            {
+                return null;
+            }
+
+            foreach (var attachment in Attachments)
+            {
+                if (attachment.SHA2 == sha2)
+                {
+                    return attachment;
+                }
+            }
+
+            return null;
         }
 
         public static bool operator ==(StatementBase base1, StatementBase base2)

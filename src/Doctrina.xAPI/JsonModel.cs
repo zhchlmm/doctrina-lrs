@@ -7,12 +7,22 @@ using System.Reflection;
 
 namespace Doctrina.xAPI
 {
-    public abstract class JsonModel : JsonModel<JObject> { }
+    public abstract class JsonModel : JsonModel<JToken>
+    {
+        public JsonModel() : base() { }
+
+        public JsonModel(JToken token, ApiVersion version) : base(token, version)
+        {
+        }
+    }
 
     public abstract class JsonModel<TToken> : IJsonModel
         where TToken : JToken
     {
-        public JsonModelFailuresCollection Failures { get; } = new JsonModelFailuresCollection();
+        public JsonModel() { }
+        public JsonModel(TToken token, ApiVersion version) { }
+
+        public JsonModelErrorsCollection ParsingErrors { get; } = new JsonModelErrorsCollection();
 
         public abstract TToken ToJToken(ApiVersion version, ResultFormat format);
 
@@ -44,7 +54,7 @@ namespace Doctrina.xAPI
 
             if (disallowedProps.Count() > 0)
             {
-                Failures.Add(jobj.Path, $"Contains additional JSON properties \"{string.Join(",", disallowedProps)}\", which is not allowed.");
+                ParsingErrors.Add(jobj.Path, $"Contains additional JSON properties \"{string.Join(",", disallowedProps)}\", which is not allowed.");
             }
         }
 
@@ -55,7 +65,7 @@ namespace Doctrina.xAPI
                 return true;
             }
 
-            Failures.Add(token.Path, $"'{token.ToString(Newtonsoft.Json.Formatting.None)}' is not a valid string.");
+            ParsingErrors.Add(token.Path, $"'{token.ToString(Newtonsoft.Json.Formatting.None)}' is not a valid string.");
             return false;
         }
 
@@ -66,7 +76,7 @@ namespace Doctrina.xAPI
                 return true;
             }
 
-            Failures.Add(token.Path, "Is not a valid JSON number.");
+            ParsingErrors.Add(token.Path, "Is not a valid JSON number.");
             return false;
         }
 
@@ -77,7 +87,7 @@ namespace Doctrina.xAPI
                 return true;
             }
 
-            Failures.Add(token.Path, "Is not a valid JSON boolean.");
+            ParsingErrors.Add(token.Path, "Is not a valid JSON boolean.");
             return false;
         }
 
@@ -88,7 +98,7 @@ namespace Doctrina.xAPI
                 return true;
             }
 
-            Failures.Add(token.Path, "Is not a valid JSON object.");
+            ParsingErrors.Add(token.Path, "Is not a valid JSON object.");
             return false;
         }
 
@@ -105,7 +115,7 @@ namespace Doctrina.xAPI
             || strDateTime.EndsWith("-0000")
             || strDateTime.EndsWith("-00"))
             {
-                Failures.Add(token.Path, $"'{strDateTime}' does not allow an offset of -00:00, -0000, -00");
+                ParsingErrors.Add(token.Path, $"'{strDateTime}' does not allow an offset of -00:00, -0000, -00");
             }
 
             if (DateTimeOffset.TryParse(strDateTime, out DateTimeOffset result))
@@ -114,16 +124,28 @@ namespace Doctrina.xAPI
             }
             else
             {
-                Failures.Add(token.Path, $"'{strDateTime}' is not a well formed DateTime string.");
+                ParsingErrors.Add(token.Path, $"'{strDateTime}' is not a well formed DateTime string.");
                 return false;
             }
         }
+
+        public bool AllowArray(JToken token)
+        {
+            if(token != null && token.Type == JTokenType.Array)
+            {
+                return true;
+            }
+
+            ParsingErrors.Add(token.Path, $"Expected JSON Array, but received '{token.Type}'");
+            return false;
+        }
+
         /// <summary>
         /// Adds failure if token type is null.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public bool DisallowNull(JToken token)
+        public bool DisallowNullValue(JToken token)
         {
             if (token == null)
             {
@@ -132,14 +154,18 @@ namespace Doctrina.xAPI
 
             if (token.Type == JTokenType.Null)
             {
-                Failures.Add(token.Path, "Null values are not allowed.");
+                ParsingErrors.Add(token.Path, "Null values are not allowed.");
                 return false;
             }
 
             return true;
         }
 
-        public JsonModelFailuresCollection GetFailures()
+        /// <summary>
+        /// Gets errors from all descendants <see cref="JsonModel"/>'s and self.
+        /// </summary>
+        /// <returns></returns>
+        public JsonModelErrorsCollection GetErrorsOfDescendantsAndSelf()
         {
             var type = GetType();
             var models = type.GetProperties(BindingFlags.Public)
@@ -148,18 +174,18 @@ namespace Doctrina.xAPI
                 .Where(x => x != null)
                 .Cast<IJsonModel>();
 
-            var failures = models.SelectMany(x => x.Failures).Concat(Failures).ToList();
+            var failures = models.SelectMany(x => x.ParsingErrors).Concat(ParsingErrors).ToList();
 
-            return new JsonModelFailuresCollection(failures);
+            return new JsonModelErrorsCollection(failures);
         }
 
         /// <summary>
-        /// Uses a combination of the errors during parsing and abstract validator 
+        /// Uses a combination of the errors during parsing and abstract validator
         /// </summary>
         /// <returns></returns>
         public bool IsValid()
         {
-            return Failures.Count() == 0;
+            return ParsingErrors.Count() == 0;
         }
     }
 }

@@ -20,12 +20,12 @@ namespace Doctrina.xAPI
                 return;
             }
 
-            if (DisallowNull(jobj["homePage"]) && AllowString(jobj["homePage"]))
+            if (DisallowNullValue(jobj["homePage"]) && AllowString(jobj["homePage"]))
             {
                 HomePage = new Uri(jobj.Value<string>("homePage"));
             }
 
-            if (DisallowNull(jobj["name"]) && AllowString(jobj["name"]))
+            if (DisallowNullValue(jobj["name"]) && AllowString(jobj["name"]))
             {
                 Name = jobj.Value<string>("name");
             }

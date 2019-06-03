@@ -9,11 +9,11 @@ namespace Doctrina.xAPI.Validators
             RuleFor(x => x.ObjectType).Equal(ObjectType.StatementRef);
             RuleFor(x => x.Id).NotEmpty();
 
-            RuleFor(x => x.Failures).Custom((x, context) =>
+            RuleFor(x => x.ParsingErrors).Custom((x, context) =>
             {
                 foreach (var failure in x)
                 {
-                    context.AddFailure(failure.Name, failure.Message);
+                    context.AddFailure(failure.Name, failure.ErrorMessage);
                 }
             });
         }

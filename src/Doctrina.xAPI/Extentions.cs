@@ -1,5 +1,4 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
@@ -7,7 +6,6 @@ using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    [JsonConverter(typeof(ExtensionsConverter))]
     public class Extensions : JsonModel, IDictionary<Uri, JToken>
     {
         private IDictionary<Uri, JToken> _values = new Dictionary<Uri, JToken>();
@@ -88,7 +86,7 @@ namespace Doctrina.xAPI
             return _values.GetEnumerator();
         }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             if(_values.Count > 0)
             {

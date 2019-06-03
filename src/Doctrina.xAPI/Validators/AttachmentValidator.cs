@@ -7,7 +7,8 @@ namespace Doctrina.xAPI.Validators
         public AttachmentValidator()
         {
             RuleFor(x => x.UsageType).NotEmpty();
-            RuleFor(x => x.Display).NotEmpty();
+            RuleFor(x => x.Display).NotEmpty().SetValidator(new LanguageMapValidator());
+            RuleFor(x => x.Description).SetValidator(new LanguageMapValidator()).When(x => x.Description != null);
             RuleFor(x => x.ContentType).NotEmpty();
             RuleFor(x => x.Length).NotEmpty();
             RuleFor(x => x.SHA2).NotEmpty();
@@ -27,11 +28,11 @@ namespace Doctrina.xAPI.Validators
             //    // Validate that the signature requirements outlined above have been met.
             //}
 
-            RuleFor(x => x.Failures).Custom((x, context) =>
+            RuleFor(x => x.ParsingErrors).Custom((x, context) =>
             {
                 foreach (var failure in x)
                 {
-                    context.AddFailure(failure.Name, failure.Message);
+                    context.AddFailure(failure.Name, failure.ErrorMessage);
                 }
             });
         }

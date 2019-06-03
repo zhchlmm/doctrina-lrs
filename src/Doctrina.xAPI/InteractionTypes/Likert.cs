@@ -17,9 +17,13 @@ namespace Doctrina.xAPI.InteractionTypes
             }
         }
 
+        public Likert(JToken jobj, ApiVersion version) : base(jobj, version)
+        {
+        }
+
         public InteractionComponentCollection Scale { get; set; }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = base.ToJToken(version, format);
 

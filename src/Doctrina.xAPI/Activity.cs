@@ -16,24 +16,31 @@ namespace Doctrina.xAPI
                 return;
             }
 
-            if (jobj["id"] != null)
+            if (DisallowNullValue(jobj["id"]))
             {
-                Id = (Iri)jobj.Value<string>("id");
+                Id = new Iri(jobj.Value<string>("id"));
             }
 
-            if (jobj["definition"] != null)
+            if (DisallowNullValue(jobj["definition"]))
             {
-                var jdefinition = jobj.Value<JObject>("definition");
+                var jdefinition = jobj["definition"];
 
-                JToken tokenInteractionType = jdefinition["interactionType"];
-                if (tokenInteractionType != null)
+                JToken jInteractionType = jdefinition["interactionType"];
+                if (DisallowNullValue(jInteractionType) && AllowString(jInteractionType))
                 {
-                    InteractionType interactionType = tokenInteractionType.Value<string>();
-                    Definition = interactionType.CreateInstance(jdefinition, version);
+                    InteractionType interactionType = jInteractionType.Value<string>();
+                    if(interactionType != null)
+                    {
+                        Definition = interactionType.CreateInstance(jdefinition, version);
+                    }
+                    else
+                    {
+                        ParsingErrors.Add(jInteractionType.Path, "Invalid interactionType.");
+                    }
                 }
                 else
                 {
-                    Definition = new ActivityDefinition(jobj.Value<JObject>("definition"), version);
+                    Definition = new ActivityDefinition(jdefinition, version);
                 }
             }
         }
@@ -50,18 +57,18 @@ namespace Doctrina.xAPI
         /// </summary>
         public ActivityDefinition Definition { get; set; }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var result = base.ToJToken(version, format);
 
             if (Id != null)
             {
-                result.Add("id", Id.ToString());
+                result["id"] = Id.ToString();
             }
 
             if (Definition != null)
             {
-                result.Add("definition", Definition.ToJToken(version, format));
+                result["definition"] = Definition.ToJToken(version, format);
             }
 
             return result;

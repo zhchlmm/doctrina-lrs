@@ -27,11 +27,11 @@ namespace Doctrina.xAPI.Validators
             RuleFor(x => x.ContextActivities).SetValidator(new ContextActivitiesValidator())
                 .When(x => x.ContextActivities != null);
 
-            RuleFor(x => x.Failures).Custom((x, context) =>
+            RuleFor(x => x.ParsingErrors).Custom((x, context) =>
             {
                 foreach (var failure in x)
                 {
-                    context.AddFailure(failure.Name, failure.Message);
+                    context.AddFailure(failure.Name, failure.ErrorMessage);
                 }
             });
         }

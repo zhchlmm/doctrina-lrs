@@ -9,7 +9,7 @@ namespace Doctrina.xAPI.InteractionTypes
         public LongFillIn()
         {
         }
-        public LongFillIn(JObject jobj, ApiVersion version) : base(jobj, version)
+        public LongFillIn(JToken jobj, ApiVersion version) : base(jobj, version)
         {
         }
     }

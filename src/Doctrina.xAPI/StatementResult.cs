@@ -10,7 +10,7 @@ namespace Doctrina.xAPI
     /// <summary>
     /// A collection of Statements can be retrieved by performing a query on the Statement Resource, see Statement Resource for details.
     /// </summary>
-    public class StatementsResult : JsonModel, IStatementsResult
+    public class StatementsResult : JsonModel, IStatementsResult, IAttachmentByHash
     {
         public StatementsResult() {}
 
@@ -45,49 +45,12 @@ namespace Doctrina.xAPI
         /// </summary>
         public Uri More { get; set; }
 
-        public static async Task<StatementsResult> ReadAsMultipartAsync(string boundary, Stream stream)
-        {
-            var result = new StatementsResult();
-
-            var multipartReader = new MultipartReader(boundary, stream);
-            var section = await multipartReader.ReadNextSectionAsync();
-            int sectionIxdex = 0;
-            while (section != null)
-            {
-                if (sectionIxdex == 0)
-                {
-                    // StatementsResult
-                    string jsonString = await section.ReadAsStringAsync();
-                    result = new StatementsResult((JsonString)jsonString);
-                }
-                else
-                {
-                    // TODO: Read attachment
-                }
-
-                section = await multipartReader.ReadNextSectionAsync();
-                sectionIxdex++;
-            }
-
-            return result;
-        }
-
         public Attachment GetAttachmentByHash(string hash)
         {
-            throw new NotImplementedException();
+            return Statements.GetAttachmentByHash(hash);
         }
 
-        public Attachment GetStatementByHash(string hash)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetAttachmentByHash(string hash, byte[] payload)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
             obj["statements"] = Statements?.ToJToken(version, format);

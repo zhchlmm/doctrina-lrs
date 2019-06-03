@@ -1,5 +1,4 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -7,8 +6,6 @@ using System.Globalization;
 
 namespace Doctrina.xAPI
 {
-    //[JsonConverter(typeof(ContextConverter))]
-    [JsonObject]
     public class Context : JsonModel
     {
         public Context()
@@ -30,131 +27,92 @@ namespace Doctrina.xAPI
                 return;
             }
 
-            if (DisallowNull(jobj["registration"]) && AllowString(jobj["registration"]))
+            if (DisallowNullValue(jobj["registration"]) && AllowString(jobj["registration"]))
             {
                 Registration = Guid.Parse(jobj.Value<string>("registration"));
             }
 
-            if (DisallowNull(jobj["instructor"]))
+            if (DisallowNullValue(jobj["instructor"]))
             {
                 Instructor = new Agent(jobj["instructor"], version);
             }
 
-            if (DisallowNull(jobj["team"]))
+            if (DisallowNullValue(jobj["team"]))
             {
                 Instructor = new Group(jobj["team"], version);
             }
 
-            if (DisallowNull(jobj["contextActivities"]))
+            if (DisallowNullValue(jobj["contextActivities"]))
             {
                 ContextActivities = new ContextActivities(jobj["contextActivities"], version);
             }
 
-            if (DisallowNull(jobj["revision"]) && AllowString(jobj["revision"]))
+            if (DisallowNullValue(jobj["revision"]) && AllowString(jobj["revision"]))
             {
                 Revision = jobj.Value<string>("revision");
             }
 
-            if (DisallowNull(jobj["platform"]) && AllowString(jobj["platform"]))
+            if (DisallowNullValue(jobj["platform"]) && AllowString(jobj["platform"]))
             {
                 Platform = jobj.Value<string>("platform");
             }
 
-            if (DisallowNull(jobj["language"]) && AllowString(jobj["language"]))
+            if (DisallowNullValue(jobj["language"]) && AllowString(jobj["language"]))
             {
                 Language = jobj.Value<string>("language");
             }
 
-            if (DisallowNull(jobj["statement"]))
+            if (DisallowNullValue(jobj["statement"]))
             {
                 Statement = new StatementRef(jobj["statement"], version);
             }
 
-            if (DisallowNull(jobj["extensions"]))
+            if (DisallowNullValue(jobj["extensions"]))
             {
                 Extensions = new Extensions(jobj["extensions"], version);
             }
         }
 
-        [JsonProperty("registration",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public Guid? Registration { get; set; }
 
         /// <summary>
         /// Instructor that the Statement relates to, if not included as the Actor of the Statement.
         /// </summary>
-        [JsonProperty("instructor",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull),
-            JsonConverter(typeof(AgentJsonConverter))]
         public Agent Instructor { get; set; }
 
         /// <summary>
         /// Instructor that the Statement relates to, if not included as the Actor of the Statement.
         /// </summary>
-        [JsonProperty("team",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull),
-            JsonConverter(typeof(AgentJsonConverter))]
         public Group Team { get; set; }
 
         /// <summary>
         /// A map of the types of learning activity context that this Statement is related to. Valid context types are: parent, "grouping", "category" and "other".
         /// </summary>
-        [JsonProperty("contextActivities",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public ContextActivities ContextActivities { get; set; }
 
         /// <summary>
         /// Revision of the learning activity associated with this Statement. Format is free.
         /// The "revision" property MUST only be used if the Statement's Object is an Activity.
         /// </summary>
-        [JsonProperty("revision",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public string Revision { get; set; }
 
         /// <summary>
         /// Platform used in the experience of this learning activity.
         /// The "platform" property MUST only be used if the Statement's Object is an Activity.
         /// </summary>
-        [JsonProperty("platform",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public string Platform { get; set; }
 
-
-        private string _language;
         /// <summary>
         /// Code representing the language in which the experience being recorded in this Statement (mainly) occurred in, if applicable and known.
         /// </summary>
-        [JsonProperty("language",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
-        public string Language
-        {
-            get { return _language; }
-            set
-            {
-                CultureInfo.GetCultureInfo(value);
-                _language = value;
-            }
-        }
+        public string Language { get; set; }
 
 
         /// <summary>
         /// Another Statement to be considered as context for this Statement.
         /// </summary>
-        [JsonProperty("statement",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public StatementRef Statement { get; set; }
 
-        [JsonProperty("extensions",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.Default)]
         public Extensions Extensions { get; set; }
 
         public override bool Equals(object obj)
@@ -187,7 +145,7 @@ namespace Doctrina.xAPI
             return hashCode;
         }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = new JObject();
             if (Registration.HasValue)

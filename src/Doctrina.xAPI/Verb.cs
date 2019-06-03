@@ -19,12 +19,12 @@ namespace Doctrina.xAPI
                 return;
             }
 
-            if (DisallowNull(jobj["id"]) && AllowString(jobj["id"]))
+            if (DisallowNullValue(jobj["id"]) && AllowString(jobj["id"]))
             {
                 Id = new Iri(jobj.Value<string>("id"));
             }
 
-            if (DisallowNull(jobj["display"]))
+            if (DisallowNullValue(jobj["display"]))
             {
                 Display = new LanguageMap(jobj.Value<JObject>("display"), version);
             }
@@ -50,7 +50,7 @@ namespace Doctrina.xAPI
             return 2108858624 + EqualityComparer<Iri>.Default.GetHashCode(Id);
         }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = new JObject
             {

@@ -6,6 +6,6 @@ namespace Doctrina.xAPI
     {
         ObjectType ObjectType { get; }
 
-        JObject ToJToken(ApiVersion version, ResultFormat format);
+        JToken ToJToken(ApiVersion version, ResultFormat format);
     }
 }

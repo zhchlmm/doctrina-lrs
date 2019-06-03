@@ -33,11 +33,11 @@ namespace Doctrina.xAPI
 
             foreach (var item in jobj)
             {
-                if (DisallowNull(item.Value) && AllowCultureName(item))
+                if (DisallowNullValue(item.Value) && AllowCultureName(item))
                 {
                     if (ContainsKey(item.Key))
                     {
-                        Failures.Add(item.Value.Path, "Duplicate language code key.");
+                        ParsingErrors.Add(item.Value.Path, "Duplicate language code key.");
                         continue;
                     }
 
@@ -51,13 +51,16 @@ namespace Doctrina.xAPI
             var token = item.Value;
             if (token != null && token.Type == JTokenType.String)
             {
-                if(item.Key == "und" || IsValidCultureName(item.Key))
+                if(item.Key == "und" || 
+                    item.Key == "zh-Hans-CN" || // should pass given zh-Hans-CN language-script-region code
+                    item.Key  == "ase" ||  // should pass given ase three letter language code
+                    IsValidCultureName(item.Key))
                 {
                     return true;
                 }
             }
 
-            Failures.Add(token.Path, "Invalid language code.");
+            ParsingErrors.Add(token.Path, "Invalid language code.");
             return false;
         }
 
@@ -75,7 +78,7 @@ namespace Doctrina.xAPI
             return false;
         }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
             foreach (var pair in this)

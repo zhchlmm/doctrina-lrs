@@ -4,7 +4,9 @@ namespace Doctrina.xAPI.InteractionTypes
 {
     public class Numeric : InteractionTypeBase
     {
-        public Numeric(JObject jobj, ApiVersion version) : base(jobj, version)
+        public Numeric() { }
+
+        public Numeric(JToken jobj, ApiVersion version) : base(jobj, version)
         {
         }
 

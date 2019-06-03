@@ -1,15 +1,35 @@
 ﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Doctrina.xAPI.InteractionTypes
 {
     public abstract class InteractionTypeBase : ActivityDefinition
     {
         public InteractionTypeBase() { }
-        public InteractionTypeBase(string jsonString) : this(JObject.Parse(jsonString)) { }
-        public InteractionTypeBase(JObject jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public InteractionTypeBase(JObject jobj, ApiVersion version)
-            : base(jobj, version)
+        public InteractionTypeBase(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
+        public InteractionTypeBase(JToken jobj, ApiVersion version) : base(jobj, version)
         {
+            //if(jobj["interactionType"] != null)
+            //{
+            //    InteractionType = jobj.Value<string>("interactionType");
+            //}
+
+            var jCorrectResponsesPattern = jobj["correctResponsesPattern"];
+            if (DisallowNullValue(jCorrectResponsesPattern))
+            {
+                if(AllowArray(jCorrectResponsesPattern))
+                {
+                    var correctResponsesPattern = new List<string>();
+                    foreach(var jstring in jCorrectResponsesPattern)
+                    {
+                        if(AllowString(jstring))
+                        {
+                            correctResponsesPattern.Add(jstring.Value<string>());
+                        }
+                    }
+                    CorrectResponsesPattern = correctResponsesPattern.ToArray();
+                }
+            }
         }
 
         public override Iri Type { get => new Iri("http://adlnet.gov/expapi/activities/cmi.interaction"); set => base.Type = value; }
@@ -20,16 +40,16 @@ namespace Doctrina.xAPI.InteractionTypes
 
         public string[] CorrectResponsesPattern { get; set; }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = base.ToJToken(version, format);
             if (InteractionType != null)
             {
-                obj.Add("interactionType", (string)InteractionType);
+                obj["interactionType"] = (string)InteractionType;
             }
             if (CorrectResponsesPattern != null)
             {
-                obj.Add("correctResponsesPattern", JArray.FromObject(CorrectResponsesPattern));
+                obj["correctResponsesPattern"] = JArray.FromObject(CorrectResponsesPattern);
             }
             return obj;
         }

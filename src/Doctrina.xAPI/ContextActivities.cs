@@ -1,12 +1,9 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    [JsonConverter(typeof(ContextActivitiesConverter))]
-    [JsonObject]
     public class ContextActivities : JsonModel
     {
         public ContextActivities() { }
@@ -46,9 +43,6 @@ namespace Doctrina.xAPI
         /// In almost all cases there is only one sensible parent or none, not multiple. 
         /// For example: a Statement about a quiz question would have the quiz as its parent Activity.
         /// </summary>
-        [JsonProperty("parent",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public ActivityCollection Parent { get; set; }
 
         /// <summary>
@@ -57,9 +51,6 @@ namespace Doctrina.xAPI
         /// For example: Anna attempts a biology exam, and the Statement is tracked using the cmi5 profile. 
         /// The Statement's Activity refers to the exam, and the category is the cmi5 profile.
         /// </summary>
-        [JsonProperty("category",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public ActivityCollection Category { get; set; }
 
         /// <summary>
@@ -67,18 +58,12 @@ namespace Doctrina.xAPI
         /// For example: a course that is part of a qualification. The course has several classes. 
         /// The course relates to a class as the parent, the qualification relates to the class as the grouping.
         /// </summary>
-        [JsonProperty("grouping",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public ActivityCollection Grouping { get; set; }
 
         /// <summary>
         /// Other: a contextActivity that doesn't fit one of the other properties. 
         /// For example: Anna studies a textbook for a biology exam. The Statement's Activity refers to the textbook, and the exam is a contextActivity of type other.
         /// </summary>
-        [JsonProperty("other",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
         public ActivityCollection Other { get; set; }
 
         public override bool Equals(object obj)
@@ -101,7 +86,7 @@ namespace Doctrina.xAPI
             return hashCode;
         }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = new JObject();
             if (Parent != null)

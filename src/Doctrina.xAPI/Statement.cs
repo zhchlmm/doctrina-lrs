@@ -1,17 +1,12 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Doctrina.xAPI
 {
     /// <summary>
     /// The Statement object
     /// </summary>
-    [JsonConverter(typeof(StatementJsonConverter))]
-    [JsonObject()]
     public class Statement : StatementBase
     {
         public Statement() { }
@@ -27,25 +22,34 @@ namespace Doctrina.xAPI
 
             var jobj = jtoken as JObject;
 
-            if (DisallowNull(jobj["id"]))
+            var jId = jobj["id"];
+            if (DisallowNullValue(jId) && AllowString(jId))
             {
-                Id = Guid.Parse(jobj.Value<string>("id"));
+                if (Guid.TryParse(jId.Value<string>(), out Guid id)){
+                    Id = id;
+                }
+                else
+                {
+                    ParsingErrors.Add(jId.Path, "Invalid UUID.");
+                }
             }
 
-            if (DisallowNull(jobj["stored"]))
+            if (DisallowNullValue(jobj["stored"]))
             {
                 Stored = DateTimeOffset.Parse(jobj.Value<string>("stored"));
             }
 
-            if (DisallowNull(jobj["authority"]))
+            if (DisallowNullValue(jobj["authority"]))
             {
                 var auth = jtoken.Value<JObject>("authority");
                 ObjectType objType = auth.Value<string>("objectType");
                 Authority = (Agent)objType.CreateInstance(auth, version);
             }
 
-            DisallowAdditionalProps(jobj, "id", "stored", "authority", "version", "object", "actor", "verb", "result", "context", "timestamp", "attachment");
+            DisallowAdditionalProps(jobj, "id", "stored", "authority", "version", "object", "actor", "verb", "result", "context", "timestamp", "attachments");
         }
+
+       
 
         /// <summary>
         /// UUID assigned by LRS if not set by the Learning Record Provider.
@@ -58,8 +62,8 @@ namespace Doctrina.xAPI
         public DateTimeOffset? Stored { get; set; }
 
         /// <summary>
-        /// Agent or Group who is asserting this Statement is true. 
-        /// TODO: Verified by the LRS based on authentication. 
+        /// Agent or Group who is asserting this Statement is true.
+        /// TODO: Verified by the LRS based on authentication.
         /// TODO: Set by LRS if not provided or if a strong trust relationship between the Learning Record Provider and LRS has not been established.
         /// </summary>
         public Agent Authority { get; set; }
@@ -95,7 +99,7 @@ namespace Doctrina.xAPI
             return hashCode;
         }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = base.ToJToken(version, format);
             if (Id != null)

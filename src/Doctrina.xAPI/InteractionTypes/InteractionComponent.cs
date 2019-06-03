@@ -3,44 +3,32 @@ using Newtonsoft.Json.Linq;
 
 namespace Doctrina.xAPI.InteractionTypes
 {
-    public class InteractionComponent : JsonModel<JObject>
+    public class InteractionComponent : JsonModel
     {
-        public InteractionComponent()
-        {
-        }
+        public InteractionComponent() {}
 
-        public InteractionComponent(string jsonString)
-            : this(JObject.Parse(jsonString))
-        {
-        }
+        public InteractionComponent(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) {}
 
-        public InteractionComponent(JObject jobj)
-           : this(jobj, ApiVersion.GetLatest())
-        {
-        }
-
-        public InteractionComponent(JObject jobj, ApiVersion version)
+        public InteractionComponent(JToken jobj, ApiVersion version)
         {
             var id = jobj["id"];
             if (id != null && AllowString(id))
             {
-                Id = jobj.Value<string>("id");
+                Id = id.Value<string>();
             }
 
             var desc = jobj["description"];
-            if (desc != null && DisallowNull(desc))
+            if (DisallowNullValue(desc))
             {
-                Description = new LanguageMap(desc.Value<JObject>(), version);
+                Description = new LanguageMap(desc, version);
             }
         }
 
-        [JsonProperty("id")]
         public string Id { get; set; }
 
-        [JsonProperty("description")]
         public LanguageMap Description { get; set; }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = new JObject();
             if (!string.IsNullOrEmpty(Id))

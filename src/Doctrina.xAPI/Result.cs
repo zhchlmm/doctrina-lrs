@@ -1,5 +1,4 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -21,25 +20,25 @@ namespace Doctrina.xAPI
 
             JObject jobj = token as JObject;
 
-            if (DisallowNull(jobj["score"]))
+            if (DisallowNullValue(jobj["score"]))
             {
                 Score = new Score(jobj.Value<JObject>("score"), version);
             }
-            if (DisallowNull(jobj["success"]) && AllowBoolean(jobj["success"]))
+            if (DisallowNullValue(jobj["success"]) && AllowBoolean(jobj["success"]))
             {
                 Success = jobj.Value<bool?>("success");
             }
-            if (DisallowNull(jobj["completion"]) && AllowBoolean(jobj["completion"]))
+            if (DisallowNullValue(jobj["completion"]) && AllowBoolean(jobj["completion"]))
             {
                 Completion = jobj.Value<bool?>("completion");
             }
 
-            if (DisallowNull(jobj["response"]))
+            if (DisallowNullValue(jobj["response"]))
             {
                 Response = jobj.Value<string>("response");
             }
 
-            if (DisallowNull(jobj["duration"]))
+            if (DisallowNullValue(jobj["duration"]))
             {
                 Duration = new Duration(jobj.Value<string>("duration"));
             }
@@ -84,7 +83,7 @@ namespace Doctrina.xAPI
         /// </summary>
         public Extensions Extensions { get; set; }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = new JObject();
 

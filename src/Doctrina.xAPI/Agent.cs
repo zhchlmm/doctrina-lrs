@@ -1,5 +1,4 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -8,8 +7,6 @@ namespace Doctrina.xAPI
     /// <summary>
     /// An Agent (an individual) is a persona or system.
     /// </summary>
-    [JsonObject]
-    [JsonConverter(typeof(AgentJsonConverter))]
     public class Agent : StatementObjectBase, IInvenseFunctionalIdenfitiers, IAgent, IStatementObject
     {
         protected override ObjectType OBJECT_TYPE => ObjectType.Agent;
@@ -25,34 +22,34 @@ namespace Doctrina.xAPI
                 return;
             }
 
-            if (DisallowNull(jobj["objectType"]) && AllowString(jobj["objectType"]))
+            if (DisallowNullValue(jobj["objectType"]) && AllowString(jobj["objectType"]))
             {
                 Name = jobj.Value<string>("objectType");
             }
 
-            if (DisallowNull(jobj["name"]) && AllowString(jobj["name"]))
+            if (DisallowNullValue(jobj["name"]) && AllowString(jobj["name"]))
             {
                 Name = jobj.Value<string>("name");
             }
 
-            if (DisallowNull(jobj["mbox"]) && AllowString(jobj["mbox"]))
+            if (DisallowNullValue(jobj["mbox"]) && AllowString(jobj["mbox"]))
             {
                 Mbox = new Mbox(jobj.Value<string>("mbox"));
             }
 
-            if (DisallowNull(jobj["mbox_sha1sum"]) && AllowString(jobj["mbox_sha1sum"]))
+            if (DisallowNullValue(jobj["mbox_sha1sum"]) && AllowString(jobj["mbox_sha1sum"]))
             {
                 Mbox_SHA1SUM = jobj.Value<string>("mbox_sha1sum");
             }
 
-            if (DisallowNull(jobj["openid"]) && AllowString(jobj["openid"]))
+            if (DisallowNullValue(jobj["openid"]) && AllowString(jobj["openid"]))
             {
                 OpenId = new Iri(jobj.Value<string>("openid"));
             }
 
-            if (DisallowNull(jobj["account"]) && AllowObject(jobj["account"]))
+            if (DisallowNullValue(jobj["account"]) && AllowObject(jobj["account"]))
             {
-                Account = new Account(jobj.Value<JObject>("account"), version);
+                Account = new Account(jobj["account"], version);
             }
         }
 
@@ -87,7 +84,7 @@ namespace Doctrina.xAPI
         /// </summary>
         public Account Account { get; set; }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = base.ToJToken(version, format);
 

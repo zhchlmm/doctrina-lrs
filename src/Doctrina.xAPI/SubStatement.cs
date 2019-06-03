@@ -42,7 +42,7 @@ namespace Doctrina.xAPI
             return base.GetHashCode();
         }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = base.ToJToken(version, format);
 

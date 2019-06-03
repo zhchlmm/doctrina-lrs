@@ -4,6 +4,6 @@ namespace Doctrina.xAPI
 {
     public interface IJsonModel
     {
-        JsonModelFailuresCollection Failures { get; }
+        JsonModelErrorsCollection ParsingErrors { get; }
     }
 }

@@ -1,12 +1,9 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    [JsonObject]
-    [JsonConverter(typeof(ScoreJsonConverter))]
     public class Score : JsonModel
     {
         public Score()
@@ -28,22 +25,22 @@ namespace Doctrina.xAPI
                 return;
             }
 
-            if (DisallowNull(jobj["scaled"]) && AllowNumber(jobj["scaled"]))
+            if (DisallowNullValue(jobj["scaled"]) && AllowNumber(jobj["scaled"]))
             {
                 Scaled = jobj.Value<double?>("scaled");
             }
 
-            if (DisallowNull(jobj["raw"]) && AllowNumber(jobj["raw"]))
+            if (DisallowNullValue(jobj["raw"]) && AllowNumber(jobj["raw"]))
             {
                 Raw = jobj.Value<double?>("raw");
             }
 
-            if (DisallowNull(jobj["min"]) && AllowNumber(jobj["min"]))
+            if (DisallowNullValue(jobj["min"]) && AllowNumber(jobj["min"]))
             {
                 Min = jobj.Value<double?>("min");
             }
 
-            if (DisallowNull(jobj["max"]) && AllowNumber(jobj["max"]))
+            if (DisallowNullValue(jobj["max"]) && AllowNumber(jobj["max"]))
             {
                 Max = jobj.Value<double?>("max");
             }
@@ -52,40 +49,24 @@ namespace Doctrina.xAPI
         /// <summary>
         /// The score related to the experience as modified by scaling and/or normalization.
         /// </summary>
-        [JsonProperty("scaled",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
-        [JsonConverter(typeof(NumberConverter))]
         public double? Scaled { get; set; }
 
         /// <summary>
         /// Decimal number between min and max (if present, otherwise unrestricted), inclusive
         /// The score achieved by the Actor in the experience described by the Statement. This is not modified by any scaling or normalization.
         /// </summary>
-        [JsonProperty("raw",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
-        [JsonConverter(typeof(NumberConverter))]
         public double? Raw { get; set; }
 
         /// <summary>
         /// Decimal number less than max (if present)
         /// The lowest possible score for the experience described by the Statement.
         /// </summary>
-        [JsonProperty("min",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
-        [JsonConverter(typeof(NumberConverter))]
         public double? Min { get; set; }
 
         /// <summary>
         /// Decimal number greater than min (if present)
         /// The highest possible score for the experience described by the Statement.
         /// </summary>
-        [JsonProperty("max",
-            NullValueHandling = NullValueHandling.Ignore,
-            Required = Required.DisallowNull)]
-        [JsonConverter(typeof(NumberConverter))]
         public double? Max { get; set; }
 
         public override bool Equals(object obj)
@@ -109,7 +90,7 @@ namespace Doctrina.xAPI
             return hashCode;
         }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var jobj = new JObject();
 

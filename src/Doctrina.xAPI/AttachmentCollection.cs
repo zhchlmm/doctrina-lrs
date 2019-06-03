@@ -11,7 +11,7 @@ namespace Doctrina.xAPI
     //[JsonConverter(typeof(AttachmentCollectionConverter))]
     public class AttachmentCollection : JsonModel<JArray>, ICollection<Attachment>
     {
-        private readonly HashSet<Attachment> Attachments;
+        private readonly HashSet<Attachment> Attachments = new HashSet<Attachment>();
 
         public int Count => Attachments.Count;
 
@@ -20,19 +20,20 @@ namespace Doctrina.xAPI
         /// <summary>
         /// Initializes a new instance of the <see cref="AttachmentCollection"/> class.
         /// </summary>
-        public AttachmentCollection()
+        public AttachmentCollection() {}
+        public AttachmentCollection(JsonString jsonString) : this(jsonString.ToJToken()) { }
+        public AttachmentCollection(JToken jarr) : this(jarr, ApiVersion.GetLatest()) { }
+        public AttachmentCollection(JToken jarr, ApiVersion version)
         {
-            // foreach over List<T> to avoid boxing the Enumerator
-            Attachments = new HashSet<Attachment>();
-        }
+            if(DisallowNullValue(jarr) && jarr.Type != JTokenType.Array)
+            {
+                ParsingErrors.Add(jarr.Path, "Must be a valid JSON array.");
+                return;
+            }
 
-        public AttachmentCollection(JsonString jsonString) : this(jsonString.ToJArray()) { }
-        public AttachmentCollection(JArray jarr) : this(jarr, ApiVersion.GetLatest()) { }
-        public AttachmentCollection(JArray jarr, ApiVersion version)
-        {
             foreach (var item in jarr)
             {
-                Add(new Attachment(item.Value<JObject>(), version));
+                Add(new Attachment(item, version));
             }
         }
 

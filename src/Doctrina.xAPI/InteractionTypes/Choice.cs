@@ -6,19 +6,15 @@ namespace Doctrina.xAPI.InteractionTypes
     public class Choice : InteractionTypeBase
     {
         protected override InteractionType INTERACTION_TYPE => InteractionType.Choice;
-        public Choice()
-        {
-        }
-        public Choice(JObject jobj, ApiVersion version) : base(jobj, version)
+        public Choice() {}
+        public Choice(JToken jobj, ApiVersion version) : base(jobj, version)
         {
             if (jobj["choices"] != null)
             {
-                Choices = new InteractionComponentCollection(jobj.Value<JArray>("choices"), version);
+                Choices = new InteractionComponentCollection(jobj["choices"], version);
             }
         }
 
-
-        [JsonProperty("choices")]
         public InteractionComponentCollection Choices { get; set; }
     }
 }

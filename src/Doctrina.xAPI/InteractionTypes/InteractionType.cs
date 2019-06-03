@@ -30,14 +30,52 @@ namespace Doctrina.xAPI.InteractionTypes
             _types.Add(this);
         }
 
-        public ActivityDefinition CreateInstance()
-        {
-            return (ActivityDefinition)Activator.CreateInstance(Type);
-        }
 
-        public ActivityDefinition CreateInstance(JObject jobj, ApiVersion version)
+        public ActivityDefinition CreateInstance(JToken jtoken, ApiVersion version)
         {
-            return (ActivityDefinition)Activator.CreateInstance(Type, jobj, version);
+            if (Type == typeof(Choice))
+            {
+                return new Choice(jtoken, version);
+            }
+
+            else if (Type == typeof(FillIn))
+            {
+                return new FillIn(jtoken, version);
+            }
+            else if (Type == typeof(Likert))
+            {
+                return new Likert(jtoken, version);
+            }
+            else if (Type == typeof(LongFillIn))
+            {
+                return new LongFillIn(jtoken, version);
+            }
+            else if (Type == typeof(Matching))
+            {
+                return new Matching(jtoken, version);
+            }
+            else if (Type == typeof(Numeric))
+            {
+                return new Numeric(jtoken, version);
+            }
+            else if (Type == typeof(Performance))
+            {
+                return new Performance(jtoken, version);
+            }
+            else if (Type == typeof(Sequencing))
+            {
+                return new Sequencing(jtoken, version);
+            }
+            else if (Type == typeof(TrueFalse))
+            {
+                return new TrueFalse(jtoken, version);
+            }
+            else if (Type == typeof(Other))
+            {
+                return new Other(jtoken, version);
+            }
+
+            throw new NotImplementedException("interactionType");
         }
         public override bool Equals(object obj)
         {
@@ -62,13 +100,7 @@ namespace Doctrina.xAPI.InteractionTypes
 
         public static implicit operator InteractionType(string alias)
         {
-            var interactionType = _types.FirstOrDefault(x => x.Alias == alias);
-            if (interactionType != null)
-            {
-                return interactionType;
-            }
-
-            throw new KeyNotFoundException();
+            return _types.FirstOrDefault(x => x.Alias == alias);
         }
 
         public static implicit operator string(InteractionType type)

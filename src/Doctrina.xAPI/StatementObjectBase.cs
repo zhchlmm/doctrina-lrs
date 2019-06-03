@@ -1,11 +1,9 @@
-﻿using Doctrina.xAPI.Json.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    [JsonConverter(typeof(StatementObjectConverter))]
     public abstract class StatementObjectBase : JsonModel
     {
         protected StatementObjectBase() { }
@@ -17,29 +15,12 @@ namespace Doctrina.xAPI
 
         public ObjectType ObjectType { get { return this.OBJECT_TYPE; } }
 
-        public override JObject ToJToken(ApiVersion version, ResultFormat format)
+        public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             return new JObject
             {
                 ["objectType"] = (string)ObjectType
             };
-        }
-
-        internal static IStatementObject Parse(JObject jobj, ApiVersion version)
-        {
-            if (jobj["objectType"] != null)
-            {
-                ObjectType strObjectType = jobj.Value<string>("objectType");
-
-                return strObjectType.CreateInstance(jobj, version);
-            }
-            else if(jobj["id"] != null)
-            {
-                // Assume activity
-                return ObjectType.Activity.CreateInstance(jobj, version);
-            }
-
-            return null;
         }
 
         public override bool Equals(object obj)
