@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Json.Exceptions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -9,14 +10,20 @@ namespace Doctrina.xAPI
         public StatementBase() : base(null, null) { }
 
         public StatementBase(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public StatementBase(JToken jobj, ApiVersion version) : base(jobj, version)
+        public StatementBase(JToken statement, ApiVersion version) : base(statement, version)
         {
-            if (DisallowNullValue(jobj["actor"]))
+            GuardType(statement, JTokenType.Object);
+
+            var actor = statement["actor"];
+            if (actor != null)
             {
-                var actor = jobj["actor"];
-                if (actor["objectType"] != null && (string)actor["objectType"] == ObjectType.Group)
+                GuardType(actor, JTokenType.Object);
+
+                var objectType = actor["objectType"];
+                if (objectType != null)
                 {
-                    Actor = new Group(actor, version);
+                    ObjectType type = ParseObjectType(objectType, ObjectType.Agent, ObjectType.Group);
+                    Actor = (Agent)type.CreateInstance(actor, version);
                 }
                 else
                 {
@@ -24,51 +31,50 @@ namespace Doctrina.xAPI
                 }
             }
 
-            if (DisallowNullValue(jobj["verb"]))
+            var verb = statement["verb"];
+            if (verb != null)
             {
-                Verb = new Verb(jobj["verb"], version);
+                Verb = new Verb(verb, version);
             }
 
-            var jObject = jobj["object"];
-            if (DisallowNullValue(jObject) && AllowObject(jObject))
+            //var @object = statement["object"];
+            //if (@object != null)
+            //{
+            //    var objectType = @object["objectType"];
+            //    if (objectType != null)
+            //    {
+            //        ObjectType type = ParseObjectType(objectType, ObjectType.Activity, ObjectType.Agent, ObjectType.Group, ObjectType.Activity, ObjectType.StatementRef);
+            //        Object = type.CreateInstance(@object, version);
+            //    }
+            //    else if(@object["id"] != null)
+            //    {
+            //        // Assume activity
+            //        Object = new Activity(@object, version);
+            //    }
+            //    else
+            //    {
+            //        // TODO: Exception
+            //    }
+            //}
+
+            if (statement["result"] != null)
             {
-                if (jObject["objectType"] != null)
-                {
-                    ObjectType objectType = jObject.Value<string>("objectType");
-                    if(objectType != null)
-                    {
-                        Object = objectType.CreateInstance(jObject, version);
-                    }
-                    else
-                    {
-                        ParsingErrors.Add(jObject.Path, $"Is not a valid objectType.");
-                    }
-                }
-                else if(jObject["id"] != null)
-                {
-                    // Assume activity
-                    Object = ObjectType.Activity.CreateInstance(jObject, version);
-                }
+                Result = new Result(statement["result"], version);
             }
 
-            if (jobj["result"] != null)
+            if (statement["context"] != null)
             {
-                Result = new Result(jobj["result"], version);
+                Context = new Context(statement["context"], version);
             }
 
-            if (jobj["context"] != null)
+            if (statement["timestamp"] != null)
             {
-                Context = new Context(jobj["context"], version);
+                Timestamp = DateTimeOffset.Parse(statement.Value<string>("timestamp"));
             }
 
-            if (jobj["timestamp"] != null)
+            if (statement["attachments"] != null)
             {
-                Timestamp = DateTimeOffset.Parse(jobj.Value<string>("timestamp"));
-            }
-
-            if (jobj["attachments"] != null)
-            {
-                Attachments = new AttachmentCollection(jobj["attachments"], version);
+                Attachments = new AttachmentCollection(statement["attachments"], version);
             }
         }
 

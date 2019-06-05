@@ -38,6 +38,16 @@ namespace Doctrina.Application.Statements.Queries
         {
             var query = _context.Statements.AsNoTracking();
 
+            //if(request.VoidedStatementId.HasValue)
+            //{
+            //    query = query.Where(x => x.StatementId == request.VoidedStatementId.Value && x.Voided);
+            //}
+
+            //if (request.StatementId.HasValue)
+            //{
+            //    query = query.Where(x => x.StatementId == request.StatementId.Value && !x.Voided);
+            //}
+
             if (request.VerbId != null)
             {
                 string verbHash = request.VerbId.ComputeHash();

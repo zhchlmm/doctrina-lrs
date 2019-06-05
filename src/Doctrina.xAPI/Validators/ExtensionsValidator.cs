@@ -2,7 +2,7 @@
 
 namespace Doctrina.xAPI.Validators
 {
-    public class ExtensionsValidator : AbstractValidator<Extensions>
+    public class ExtensionsValidator : AbstractValidator<ExtensionsDictionary>
     {
         public ExtensionsValidator()
         {

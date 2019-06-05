@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Exceptions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,7 +83,7 @@ namespace Doctrina.xAPI
         {
             if (string.IsNullOrEmpty(type))
             {
-                return null;
+                throw new ArgumentNullException(nameof(type));
             }
 
             var objectType = _types.FirstOrDefault(x => x.Alias == type);
@@ -91,7 +92,7 @@ namespace Doctrina.xAPI
                 return objectType;
             }
 
-            return null;
+            throw new InvalidObjectTypeException(type);
         }
 
         public static bool operator ==(ObjectType left, ObjectType right)

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,26 +10,35 @@ namespace Doctrina.xAPI
         public Group() { }
         public Group(JsonString jsonString) : this(jsonString.ToJToken()) { }
         public Group(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public Group(JToken jobj, ApiVersion version) : base(jobj, version)
+        public Group(JToken group, ApiVersion version) : base(group, version)
         {
-            if (DisallowNullValue(jobj["member"]))
-            {
-                Member = new HashSet<Agent>();
+            GuardType(group, JTokenType.Object);
 
-                var members = jobj["member"];
+            var members = group["member"];
+            if (members != null)
+            {
+                GuardType(members, JTokenType.Array);
+
+                Member = new HashSet<Agent>();
 
                 foreach (var member in members)
                 {
-                    ObjectType objType = member.Value<string>("objectType");
+                    GuardType(member, JTokenType.Object);
 
-                    if (objType != null && objType == ObjectType.Group)
+                    var objectType = member["objectType"];
+
+                    if (objectType != null)
                     {
-                        Member.Add(new Group(member, version));
+                        GuardType(objectType, JTokenType.String);
+
+                        if (objectType.Value<string>() == ObjectType.Group)
+                        {
+                            Member.Add(new Group(member, version));
+                            continue;
+                        }
                     }
-                    else
-                    {
-                        Member.Add(new Agent(member, version));
-                    }
+
+                    Member.Add(new Agent(member, version));
                 }
             }
         }
@@ -46,10 +54,10 @@ namespace Doctrina.xAPI
         {
             var jobj = base.ToJToken(version, format);
 
-            if(Member != null && Member.Count > 0)
+            if (Member != null && Member.Count > 0)
             {
                 var jarr = new JArray();
-                foreach(var mem in Member)
+                foreach (var mem in Member)
                 {
                     jarr.Add(mem.ToJToken(version, format));
                 }

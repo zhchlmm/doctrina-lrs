@@ -20,14 +20,32 @@ namespace Doctrina.xAPI
         public SubStatement() : base() { }
         public SubStatement(JsonString jsonString) : this(jsonString.ToJToken()) { }
         public SubStatement(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
-        public SubStatement(JToken jobj, ApiVersion version) : base(jobj, version)
+        public SubStatement(JToken subStatement, ApiVersion version) : base(subStatement, version)
         {
-            if (!AllowObject(jobj))
+            GuardType(subStatement, JTokenType.Object);
+
+            var @object = subStatement["object"];
+            if (@object != null)
             {
-                return;
+                GuardType(@object, JTokenType.Object);
+                var objectType = @object["objectType"];
+                if (objectType != null)
+                {
+                    ObjectType type = ParseObjectType(objectType, ObjectType.Activity, ObjectType.Agent, ObjectType.Group, ObjectType.Activity, ObjectType.StatementRef);
+                    Object = type.CreateInstance(@object, version);
+                }
+                else if (@object["id"] != null)
+                {
+                    // Assume activity
+                    Object = new Activity(@object, version);
+                }
+                else
+                {
+                    // TODO: Exception
+                }
             }
 
-            DisallowAdditionalProps(jobj as JObject, "objectType", "actor", "object", "verb", "result", "context", "timestamp", "attachment");
+            GuardAdditionalProperties((JObject)subStatement, "objectType", "actor", "object", "verb", "result", "context", "timestamp", "attachment");
         }
 
         public override bool Equals(object obj)

@@ -13,6 +13,8 @@ namespace Doctrina.xAPI
         public ActivityCollection(JToken jtoken) : this(jtoken, ApiVersion.GetLatest()) { }
         public ActivityCollection(JToken jtoken, ApiVersion version)
         {
+            GuardType(jtoken, JTokenType.Array, JTokenType.Object);
+
             if (jtoken.Type == JTokenType.Array)
             {
                 var activities = jtoken.Value<JArray>();

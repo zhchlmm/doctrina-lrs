@@ -10,6 +10,6 @@ namespace Doctrina.xAPI
         public IEnumerable<string> Version { get; set; }
 
         [JsonProperty("extensions")]
-        public Extensions Extensions { get; set; }
+        public ExtensionsDictionary Extensions { get; set; }
     }
 }

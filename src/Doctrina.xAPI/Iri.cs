@@ -1,10 +1,9 @@
-﻿using Doctrina.xAPI.Helpers;
+﻿using Doctrina.xAPI.Exceptions;
+using Doctrina.xAPI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Doctrina.xAPI
 {
@@ -12,7 +11,6 @@ namespace Doctrina.xAPI
     /// Internationalized Resource Identifiers, or IRIs, are unique identifiers which could also be resolvable. 
     /// IRIs can contain some characters outside of the ASCII character set.
     /// </summary>
-    [TypeConverter(typeof(IRITypeConverter))]
     public class Iri
     {
         private readonly string _iriString;
@@ -25,10 +23,10 @@ namespace Doctrina.xAPI
             }
             catch (Exception)
             {
-                throw new FormatException($"IRI '{iriString}' is not a well formatted IRI string.");
+                throw new IriFormatException($"IRI '{iriString}' is not a well formatted IRI string.");
             }
 
-            this._iriString = iriString;
+            _iriString = iriString;
         }
 
         public override string ToString()

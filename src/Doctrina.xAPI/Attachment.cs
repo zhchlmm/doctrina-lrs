@@ -13,44 +13,53 @@ namespace Doctrina.xAPI
         public Attachment(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Attachment(JToken jobj, ApiVersion version)
         {
-            if (!AllowObject(jobj))
+            GuardType(jobj, JTokenType.Object);
+
+            var usageType = jobj["usageType"];
+            if (usageType != null)
             {
-                return;
+                GuardType(usageType, JTokenType.String);
+                UsageType = new Iri(usageType.Value<string>());
             }
 
-            if (jobj["usageType"] != null)
+            var display = jobj["display"];
+            if (display != null)
             {
-                UsageType = new Iri(jobj.Value<string>("usageType"));
+                Display = new LanguageMap(display, version);
             }
 
-            if (jobj["display"] != null)
+            var description = jobj["description"];
+            if (description != null)
             {
-                Display = new LanguageMap(jobj["display"], version);
+                Description = new LanguageMap(description, version);
             }
 
-            if (jobj["description"] != null)
+            var contentType = jobj["contentType"];
+            if (contentType != null)
             {
-                Description = new LanguageMap(jobj["description"], version);
+                GuardType(contentType, JTokenType.String);
+                ContentType = contentType.Value<string>();
             }
 
-            if (jobj["contentType"] != null)
+            var length = jobj["length"];
+            if (length != null)
             {
-                ContentType = jobj.Value<string>("contentType");
+                GuardType(length, JTokenType.Integer);
+                Length = length.Value<int>();
             }
 
-            if (jobj["length"] != null)
+            var sha2 = jobj["sha2"];
+            if (sha2 != null)
             {
-                Length = jobj.Value<int>("length");
+                GuardType(sha2, JTokenType.String);
+                SHA2 = sha2.Value<string>();
             }
 
-            if (jobj["sha2"] != null)
+            var fileUrl = jobj["fileUrl"];
+            if (fileUrl != null)
             {
-                SHA2 = jobj.Value<string>("sha2");
-            }
-
-            if (jobj["fileUrl"] != null)
-            {
-                FileUrl = new Uri(jobj.Value<string>("fileUrl"));
+                GuardType(fileUrl, JTokenType.String);
+                FileUrl = new Uri(fileUrl.Value<string>());
             }
         }
 

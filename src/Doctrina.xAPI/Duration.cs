@@ -10,7 +10,6 @@ namespace Doctrina.xAPI
     /// <summary>
     /// ISO 8601 Duration
     /// </summary>
-    [TypeConverter(typeof(DurationTypeConverter))]
     public struct Duration
     {
         //private static string _regexPattern = @"^P((\d+(?:\.\d+)?Y)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?D)?(T(?=\d)(\d+(?:\.\d+)?H)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?S)?)?)$|^P(\d+(?:\.\d+)?W)?$";
@@ -131,8 +130,7 @@ namespace Doctrina.xAPI
                         throw new FormatException($"'{chr}' designator must have a value.");
                     }
 
-                    double value;
-                    if (double.TryParse(strValue, out value))
+                    if (double.TryParse(strValue, out double value))
                     {
                         elements.Add(new KeyValuePair<char, double>(chr, value));
                         strValue = null; // Clear value

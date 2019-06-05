@@ -13,15 +13,13 @@ namespace Doctrina.xAPI
         public StatementRef(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public StatementRef(JToken jobj, ApiVersion version)
         {
-            if (!AllowObject(jobj))
-            {
-                return;
-            }
+            GuardType(jobj, JTokenType.Object);
 
-            if (DisallowNullValue(jobj["id"]) && AllowString(jobj["id"]))
+            var id = jobj["id"];
+            if (id != null)
             {
-                // TODO: Required
-                Id = Guid.Parse(jobj.Value<string>("id"));
+                GuardType(id, JTokenType.String);
+                Id = ParseGuid(id);
             }
         }
 

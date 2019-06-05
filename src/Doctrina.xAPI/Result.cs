@@ -11,44 +11,51 @@ namespace Doctrina.xAPI
         public Result(JsonString jsonString) : this(jsonString.ToJToken()) { }
         public Result(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
-        public Result(JToken token, ApiVersion version)
+        public Result(JToken result, ApiVersion version)
         {
-            if (!AllowObject(token))
+            GuardType(result, JTokenType.Object);
+
+            var score = result["score"];
+            if (score != null)
             {
-                return;
+                Score = new Score(score, version);
             }
 
-            JObject jobj = token as JObject;
-
-            if (DisallowNullValue(jobj["score"]))
+            var success = result["success"];
+            if (success != null)
             {
-                Score = new Score(jobj.Value<JObject>("score"), version);
-            }
-            if (DisallowNullValue(jobj["success"]) && AllowBoolean(jobj["success"]))
-            {
-                Success = jobj.Value<bool?>("success");
-            }
-            if (DisallowNullValue(jobj["completion"]) && AllowBoolean(jobj["completion"]))
-            {
-                Completion = jobj.Value<bool?>("completion");
+                GuardType(success, JTokenType.Boolean);
+                Success = success.Value<bool?>();
             }
 
-            if (DisallowNullValue(jobj["response"]))
+            var completion = result["completion"];
+            if (completion != null)
             {
-                Response = jobj.Value<string>("response");
+                GuardType(completion, JTokenType.Boolean);
+                Completion = completion.Value<bool?>();
             }
 
-            if (DisallowNullValue(jobj["duration"]))
+            var response = result["response"];
+            if (response != null)
             {
-                Duration = new Duration(jobj.Value<string>("duration"));
+                GuardType(response, JTokenType.String);
+                Response = response.Value<string>();
             }
 
-            if (jobj["extensions"] != null)
+            var duration = result["duration"];
+            if (duration != null)
             {
-                Extensions = new Extensions(jobj.Value<JToken>("extensions"), version);
+                GuardType(duration, JTokenType.String);
+                Duration = new Duration(duration.Value<string>());
             }
 
-            DisallowAdditionalProps(jobj, "score", "success", "completion", "response", "duration", "extensions");
+            var extensions = result["extensions"];
+            if (extensions != null)
+            {
+                Extensions = new ExtensionsDictionary(extensions, version);
+            }
+
+            GuardAdditionalProperties((JObject)result, "score", "success", "completion", "response", "duration", "extensions");
         }
 
         /// <summary>
@@ -81,7 +88,7 @@ namespace Doctrina.xAPI
         /// <summary>
         /// A map of other properties as needed. See: <seealso cref="Models.Extensions"/>
         /// </summary>
-        public Extensions Extensions { get; set; }
+        public ExtensionsDictionary Extensions { get; set; }
 
         public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
@@ -114,7 +121,7 @@ namespace Doctrina.xAPI
 
             if (jobj["extensions"] != null)
             {
-                Extensions = new Extensions(jobj.Value<JObject>("extenions"), version);
+                Extensions = new ExtensionsDictionary(jobj.Value<JObject>("extenions"), version);
             }
 
             return jobj;
@@ -130,7 +137,7 @@ namespace Doctrina.xAPI
                    EqualityComparer<bool?>.Default.Equals(Completion, result.Completion) &&
                    Response == result.Response &&
                    EqualityComparer<Duration>.Default.Equals(Duration, result.Duration) &&
-                   EqualityComparer<Extensions>.Default.Equals(Extensions, result.Extensions);
+                   EqualityComparer<ExtensionsDictionary>.Default.Equals(Extensions, result.Extensions);
         }
 
         public override int GetHashCode()
@@ -141,7 +148,7 @@ namespace Doctrina.xAPI
             hashCode = hashCode * -1521134295 + EqualityComparer<bool?>.Default.GetHashCode(Completion);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Response);
             hashCode = hashCode * -1521134295 + EqualityComparer<Duration>.Default.GetHashCode(Duration);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Extensions>.Default.GetHashCode(Extensions);
+            hashCode = hashCode * -1521134295 + EqualityComparer<ExtensionsDictionary>.Default.GetHashCode(Extensions);
             return hashCode;
         }
 

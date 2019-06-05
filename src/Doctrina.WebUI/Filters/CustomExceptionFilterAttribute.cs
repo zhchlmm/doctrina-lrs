@@ -1,6 +1,8 @@
 ﻿using Doctrina.Application.Exceptions;
+using Doctrina.xAPI.Json.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Newtonsoft.Json;
 using System;
 using System.Net;
 
@@ -16,7 +18,13 @@ namespace Doctrina.WebUI.Filters
                 context.HttpContext.Response.ContentType = "application/json";
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 context.Result = new JsonResult(new { failures = ((ValidationException)context.Exception).Failures });
-
+                return;
+            }
+            else if (typeof(JsonModelException).IsAssignableFrom(context.Exception.GetType()))
+            {
+                context.HttpContext.Response.ContentType = "application/json";
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Result = new JsonResult(new { error = ((JsonModelException)context.Exception).Message });
                 return;
             }
 
@@ -25,6 +33,9 @@ namespace Doctrina.WebUI.Filters
             if (context.Exception is NotFoundException)
             {
                 code = HttpStatusCode.NotFound;
+            } else if (context.Exception is JsonReaderException)
+            {
+                code = HttpStatusCode.BadRequest;
             }
 
             context.HttpContext.Response.ContentType = "application/json";

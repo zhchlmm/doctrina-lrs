@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Exceptions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,9 +99,20 @@ namespace Doctrina.xAPI.InteractionTypes
             return type1?.Alias != type2?.Alias;
         }
 
-        public static implicit operator InteractionType(string alias)
+        public static implicit operator InteractionType(string type)
         {
-            return _types.FirstOrDefault(x => x.Alias == alias);
+            if (string.IsNullOrEmpty(type))
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            var interactionType = _types.FirstOrDefault(x => x.Alias == type);
+            if(interactionType != null)
+            {
+                return interactionType;
+            }
+
+            throw new InvalidInteractionTypeException(type);
         }
 
         public static implicit operator string(InteractionType type)

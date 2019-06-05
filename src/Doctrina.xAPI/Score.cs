@@ -18,31 +18,36 @@ namespace Doctrina.xAPI
         {
         }
 
-        public Score(JToken jobj, ApiVersion version)
+        public Score(JToken score, ApiVersion version)
         {
-            if (!AllowObject(jobj))
+            GuardType(score, JTokenType.Object);
+
+            var scaled = score["scaled"];
+            if (scaled != null)
             {
-                return;
+                GuardType(scaled, JTokenType.Float, JTokenType.Integer);
+                Scaled = scaled.Value<double?>();
             }
 
-            if (DisallowNullValue(jobj["scaled"]) && AllowNumber(jobj["scaled"]))
+            var raw = score["raw"];
+            if (raw != null)
             {
-                Scaled = jobj.Value<double?>("scaled");
+                GuardType(raw, JTokenType.Float, JTokenType.Integer);
+                Raw = raw.Value<double?>();
             }
 
-            if (DisallowNullValue(jobj["raw"]) && AllowNumber(jobj["raw"]))
+            var min = score["min"];
+            if (min != null)
             {
-                Raw = jobj.Value<double?>("raw");
+                GuardType(min, JTokenType.Float, JTokenType.Integer);
+                Min = min.Value<double?>();
             }
 
-            if (DisallowNullValue(jobj["min"]) && AllowNumber(jobj["min"]))
+            var max = score["max"];
+            if (max != null)
             {
-                Min = jobj.Value<double?>("min");
-            }
-
-            if (DisallowNullValue(jobj["max"]) && AllowNumber(jobj["max"]))
-            {
-                Max = jobj.Value<double?>("max");
+                GuardType(max, JTokenType.Float, JTokenType.Integer);
+                Max = max.Value<double?>();
             }
         }
 

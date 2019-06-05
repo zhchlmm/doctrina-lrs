@@ -10,9 +10,9 @@ namespace Doctrina.xAPI.Validators
             // Requirements for Groups
             RuleFor(x => x.ObjectType).Equal(ObjectType.Group);
 
-
             // Requirements for Anonymous Groups
             RuleFor(x => x.Member)
+                .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty()
                 .Must(x => x.Count() > 0)
                 .Unless(IsIdentifiedGroup)

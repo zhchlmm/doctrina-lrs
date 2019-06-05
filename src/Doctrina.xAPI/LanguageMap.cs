@@ -1,4 +1,6 @@
-﻿using Doctrina.xAPI.Helpers;
+﻿using Doctrina.xAPI.Exceptions;
+using Doctrina.xAPI.Helpers;
+using Doctrina.xAPI.Json.Exceptions;
 using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,27 +26,25 @@ namespace Doctrina.xAPI
 
         public LanguageMap(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
-        public LanguageMap(JToken jtoken, ApiVersion version)
+        public LanguageMap(JToken languageMap, ApiVersion version)
         {
-            if (!AllowObject(jtoken))
-            {
-                return;
-            }
+            GuardType(languageMap, JTokenType.Object);
 
-            var jobj = jtoken as JObject;
-
-            foreach (var item in jobj)
+            foreach (var item in (JObject)languageMap)
             {
-                if (DisallowNullValue(item.Value) && AllowCultureName(item))
+                GuardType(item.Value, JTokenType.String);
+
+                if(!CultureHelper.IsValidCultureName(item.Key))
                 {
-                    if (ContainsKey(item.Key))
-                    {
-                        ParsingErrors.Add(item.Value.Path, "Duplicate language code key.");
-                        continue;
-                    }
-
-                    Add(item.Key, item.Value.Value<string>());
+                    throw new CultureNameException(languageMap, item.Key);
                 }
+
+                //if (ContainsKey(item.Key))
+                //{
+                //    throw new LanguageMapKeyException();
+                //}
+
+                Add(item.Key, item.Value.Value<string>());
             }
         }
 

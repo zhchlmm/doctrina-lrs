@@ -101,7 +101,7 @@ namespace Doctrina.Application.Mappings
                 .ForMember(ent => ent.ActivityDefinitionId, opt => opt.Ignore())
                 .ForMember(ent => ent.Type, opt => opt.MapFrom(x => x.Type.ToString()))
                 .ForMember(ent => ent.Descriptions, opt => opt.MapFrom<LanguageMapValueResolver, LanguageMap>(x => x.Description))
-                .ForMember(ent => ent.Extensions, opt => opt.MapFrom<ExtenstionsValueResolver, xAPI.Extensions>(x => x.Extensions))
+                .ForMember(ent => ent.Extensions, opt => opt.MapFrom<ExtenstionsValueResolver, xAPI.ExtensionsDictionary>(x => x.Extensions))
                 .ForMember(ent => ent.MoreInfo, opt => opt.MapFrom(x => x.MoreInfo.ToString()))
                 .ForMember(ent => ent.Names, opt => opt.MapFrom<LanguageMapValueResolver, LanguageMap>(src => src.Name))
                 .ReverseMap();
@@ -113,7 +113,7 @@ namespace Doctrina.Application.Mappings
                 .ForMember(x => x.Duration, opt => opt.Ignore()/*MapFrom(x => (string)x.Duration.ToString())*/)
                 .ForMember(x => x.Response, opt => opt.MapFrom(x => x.Response))
                 .ForMember(x => x.Success, opt => opt.MapFrom(x => x.Success))
-                .ForMember(x => x.Extensions, opt => opt.MapFrom<ExtenstionsValueResolver, xAPI.Extensions>(x => x.Extensions))
+                .ForMember(x => x.Extensions, opt => opt.MapFrom<ExtenstionsValueResolver, xAPI.ExtensionsDictionary>(x => x.Extensions))
                 .ReverseMap();
 
             configuration.CreateMap<Score, ScoreEntity>()

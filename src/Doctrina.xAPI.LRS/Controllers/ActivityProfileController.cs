@@ -94,7 +94,7 @@ namespace Doctrina.xAPI.LRS.Controllers
         /// <param name="document">The document to be stored or updated.</param>
         /// <returns>204 No Content</returns>
         [AcceptVerbs("PUT", "POST")]
-        public async Task<IActionResult> SaveProfile(string profileId, Iri activityId, [FromBody]byte[] document, Guid? registration = null)
+        public async Task<IActionResult> SaveProfile([FromQuery]string profileId, [FromQuery]Iri activityId, [FromBody]byte[] document, [FromQuery]Guid? registration = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

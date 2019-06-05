@@ -15,18 +15,19 @@ namespace Doctrina.xAPI
         public Account(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Account(JToken jobj, ApiVersion version)
         {
-            if (!AllowObject(jobj))
-            {
-                return;
-            }
+            GuardType(jobj, JTokenType.Object);
 
-            if (DisallowNullValue(jobj["homePage"]) && AllowString(jobj["homePage"]))
+            var homePage = jobj["homePage"];
+            if (homePage != null)
             {
+                GuardType(homePage, JTokenType.String);
                 HomePage = new Uri(jobj.Value<string>("homePage"));
             }
 
-            if (DisallowNullValue(jobj["name"]) && AllowString(jobj["name"]))
+            var name = jobj["name"];
+            if (name != null)
             {
+                GuardType(name, JTokenType.String);
                 Name = jobj.Value<string>("name");
             }
         }

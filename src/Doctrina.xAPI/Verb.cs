@@ -9,24 +9,24 @@ namespace Doctrina.xAPI
         public Verb(JsonString jsonString) : this(jsonString.ToJToken())
         {
         }
-        public Verb(JToken jObject) : this(jObject, ApiVersion.GetLatest())
+        public Verb(JToken verb) : this(verb, ApiVersion.GetLatest())
         {
         }
-        public Verb(JToken jobj, ApiVersion version)
+        public Verb(JToken verb, ApiVersion version)
         {
-            if (!AllowObject(jobj))
+            GuardType(verb, JTokenType.Object);
+
+            var id = verb["id"];
+            if (id != null)
             {
-                return;
+                GuardType(id, JTokenType.String);
+                Id = new Iri(id.Value<string>());
             }
 
-            if (DisallowNullValue(jobj["id"]) && AllowString(jobj["id"]))
+            var display = verb["display"];
+            if (display != null)
             {
-                Id = new Iri(jobj.Value<string>("id"));
-            }
-
-            if (DisallowNullValue(jobj["display"]))
-            {
-                Display = new LanguageMap(jobj.Value<JObject>("display"), version);
+                Display = new LanguageMap(display, version);
             }
         }
 

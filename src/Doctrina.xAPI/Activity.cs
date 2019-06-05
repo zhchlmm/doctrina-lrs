@@ -1,4 +1,6 @@
-﻿using Doctrina.xAPI.InteractionTypes;
+﻿using Doctrina.xAPI.Exceptions;
+using Doctrina.xAPI.InteractionTypes;
+using Doctrina.xAPI.Json.Exceptions;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -11,36 +13,35 @@ namespace Doctrina.xAPI
         public Activity(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Activity(JToken jobj, ApiVersion version) : base(jobj, version)
         {
-            if (!AllowObject(jobj))
-            {
-                return;
-            }
+            GuardType(jobj, JTokenType.Object);
 
-            if (DisallowNullValue(jobj["id"]))
+            var id = jobj["id"];
+            if (id != null)
             {
+                GuardType(id, JTokenType.String);
                 Id = new Iri(jobj.Value<string>("id"));
             }
 
-            if (DisallowNullValue(jobj["definition"]))
+            var definition = jobj["definition"];
+            if (definition != null)
             {
-                var jdefinition = jobj["definition"];
-
-                JToken jInteractionType = jdefinition["interactionType"];
-                if (DisallowNullValue(jInteractionType) && AllowString(jInteractionType))
+                JToken interactionType = definition["interactionType"];
+                if (interactionType != null)
                 {
-                    InteractionType interactionType = jInteractionType.Value<string>();
-                    if(interactionType != null)
+                    GuardType(interactionType, JTokenType.String);
+                    try
                     {
-                        Definition = interactionType.CreateInstance(jdefinition, version);
+                        InteractionType type = interactionType.Value<string>();
+                        Definition = type.CreateInstance(definition, version);
                     }
-                    else
+                    catch (InvalidInteractionTypeException ex)
                     {
-                        ParsingErrors.Add(jInteractionType.Path, "Invalid interactionType.");
+                        throw new JsonTokenModelException(interactionType, ex.Message);
                     }
                 }
                 else
                 {
-                    Definition = new ActivityDefinition(jdefinition, version);
+                    Definition = new ActivityDefinition(definition, version);
                 }
             }
         }

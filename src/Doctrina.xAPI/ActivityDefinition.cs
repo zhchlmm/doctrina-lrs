@@ -11,34 +11,38 @@ namespace Doctrina.xAPI
         public ActivityDefinition(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) {}
         public ActivityDefinition(JToken obj, ApiVersion version)
         {
-            if (!AllowObject(obj))
+            GuardType(obj, JTokenType.Object);
+
+            var type = obj["type"];
+            if (type != null)
             {
-                return;
+                GuardType(type, JTokenType.String);
+                Type = new Iri(type.Value<string>());
             }
 
-            if (DisallowNullValue(obj["type"]) && AllowString(obj["type"]))
+            var moreInfo = obj["moreInfo"];
+            if (moreInfo != null)
             {
-                Type = new Iri(obj["type"].Value<string>());
+                GuardType(moreInfo, JTokenType.String);
+                MoreInfo = new Uri(moreInfo.Value<string>());
             }
 
-            if (DisallowNullValue(obj["moreInfo"]) && AllowString(obj["moreInfo"]))
+            var name = obj["name"];
+            if (name != null)
             {
-                MoreInfo = new Uri(obj["moreInfo"].Value<string>());
+                Name = new LanguageMap(name, version);
             }
 
-            if (DisallowNullValue(obj["name"]))
+            var description = obj["description"];
+            if (description != null)
             {
-                Name = new LanguageMap(obj["name"], version);
+                Description = new LanguageMap(description, version);
             }
 
-            if (DisallowNullValue(obj["description"]))
+            var extensions = obj["extensions"];
+            if (extensions != null)
             {
-                Description = new LanguageMap(obj["description"], version);
-            }
-
-            if (obj["extensions"] != null)
-            {
-                Extensions = new Extensions(obj["extensions"], version);
+                Extensions = new ExtensionsDictionary(extensions, version);
             }
         }
 
@@ -53,7 +57,7 @@ namespace Doctrina.xAPI
         /// </summary>
         public Uri MoreInfo { get; set; }
 
-        public Extensions Extensions { get; set; }
+        public ExtensionsDictionary Extensions { get; set; }
 
         public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {

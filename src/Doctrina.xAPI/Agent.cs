@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Doctrina.xAPI.Exceptions;
+using Doctrina.xAPI.Json.Exceptions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -17,39 +19,53 @@ namespace Doctrina.xAPI
         public Agent(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public Agent(JToken jobj, ApiVersion version) : base(jobj, version)
         {
-            if (!AllowObject(jobj))
+            GuardType(jobj, JTokenType.Object);
+
+            var objectType = jobj["objectType"];
+            if (objectType != null)
             {
-                return;
+                GuardType(objectType, JTokenType.String);
+                ObjectType obt = objectType.Value<string>();
+                if(obt != ObjectType)
+                {
+                    throw new UnexpectedObjectTypeException(objectType, obt);
+                }
             }
 
-            if (DisallowNullValue(jobj["objectType"]) && AllowString(jobj["objectType"]))
+            var name = jobj["name"];
+            if (name != null)
             {
-                Name = jobj.Value<string>("objectType");
-            }
-
-            if (DisallowNullValue(jobj["name"]) && AllowString(jobj["name"]))
-            {
+                GuardType(name, JTokenType.String);
                 Name = jobj.Value<string>("name");
             }
 
-            if (DisallowNullValue(jobj["mbox"]) && AllowString(jobj["mbox"]))
+            var mbox = jobj["mbox"];
+            if (mbox != null)
             {
-                Mbox = new Mbox(jobj.Value<string>("mbox"));
+                GuardType(mbox, JTokenType.String);
+                Mbox = new Mbox(mbox.Value<string>());
             }
 
-            if (DisallowNullValue(jobj["mbox_sha1sum"]) && AllowString(jobj["mbox_sha1sum"]))
+            var mbox_sha1sum = jobj["mbox_sha1sum"];
+            if (mbox_sha1sum != null)
             {
-                Mbox_SHA1SUM = jobj.Value<string>("mbox_sha1sum");
+                GuardType(mbox_sha1sum, JTokenType.String);
+                Mbox_SHA1SUM = mbox_sha1sum.Value<string>();
             }
 
-            if (DisallowNullValue(jobj["openid"]) && AllowString(jobj["openid"]))
+            var openid = jobj["openid"];
+            if (openid != null)
             {
-                OpenId = new Iri(jobj.Value<string>("openid"));
+                GuardType(openid, JTokenType.String);
+                OpenId = new Iri(openid.Value<string>());
             }
 
-            if (DisallowNullValue(jobj["account"]) && AllowObject(jobj["account"]))
+            var account = jobj["account"];
+            if (account != null)
             {
-                Account = new Account(jobj["account"], version);
+                GuardType(account, JTokenType.Object);
+
+                Account = new Account(account, version);
             }
         }
 

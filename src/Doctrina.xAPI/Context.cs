@@ -16,26 +16,35 @@ namespace Doctrina.xAPI
         {
         }
 
-        public Context(JToken jobj) : this(jobj, ApiVersion.GetLatest())
+        public Context(JToken context) : this(context, ApiVersion.GetLatest())
         {
         }
 
-        public Context(JToken jobj, ApiVersion version)
+        public Context(JToken context, ApiVersion version)
         {
-            if (!AllowObject(jobj))
+            GuardType(context, JTokenType.Object);
+
+            var registration = context["registration"];
+            if (registration != null)
             {
-                return;
+                GuardType(registration, JTokenType.String);
+
+                if (Guid.TryParse(registration.Value<string>(), out Guid id))
+                {
+                    Registration = id;
+                }
+                else
+                {
+                    ParsingErrors.Add(registration.Path, "Invalid UUID.");
+                }
             }
 
-            if (DisallowNullValue(jobj["registration"]) && AllowString(jobj["registration"]))
+            var instructor = context["instructor"];
+            if (instructor != null)
             {
-                Registration = Guid.Parse(jobj.Value<string>("registration"));
-            }
+                GuardType(instructor, JTokenType.Object);
 
-            var instructor = jobj["instructor"];
-            if (DisallowNullValue(instructor))
-            {
-                ObjectType objectType = instructor["objectType"] != null ? 
+                ObjectType objectType = instructor["objectType"] != null ?
                     (ObjectType)instructor["objectType"].Value<string>() : 
                     ObjectType.Agent;
 
@@ -49,39 +58,49 @@ namespace Doctrina.xAPI
                 }
             }
 
-            if (DisallowNullValue(jobj["team"]))
+            var team = context["team"];
+            if (team != null)
             {
-                Instructor = new Group(jobj["team"], version);
+                Instructor = new Group(team, version);
             }
 
-            if (DisallowNullValue(jobj["contextActivities"]))
+            var contextActivities = context["contextActivities"];
+            if (contextActivities != null)
             {
-                ContextActivities = new ContextActivities(jobj["contextActivities"], version);
+                ContextActivities = new ContextActivities(contextActivities, version);
             }
 
-            if (DisallowNullValue(jobj["revision"]) && AllowString(jobj["revision"]))
+            var revision = context["revision"];
+            if (revision != null)
             {
-                Revision = jobj.Value<string>("revision");
+                GuardType(revision, JTokenType.String);
+                Revision = revision.Value<string>();
             }
 
-            if (DisallowNullValue(jobj["platform"]) && AllowString(jobj["platform"]))
+            var platform = context["platform"];
+            if (platform != null)
             {
-                Platform = jobj.Value<string>("platform");
+                GuardType(platform, JTokenType.String);
+                Platform = platform.Value<string>();
             }
 
-            if (DisallowNullValue(jobj["language"]) && AllowString(jobj["language"]))
+            var language = context["language"];
+            if (language != null)
             {
-                Language = jobj.Value<string>("language");
+                GuardType(language, JTokenType.String);
+                Language = language.Value<string>();
             }
 
-            if (DisallowNullValue(jobj["statement"]))
+            var statement = context["statement"];
+            if (statement != null)
             {
-                Statement = new StatementRef(jobj["statement"], version);
+                Statement = new StatementRef(statement, version);
             }
 
-            if (DisallowNullValue(jobj["extensions"]))
+            var extensions = context["extensions"];
+            if (extensions != null)
             {
-                Extensions = new Extensions(jobj["extensions"], version);
+                Extensions = new ExtensionsDictionary(extensions, version);
             }
         }
 
@@ -125,7 +144,7 @@ namespace Doctrina.xAPI
         /// </summary>
         public StatementRef Statement { get; set; }
 
-        public Extensions Extensions { get; set; }
+        public ExtensionsDictionary Extensions { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -139,7 +158,7 @@ namespace Doctrina.xAPI
                    Platform == context.Platform &&
                    Language == context.Language &&
                    EqualityComparer<StatementRef>.Default.Equals(Statement, context.Statement) &&
-                   EqualityComparer<Extensions>.Default.Equals(Extensions, context.Extensions);
+                   EqualityComparer<ExtensionsDictionary>.Default.Equals(Extensions, context.Extensions);
         }
 
         public override int GetHashCode()
@@ -153,7 +172,7 @@ namespace Doctrina.xAPI
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Platform);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Language);
             hashCode = hashCode * -1521134295 + EqualityComparer<StatementRef>.Default.GetHashCode(Statement);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Extensions>.Default.GetHashCode(Extensions);
+            hashCode = hashCode * -1521134295 + EqualityComparer<ExtensionsDictionary>.Default.GetHashCode(Extensions);
             return hashCode;
         }
 

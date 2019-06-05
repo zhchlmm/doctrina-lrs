@@ -20,6 +20,8 @@ namespace Doctrina.xAPI
         public StatementCollection(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
         public StatementCollection(JToken jobj, ApiVersion version)
         {
+            GuardType(jobj, JTokenType.Array, JTokenType.Object);
+
             if (jobj.Type == JTokenType.Array)
             {
                 foreach (var item in jobj)

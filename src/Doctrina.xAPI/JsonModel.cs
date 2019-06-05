@@ -1,8 +1,11 @@
 ﻿using Doctrina.xAPI.Collections;
+using Doctrina.xAPI.Exceptions;
+using Doctrina.xAPI.Json.Exceptions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Doctrina.xAPI
@@ -46,7 +49,7 @@ namespace Doctrina.xAPI
             return base.GetHashCode();
         }
 
-        public void DisallowAdditionalProps(JObject jobj, params string[] allowedPropertyNames)
+        public void GuardAdditionalProperties(JObject jobj, params string[] allowedPropertyNames)
         {
             var disallowedProps = jobj.Properties()
                 .Where(x => x.Name != null && !allowedPropertyNames.Contains(x.Name))
@@ -58,56 +61,9 @@ namespace Doctrina.xAPI
             }
         }
 
-        public bool AllowString(JToken token)
+        public DateTimeOffset ParseDateTimeOffset(JToken token)
         {
-            if (token.Type == JTokenType.String)
-            {
-                return true;
-            }
-
-            ParsingErrors.Add(token.Path, $"'{token.ToString(Newtonsoft.Json.Formatting.None)}' is not a valid string.");
-            return false;
-        }
-
-        public bool AllowNumber(JToken token)
-        {
-            if (token != null && (token.Type == JTokenType.Integer || token.Type == JTokenType.Float))
-            {
-                return true;
-            }
-
-            ParsingErrors.Add(token.Path, "Is not a valid JSON number.");
-            return false;
-        }
-
-        public bool AllowBoolean(JToken token)
-        {
-            if (token != null && token.Type == JTokenType.Boolean)
-            {
-                return true;
-            }
-
-            ParsingErrors.Add(token.Path, "Is not a valid JSON boolean.");
-            return false;
-        }
-
-        public bool AllowObject(JToken token)
-        {
-            if(token != null && token.Type == JTokenType.Object)
-            {
-                return true;
-            }
-
-            ParsingErrors.Add(token.Path, "Is not a valid JSON object.");
-            return false;
-        }
-
-        public bool AllowDateTimeOffset(JToken token)
-        {
-            if (token == null || token.Type != JTokenType.String)
-            {
-                return false;
-            }
+            GuardType(token, JTokenType.String);
 
             string strDateTime = token.Value<string>();
 
@@ -115,50 +71,75 @@ namespace Doctrina.xAPI
             || strDateTime.EndsWith("-0000")
             || strDateTime.EndsWith("-00"))
             {
-                ParsingErrors.Add(token.Path, $"'{strDateTime}' does not allow an offset of -00:00, -0000, -00");
+                throw new InvalidDateTimeOffsetException(token, strDateTime);
             }
 
             if (DateTimeOffset.TryParse(strDateTime, out DateTimeOffset result))
             {
-                return true;
+                return result;
             }
             else
             {
-                ParsingErrors.Add(token.Path, $"'{strDateTime}' is not a well formed DateTime string.");
-                return false;
+                throw new InvalidDateTimeOffsetFormatException(token, strDateTime);
             }
         }
 
-        public bool AllowArray(JToken token)
+        public Guid ParseGuid(JToken token)
         {
-            if(token != null && token.Type == JTokenType.Array)
-            {
-                return true;
-            }
+            GuardType(token, JTokenType.String);
 
-            ParsingErrors.Add(token.Path, $"Expected JSON Array, but received '{token.Type}'");
-            return false;
+            string strGuid = token.Value<string>();
+
+            if(Guid.TryParse(strGuid, out Guid result))
+            {
+                return result;
+            }
+            else
+            {
+                throw new GuidFormatException(token, strGuid);
+            }
+        }
+
+        public ObjectType ParseObjectType(JToken token, params ObjectType[] types)
+        {
+            GuardType(token, JTokenType.String);
+            try
+            {
+                ObjectType objectType = token.Value<string>();
+                foreach (var type in types)
+                {
+                    if (objectType == type)
+                    {
+                        return objectType;
+                    }
+                }
+
+                throw new UnexpectedObjectTypeException(token, objectType);
+            }
+            catch (InvalidObjectTypeException ex)
+            {
+                throw new JsonTokenModelException(token, ex.Message);
+            }
         }
 
         /// <summary>
-        /// Adds failure if token type is null.
+        /// Throws an exception when type does not match any of the provided types.
         /// </summary>
         /// <param name="token"></param>
-        /// <returns></returns>
-        public bool DisallowNullValue(JToken token)
+        /// <param name="types"></param>
+        public void GuardType(JToken token, params JTokenType[] types)
         {
-            if (token == null)
+            if(!types.Contains(token.Type))
             {
-                return false;
+                if(types.Length == 1)
+                {
+                    throw new InvalidTokenTypeException(token, types[0]);
+                }
+                else
+                {
+                    throw new InvalidTokenTypeException(token, types);
+                }
             }
-
-            if (token.Type == JTokenType.Null)
-            {
-                ParsingErrors.Add(token.Path, "Null values are not allowed.");
-                return false;
-            }
-
-            return true;
         }
 
         /// <summary>

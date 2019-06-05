@@ -38,6 +38,11 @@ namespace Doctrina.xAPI.Validators
             //    }
             //});
 
+            RuleFor(x => x.Object.ObjectType)
+                .Equal(ObjectType.SubStatement)
+                .When(x => x.Verb?.Id?.ToString() == Verbs.Voided)
+                .WithMessage("When statement verb is voided, statement object must be StatementRef.");
+
             RuleFor(x => x.ParsingErrors).Custom((x, context) =>
             {
                 foreach (var failure in x)

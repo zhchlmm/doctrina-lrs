@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Json.Exceptions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -13,40 +14,58 @@ namespace Doctrina.xAPI
         public Statement(string jsonString) : this((JsonString)jsonString) { }
         public Statement(JsonString jsonString) : this(jsonString.ToJToken()) { }
         public Statement(JToken jtoken) : this(jtoken, ApiVersion.GetLatest()) { }
-        public Statement(JToken jtoken, ApiVersion version) : base(jtoken, version)
+        public Statement(JToken statement, ApiVersion version) : base(statement, version)
         {
-            if (!AllowObject(jtoken))
+            GuardType(statement, JTokenType.Object);
+
+            var id = statement["id"];
+            if (id != null)
             {
-                return;
+                Id = ParseGuid(id);
             }
 
-            var jobj = jtoken as JObject;
-
-            var jId = jobj["id"];
-            if (DisallowNullValue(jId) && AllowString(jId))
+            var @object = statement["object"];
+            if (@object != null)
             {
-                if (Guid.TryParse(jId.Value<string>(), out Guid id)){
-                    Id = id;
+                GuardType(@object, JTokenType.Object);
+
+                var jobjectType = @object["objectType"];
+                if (jobjectType != null)
+                {
+                    ObjectType type = ParseObjectType(jobjectType, ObjectType.Activity, ObjectType.Agent, ObjectType.Group, ObjectType.Activity, ObjectType.StatementRef, ObjectType.SubStatement);
+                    Object = type.CreateInstance(@object, version);
+                }
+                else if (@object["id"] != null)
+                {
+                    // Assume activity
+                    Object = new Activity(@object, version);
+                }
+            }
+
+            var stored = statement["stored"];
+            if (stored != null)
+            {
+                stored = ParseDateTimeOffset(stored);
+            }
+            var authority = statement["authority"];
+            if (authority != null)
+            {
+                GuardType(authority, JTokenType.Object);
+
+                var objectType = authority["objectType"];
+                if(objectType != null)
+                {
+                    ObjectType type = ParseObjectType(objectType, ObjectType.Agent, ObjectType.Group);
+                    Authority = (Agent)type.CreateInstance(authority, version);
                 }
                 else
                 {
-                    ParsingErrors.Add(jId.Path, "Invalid UUID.");
+                    Authority = new Agent(authority, version);
                 }
+
             }
 
-            if (DisallowNullValue(jobj["stored"]))
-            {
-                Stored = DateTimeOffset.Parse(jobj.Value<string>("stored"));
-            }
-
-            if (DisallowNullValue(jobj["authority"]))
-            {
-                var auth = jtoken.Value<JObject>("authority");
-                ObjectType objType = auth.Value<string>("objectType");
-                Authority = (Agent)objType.CreateInstance(auth, version);
-            }
-
-            DisallowAdditionalProps(jobj, "id", "stored", "authority", "version", "object", "actor", "verb", "result", "context", "timestamp", "attachments");
+            GuardAdditionalProperties((JObject)statement, "id", "stored", "authority", "version", "object", "actor", "verb", "result", "context", "timestamp", "attachments");
         }
 
        

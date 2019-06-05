@@ -25,11 +25,7 @@ namespace Doctrina.xAPI
         public AttachmentCollection(JToken jarr) : this(jarr, ApiVersion.GetLatest()) { }
         public AttachmentCollection(JToken jarr, ApiVersion version)
         {
-            if(DisallowNullValue(jarr) && jarr.Type != JTokenType.Array)
-            {
-                ParsingErrors.Add(jarr.Path, "Must be a valid JSON array.");
-                return;
-            }
+            GuardType(jarr, JTokenType.Array);
 
             foreach (var item in jarr)
             {

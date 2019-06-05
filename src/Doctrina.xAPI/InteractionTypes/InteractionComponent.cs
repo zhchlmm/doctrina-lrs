@@ -12,15 +12,16 @@ namespace Doctrina.xAPI.InteractionTypes
         public InteractionComponent(JToken jobj, ApiVersion version)
         {
             var id = jobj["id"];
-            if (id != null && AllowString(id))
+            if (id != null)
             {
+                GuardType(id, JTokenType.String);
                 Id = id.Value<string>();
             }
 
-            var desc = jobj["description"];
-            if (DisallowNullValue(desc))
+            var description = jobj["description"];
+            if (description != null)
             {
-                Description = new LanguageMap(desc, version);
+                Description = new LanguageMap(description, version);
             }
         }
 

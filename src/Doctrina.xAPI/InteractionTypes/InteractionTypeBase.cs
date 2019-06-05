@@ -7,28 +7,20 @@ namespace Doctrina.xAPI.InteractionTypes
     {
         public InteractionTypeBase() { }
         public InteractionTypeBase(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
-        public InteractionTypeBase(JToken jobj, ApiVersion version) : base(jobj, version)
+        public InteractionTypeBase(JToken interactionType, ApiVersion version) : base(interactionType, version)
         {
-            //if(jobj["interactionType"] != null)
-            //{
-            //    InteractionType = jobj.Value<string>("interactionType");
-            //}
-
-            var jCorrectResponsesPattern = jobj["correctResponsesPattern"];
-            if (DisallowNullValue(jCorrectResponsesPattern))
+            var correctResponsesPattern = interactionType["correctResponsesPattern"];
+            if (correctResponsesPattern != null)
             {
-                if(AllowArray(jCorrectResponsesPattern))
+                GuardType(correctResponsesPattern, JTokenType.Array);
+
+                var stringList = new List<string>();
+                foreach (var jstring in correctResponsesPattern)
                 {
-                    var correctResponsesPattern = new List<string>();
-                    foreach(var jstring in jCorrectResponsesPattern)
-                    {
-                        if(AllowString(jstring))
-                        {
-                            correctResponsesPattern.Add(jstring.Value<string>());
-                        }
-                    }
-                    CorrectResponsesPattern = correctResponsesPattern.ToArray();
+                    GuardType(jstring, JTokenType.String);
+                    stringList.Add(jstring.Value<string>());
                 }
+                CorrectResponsesPattern = stringList.ToArray();
             }
         }
 

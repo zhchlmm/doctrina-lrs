@@ -1,38 +1,39 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI
 {
-    public class Extensions : JsonModel, IDictionary<Uri, JToken>
+    public class ExtensionsDictionary : JsonModel, IDictionary<Uri, JToken>
     {
-        private IDictionary<Uri, JToken> _values = new Dictionary<Uri, JToken>();
+        private IDictionary<Uri, JToken> _values;
 
-        public Extensions() { }
-        public Extensions(IEnumerable<KeyValuePair<Uri, JToken>> values)
+        public ExtensionsDictionary() { }
+        public ExtensionsDictionary(IEnumerable<KeyValuePair<Uri, JToken>> values)
         {
-            foreach(var value in values)
+            _values = new Dictionary<Uri, JToken>();
+
+            foreach (var value in values)
             {
                 _values.Add(value);
             }
         }
 
-        public Extensions(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public ExtensionsDictionary(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
 
-        public Extensions(JToken jtoken, ApiVersion version)
+        public ExtensionsDictionary(JToken extensions, ApiVersion version)
         {
-            if (!AllowObject(jtoken))
-            {
-                return;
-            }
+            GuardType(extensions, JTokenType.Null, JTokenType.Object);
 
-            var jobj = jtoken as JObject;
-
-            foreach (var token in jobj)
+            if(extensions.Type == JTokenType.Object)
             {
-                Add(new Uri(token.Key), token.Value);
+                _values = new Dictionary<Uri, JToken>();
+
+                foreach (var token in (JObject)extensions)
+                {
+                    Add(new Uri(token.Key), token.Value);
+                }
             }
         }
 
@@ -88,7 +89,7 @@ namespace Doctrina.xAPI
 
         public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
-            if(_values.Count > 0)
+            if(_values != null && _values.Count > 0)
             {
                 var obj = new JObject();
                 foreach (var val in _values)
@@ -97,6 +98,7 @@ namespace Doctrina.xAPI
                 }
                 return obj;
             }
+
             return null;
         }
 
@@ -113,11 +115,6 @@ namespace Doctrina.xAPI
         public bool TryGetValue(Uri key, out JToken value)
         {
             return _values.TryGetValue(key, out value);
-        }
-
-        public static implicit operator Extensions(JObject jobj)
-        {
-            return new Extensions(jobj);
         }
     }
 }

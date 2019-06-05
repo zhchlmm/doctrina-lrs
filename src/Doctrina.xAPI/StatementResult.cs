@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Doctrina.xAPI
 {
@@ -19,19 +15,18 @@ namespace Doctrina.xAPI
         public StatementsResult(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
         public StatementsResult(JToken jobj, ApiVersion version)
         {
-            if (!AllowObject(jobj))
+            GuardType(jobj, JTokenType.Object);
+
+            var statements = jobj["statements"];
+            if (statements != null)
             {
-                return;
+                Statements = new StatementCollection(statements, version);
             }
 
-            if (jobj["statements"] != null)
+            var more = jobj["more"];
+            if (more != null)
             {
-                Statements = new StatementCollection(jobj.Value<JArray>("statements"), version);
-            }
-
-            if (jobj["more"] != null)
-            {
-                More = new Uri(jobj.Value<string>("more"));
+                More = new Uri(more.Value<string>());
             }
         }
 
