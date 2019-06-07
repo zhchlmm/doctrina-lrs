@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Doctrina.xAPI.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -10,11 +11,7 @@ namespace Doctrina.xAPI
         {
         }
 
-        public Score(JsonString jsonString) : this(jsonString.ToJToken())
-        {
-        }
-
-        public Score(JToken jobj) : this(jobj, ApiVersion.GetLatest())
+        public Score(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest())
         {
         }
 

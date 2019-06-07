@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace Doctrina.xAPI.Json.Exceptions
+namespace Doctrina.xAPI.Json
 {
     public class GuidFormatException : JsonTokenModelException
     {

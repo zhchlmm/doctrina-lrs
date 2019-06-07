@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 
-namespace Doctrina.xAPI.Json.Exceptions
+namespace Doctrina.xAPI.Json
 {
     public class JsonModelException : Exception
     {
@@ -9,16 +8,5 @@ namespace Doctrina.xAPI.Json.Exceptions
             : base(message)
         {
         }
-    }
-
-    public class JsonTokenModelException : JsonModelException
-    {
-        public JsonTokenModelException(JToken token, string message) 
-            : base($"{message.EnsureEndsWith(".")} Path: '{token.Path}'")
-        {
-            Token = token;
-        }
-
-        public JToken Token { get; }
     }
 }

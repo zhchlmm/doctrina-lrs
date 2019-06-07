@@ -1,5 +1,4 @@
-﻿using Doctrina.xAPI.Validators;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Doctrina.Application.Statements.Commands
 {

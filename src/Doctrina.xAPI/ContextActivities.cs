@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Doctrina.xAPI.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -7,8 +8,8 @@ namespace Doctrina.xAPI
     public class ContextActivities : JsonModel
     {
         public ContextActivities() { }
-        public ContextActivities(JsonString jsonString) : this(jsonString.ToJToken()) { }
-        public ContextActivities(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+
+        public ContextActivities(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
 
         public ContextActivities(JToken contextActivities, ApiVersion version)
         {

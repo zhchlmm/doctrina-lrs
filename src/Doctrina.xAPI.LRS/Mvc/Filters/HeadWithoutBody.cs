@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Doctrina.xAPI.LRS.Mvc.Filters
+namespace Doctrina.xAPI.Store.Mvc.Filters
 {
     /// <summary>
     /// Accepts HEAD requests without body

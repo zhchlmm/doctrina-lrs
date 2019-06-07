@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Doctrina.xAPI.Json.Exceptions
+namespace Doctrina.xAPI.Json
 {
     public class InvalidTokenTypeException : JsonTokenModelException
     {

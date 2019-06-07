@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Json;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace Doctrina.xAPI
@@ -10,9 +11,8 @@ namespace Doctrina.xAPI
     {
         public StatementsResult() {}
 
-        public StatementsResult(string jsonString) : this((JsonString)jsonString) {}
-        public StatementsResult(JsonString jsonString) : this(jsonString.ToJToken()) {}
-        public StatementsResult(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public StatementsResult(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) {}
+
         public StatementsResult(JToken jobj, ApiVersion version)
         {
             GuardType(jobj, JTokenType.Object);
@@ -47,9 +47,11 @@ namespace Doctrina.xAPI
 
         public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
-            var obj = new JObject();
-            obj["statements"] = Statements?.ToJToken(version, format);
-            obj["more"] = More?.ToString();
+            var obj = new JObject
+            {
+                ["statements"] = Statements?.ToJToken(version, format),
+                ["more"] = More?.ToString()
+            };
             return obj;
         }
     }

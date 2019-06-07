@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
-namespace Doctrina.xAPI.LRS.Mvc.ModelBinding.Providers
+namespace Doctrina.xAPI.Store.Mvc.ModelBinding.Providers
 {
     public class IriModelBinderProvider : IModelBinderProvider
     {

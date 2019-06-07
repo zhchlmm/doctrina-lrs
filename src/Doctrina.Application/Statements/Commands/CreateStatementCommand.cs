@@ -5,10 +5,8 @@ using Doctrina.Application.Verbs.Commands;
 using Doctrina.Domain.Entities;
 using Doctrina.xAPI;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,17 +26,15 @@ namespace Doctrina.Application.Statements.Commands
 
         public class Handler : IRequestHandler<CreateStatementCommand, Guid>
         {
+            private readonly IDoctrinaDbContext _context;
             private readonly IMediator _mediator;
             private readonly IMapper _mapper;
-            private readonly IHttpContextAccessor _httpContextAccessor;
-            private readonly IDoctrinaDbContext _context;
 
-            public Handler(IDoctrinaDbContext context, IMediator mediator, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            public Handler(IDoctrinaDbContext context, IMediator mediator, IMapper mapper)
             {
                 _context = context;
                 _mediator = mediator;
                 _mapper = mapper;
-                _httpContextAccessor = httpContextAccessor;
             }
 
             /// <summary>
@@ -67,19 +63,19 @@ namespace Doctrina.Application.Statements.Commands
                 request.Statement.Stored = request.Statement.Stored ?? DateTimeOffset.UtcNow;
 
                 // TODO: Move this logic elsewhere
-                var httpRequest = _httpContextAccessor.HttpContext.Request;
-                var url = new Uri($"{httpRequest.Scheme}://{httpRequest.Host.Value}");
-                if (request.Statement.Authority == null)
-                {
-                    request.Statement.Authority = new Agent()
-                    {
-                        Account = new xAPI.Account()
-                        {
-                            HomePage = url,
-                            Name = "REPLACE ME"
-                        }
-                    };
-                }
+                //var httpRequest = _httpContextAccessor.HttpContext.Request;
+                //var url = new Uri($"{httpRequest.Scheme}://{httpRequest.Host.Value}");
+                //if (request.Statement.Authority == null)
+                //{
+                //    request.Statement.Authority = new Agent()
+                //    {
+                //        Account = new xAPI.Account()
+                //        {
+                //            HomePage = url,
+                //            Name = "REPLACE ME"
+                //        }
+                //    };
+                //}
 
                 StatementEntity statement = _mapper.Map<StatementEntity>(request.Statement);
                 statement.Verb = await _mediator.Send(MergeVerbCommand.Create(statement.Verb), cancellationToken);

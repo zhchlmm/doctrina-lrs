@@ -1,6 +1,6 @@
 ﻿using Doctrina.xAPI.Exceptions;
 using Doctrina.xAPI.InteractionTypes;
-using Doctrina.xAPI.Json.Exceptions;
+using Doctrina.xAPI.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -9,8 +9,9 @@ namespace Doctrina.xAPI
     public class Activity : StatementObjectBase, IStatementObject
     {
         public Activity() { }
-        public Activity(JsonString jsonString) : this(jsonString.ToJToken()) { }
-        public Activity(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+
+        public Activity(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
+
         public Activity(JToken jobj, ApiVersion version) : base(jobj, version)
         {
             GuardType(jobj, JTokenType.Object);

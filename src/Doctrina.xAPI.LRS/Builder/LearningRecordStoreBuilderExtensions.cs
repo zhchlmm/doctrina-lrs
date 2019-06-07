@@ -1,12 +1,12 @@
-﻿using Doctrina.xAPI.LRS.Mvc.ModelBinding.Providers;
-using Doctrina.xAPI.LRS.Routing;
+﻿using Doctrina.xAPI.Store.Mvc.ModelBinding.Providers;
+using Doctrina.xAPI.Store.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Doctrina.xAPI.LRS.Builder
+namespace Doctrina.xAPI.Store.Builder
 {
     public static class LearningRecordStoreBuilderExtensions
     {

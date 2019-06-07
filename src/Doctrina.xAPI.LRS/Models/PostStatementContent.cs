@@ -1,8 +1,8 @@
-﻿using Doctrina.xAPI.LRS.Mvc.ModelBinding;
+﻿using Doctrina.xAPI.Store.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace Doctrina.xAPI.LRS.Models
+namespace Doctrina.xAPI.Store.Models
 {
     [ModelBinder(BinderType = typeof(PostStatementsModelBinder))]
     public class PostStatementContent

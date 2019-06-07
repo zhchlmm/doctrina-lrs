@@ -1,13 +1,8 @@
 ﻿using Doctrina.xAPI;
-using Doctrina.xAPI.Http;
-using Doctrina.xAPI.Json;
+using Doctrina.xAPI.Client;
+using Doctrina.xAPI.Store.Exceptions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
 using System;
-using System.IO;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
@@ -36,17 +31,18 @@ namespace Doctrina.WebUI.Mvc.ModelBinders
 
             var contentType = MediaTypeHeaderValue.Parse(request.ContentType);
 
-            var jsonModelReader = new JsonModelReader(contentType, request.Body);
-            Statement statement = await jsonModelReader.ReadAs<Statement>();
-
-            if (statement != null)
+            try
             {
+                var jsonModelReader = new JsonModelReader(contentType, request.Body);
+                Statement statement = await jsonModelReader.ReadAs<Statement>();
                 bindingContext.Result = ModelBindingResult.Success(statement);
             }
-            else
+            catch (JsonModelReaderException ex)
             {
-                bindingContext.Result = ModelBindingResult.Failed();
+                throw new BadRequestException(ex.Message);
             }
+
+            bindingContext.Result = ModelBindingResult.Failed();
         }
     }
 }

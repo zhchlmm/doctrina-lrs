@@ -1,6 +1,4 @@
-﻿using Doctrina.xAPI.Exceptions;
-using Doctrina.xAPI.Json.Exceptions;
-using Newtonsoft.Json;
+﻿using Doctrina.xAPI.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -14,9 +12,7 @@ namespace Doctrina.xAPI
         protected override ObjectType OBJECT_TYPE => ObjectType.Agent;
 
         public Agent() : base() { }
-        public Agent(string jsonString) : this((JsonString)jsonString) { }
-        public Agent(JsonString jsonString) : this(jsonString.ToJToken()) { }
-        public Agent(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Agent(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
         public Agent(JToken jobj, ApiVersion version) : base(jobj, version)
         {
             GuardType(jobj, JTokenType.Object);
@@ -25,11 +21,7 @@ namespace Doctrina.xAPI
             if (objectType != null)
             {
                 GuardType(objectType, JTokenType.String);
-                ObjectType obt = objectType.Value<string>();
-                if(obt != ObjectType)
-                {
-                    throw new UnexpectedObjectTypeException(objectType, obt);
-                }
+                ParseObjectType(objectType, OBJECT_TYPE);
             }
 
             var name = jobj["name"];

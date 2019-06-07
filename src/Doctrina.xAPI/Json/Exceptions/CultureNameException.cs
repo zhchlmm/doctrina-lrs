@@ -1,8 +1,6 @@
-﻿using Doctrina.xAPI.Json.Exceptions;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using Newtonsoft.Json.Linq;
 
-namespace Doctrina.xAPI.Json.Exceptions
+namespace Doctrina.xAPI.Json
 {
     public class CultureNameException : JsonTokenModelException
     {

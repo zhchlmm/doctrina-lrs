@@ -1,4 +1,5 @@
-﻿using Doctrina.xAPI.Http;
+﻿using Doctrina.xAPI.Client.Http;
+using Doctrina.xAPI.Store.Mvc.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Primitives;
 using System;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Http
+namespace Doctrina.xAPI.Store.Mvc
 {
     public class ETagModelBinder : IModelBinder
     {

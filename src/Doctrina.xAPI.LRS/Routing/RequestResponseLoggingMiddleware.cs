@@ -6,7 +6,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Routing
+namespace Doctrina.xAPI.Store.Routing
 {
     public class RequestResponseLoggingMiddleware
     {

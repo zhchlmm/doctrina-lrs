@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 
-namespace Doctrina.xAPI.LRS.Authorization
+namespace Doctrina.xAPI.Store.Authorization
 {
     public class ApiScopesFilter : TypeFilterAttribute
     {

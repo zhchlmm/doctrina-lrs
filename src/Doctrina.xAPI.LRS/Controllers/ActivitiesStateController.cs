@@ -1,8 +1,8 @@
 ﻿using Doctrina.Application.ActivityStates.Commands;
 using Doctrina.Application.ActivityStates.Queries;
 using Doctrina.xAPI.Documents;
-using Doctrina.xAPI.LRS.Models;
-using Doctrina.xAPI.LRS.Mvc.Filters;
+using Doctrina.xAPI.Store.Models;
+using Doctrina.xAPI.Store.Mvc.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Controllers
+namespace Doctrina.xAPI.Store.Controllers
 {
     /// <summary>
     /// Generally, this is a scratch area for Learning Record Providers that do not have their own internal storage, or need to persist state across devices.

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Controllers
+namespace Doctrina.xAPI.Store.Controllers
 {
     [Area("xapi")]
     [Route("xapi/about")]

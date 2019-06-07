@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI.InteractionTypes
@@ -6,7 +7,9 @@ namespace Doctrina.xAPI.InteractionTypes
     public abstract class InteractionTypeBase : ActivityDefinition
     {
         public InteractionTypeBase() { }
+
         public InteractionTypeBase(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
+
         public InteractionTypeBase(JToken interactionType, ApiVersion version) : base(interactionType, version)
         {
             var correctResponsesPattern = interactionType["correctResponsesPattern"];

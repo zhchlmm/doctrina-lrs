@@ -1,11 +1,11 @@
 ﻿using Doctrina.Application.Statements.Queries;
-using Doctrina.xAPI.Http;
+using Doctrina.xAPI.Client.Http;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Routing
+namespace Doctrina.xAPI.Store.Routing
 {
     public class ConsistentThroughMiddleware
     {

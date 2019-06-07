@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,8 +10,7 @@ namespace Doctrina.xAPI
         private readonly ICollection<Activity> activities = new HashSet<Activity>();
 
         public ActivityCollection() { }
-        public ActivityCollection(JsonString jsonString) : this(jsonString.ToJToken()) { }
-        public ActivityCollection(JToken jtoken) : this(jtoken, ApiVersion.GetLatest()) { }
+        public ActivityCollection(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
         public ActivityCollection(JToken jtoken, ApiVersion version)
         {
             GuardType(jtoken, JTokenType.Array, JTokenType.Object);

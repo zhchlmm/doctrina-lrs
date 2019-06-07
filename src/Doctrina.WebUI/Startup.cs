@@ -6,7 +6,7 @@ using Doctrina.Application.Statements;
 using Doctrina.Application.Statements.Commands;
 using Doctrina.Persistence;
 using Doctrina.WebUI.Filters;
-using Doctrina.xAPI.LRS.Builder;
+using Doctrina.xAPI.Store.Builder;
 using FluentValidation.AspNetCore;
 using MediatR;
 using MediatR.Pipeline;

@@ -1,4 +1,5 @@
 ﻿using Doctrina.xAPI.Helpers;
+using Doctrina.xAPI.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -9,8 +10,7 @@ namespace Doctrina.xAPI
     public class Attachment : JsonModel
     {
         public Attachment() { }
-        public Attachment(JsonString jsonString) : this(jsonString.ToJToken()) { }
-        public Attachment(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public Attachment(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
         public Attachment(JToken jobj, ApiVersion version)
         {
             GuardType(jobj, JTokenType.Object);

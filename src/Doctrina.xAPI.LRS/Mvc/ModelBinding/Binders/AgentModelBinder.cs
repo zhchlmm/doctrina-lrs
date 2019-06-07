@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
+namespace Doctrina.xAPI.Store.Mvc.ModelBinding
 {
     public class AgentModelBinder : IModelBinder
     {

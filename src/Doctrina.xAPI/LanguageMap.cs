@@ -1,11 +1,8 @@
-﻿using Doctrina.xAPI.Exceptions;
-using Doctrina.xAPI.Helpers;
-using Doctrina.xAPI.Json.Exceptions;
+﻿using Doctrina.xAPI.Helpers;
+using Doctrina.xAPI.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
 namespace Doctrina.xAPI
 {
@@ -22,9 +19,7 @@ namespace Doctrina.xAPI
             }
         }
 
-        public LanguageMap(JsonString jsonString) : this(jsonString.ToJToken()) { }
-
-        public LanguageMap(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+        public LanguageMap(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
 
         public LanguageMap(JToken languageMap, ApiVersion version)
         {
@@ -48,21 +43,6 @@ namespace Doctrina.xAPI
             }
         }
 
-        private bool AllowCultureName(KeyValuePair<string, JToken> item)
-        {
-            var token = item.Value;
-            if (token != null && token.Type == JTokenType.String)
-            {
-                if(CultureHelper.IsValidCultureName(item.Key))
-                {
-                    return true;
-                }
-            }
-
-            ParsingErrors.Add(token.Path, "Invalid language code.");
-            return false;
-        }
-
         public override JToken ToJToken(ApiVersion version, ResultFormat format)
         {
             var obj = new JObject();
@@ -71,11 +51,6 @@ namespace Doctrina.xAPI
                 obj[pair.Key] = pair.Value;
             }
             return obj;
-        }
-
-        public static implicit operator LanguageMap(JObject jobj)
-        {
-            return new LanguageMap(jobj);
         }
 
         #region Implementation

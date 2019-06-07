@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using Doctrina.xAPI.Json;
 
 namespace Doctrina.xAPI
 {

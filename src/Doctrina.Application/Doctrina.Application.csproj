@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Doctrina.Domain\Doctrina.Domain.csproj" />
+    <ProjectReference Include="..\Doctrina.xAPI.Client\Doctrina.xAPI.Client.csproj" />
     <ProjectReference Include="..\Doctrina.xAPI\Doctrina.xAPI.csproj" />
   </ItemGroup>
 

@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Routing
+namespace Doctrina.xAPI.Store.Routing
 {
     public class UnrecognizedParametersMiddleware
     {

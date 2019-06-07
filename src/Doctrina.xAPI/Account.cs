@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -11,8 +12,9 @@ namespace Doctrina.xAPI
     {
 
         public Account() { }
-        public Account(JsonString jsonString) : this(jsonString.ToJToken()) { }
-        public Account(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+
+        public Account(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
+
         public Account(JToken jobj, ApiVersion version)
         {
             GuardType(jobj, JTokenType.Object);

@@ -2,12 +2,12 @@
 using Doctrina.Application.Statements.Models;
 using Doctrina.Application.Statements.Queries;
 using Doctrina.WebUI.Mvc.ModelBinders;
-using Doctrina.xAPI.Http;
-using Doctrina.xAPI.LRS.Models;
-using Doctrina.xAPI.LRS.Mvc.Filters;
+using Doctrina.xAPI.Client.Http;
+using Doctrina.xAPI.Json;
+using Doctrina.xAPI.Store.Models;
+using Doctrina.xAPI.Store.Mvc.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Controllers
+namespace Doctrina.xAPI.Store.Controllers
 {
     /// <summary>
     /// The basic communication mechanism of the Experience API.
@@ -189,8 +189,10 @@ namespace Doctrina.xAPI.LRS.Controllers
             Response.ContentType = MediaTypes.Multipart.Mixed;
             var attachmentsWithPayload = statements.SelectMany(x => x.Attachments.Where(a => a.Payload != null));
 
-            var multipart = new MultipartContent("mixed");
-            multipart.Add(new StringContent(result.ToJson(format), Encoding.UTF8, MediaTypes.Application.Json));
+            var multipart = new MultipartContent("mixed")
+            {
+                new StringContent(result.ToJson(format), Encoding.UTF8, MediaTypes.Application.Json)
+            };
 
             foreach (var attachment in attachmentsWithPayload)
             {

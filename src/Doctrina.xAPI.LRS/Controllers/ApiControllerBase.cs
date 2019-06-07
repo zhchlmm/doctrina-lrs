@@ -1,8 +1,8 @@
-﻿using Doctrina.xAPI.Http;
+﻿using Doctrina.xAPI.Client.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
-namespace Doctrina.xAPI.LRS.Controllers
+namespace Doctrina.xAPI.Store.Controllers
 {
     [ApiController]
     [Route("xapi/[controller]")]

@@ -1,4 +1,4 @@
-﻿using Doctrina.xAPI.Json.Exceptions;
+﻿using Doctrina.xAPI.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ namespace Doctrina.xAPI
         public StatementBase() : base(null, null) { }
 
         public StatementBase(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+
         public StatementBase(JToken statement, ApiVersion version) : base(statement, version)
         {
             GuardType(statement, JTokenType.Object);
@@ -36,26 +37,6 @@ namespace Doctrina.xAPI
             {
                 Verb = new Verb(verb, version);
             }
-
-            //var @object = statement["object"];
-            //if (@object != null)
-            //{
-            //    var objectType = @object["objectType"];
-            //    if (objectType != null)
-            //    {
-            //        ObjectType type = ParseObjectType(objectType, ObjectType.Activity, ObjectType.Agent, ObjectType.Group, ObjectType.Activity, ObjectType.StatementRef);
-            //        Object = type.CreateInstance(@object, version);
-            //    }
-            //    else if(@object["id"] != null)
-            //    {
-            //        // Assume activity
-            //        Object = new Activity(@object, version);
-            //    }
-            //    else
-            //    {
-            //        // TODO: Exception
-            //    }
-            //}
 
             if (statement["result"] != null)
             {

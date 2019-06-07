@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28902.138
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.WebUI", "Doctrina.WebUI\Doctrina.WebUI.csproj", "{BDFD681A-BC12-45BA-BB78-7591AC12E2D7}"
 EndProject
@@ -13,7 +13,7 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.xAPI.Tests", "Doctrina.xAPI.Tests\Doctrina.xAPI.Tests.csproj", "{32D23789-E19B-40D1-923C-10A959B1B8AC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.xAPI.LRS", "Doctrina.xAPI.LRS\Doctrina.xAPI.LRS.csproj", "{49FD475F-B9AB-443A-83AD-029855301A20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.xAPI.Store", "Doctrina.xAPI.LRS\Doctrina.xAPI.Store.csproj", "{49FD475F-B9AB-443A-83AD-029855301A20}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.Domain", "Doctrina.Domain\Doctrina.Domain.csproj", "{FEBAC493-29F8-40A4-BB43-F47D22DC515C}"
 EndProject
@@ -23,7 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.Common", "Doctrina
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Doctrina.Infrastructure", "Doctrina.Infrastructure\Doctrina.Infrastructure.csproj", "{6CEE3F53-707F-47E2-92CC-6D9CF7360E62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doctrina.Application.Tests", "..\Doctrina.Application.Tests\Doctrina.Application.Tests.csproj", "{23319151-89BE-4947-89C1-7AE97FE14353}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doctrina.xAPI.Consumer", "Doctrina.xAPI.Consumer\Doctrina.xAPI.Consumer.csproj", "{9F4EEC09-1286-49DE-9D5E-B443BEECDE9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doctrina.xAPI.Client", "Doctrina.xAPI.Client\Doctrina.xAPI.Client.csproj", "{E14FED45-1E4C-4EC6-83B3-89AA3823BAAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doctrina.Application.Tests", "Doctrina.Application.Tests\Doctrina.Application.Tests.csproj", "{DA0699CB-E86E-4922-8FDB-4DA564D1BA58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,10 +75,18 @@ Global
 		{6CEE3F53-707F-47E2-92CC-6D9CF7360E62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CEE3F53-707F-47E2-92CC-6D9CF7360E62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CEE3F53-707F-47E2-92CC-6D9CF7360E62}.Release|Any CPU.Build.0 = Release|Any CPU
-		{23319151-89BE-4947-89C1-7AE97FE14353}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{23319151-89BE-4947-89C1-7AE97FE14353}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{23319151-89BE-4947-89C1-7AE97FE14353}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23319151-89BE-4947-89C1-7AE97FE14353}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F4EEC09-1286-49DE-9D5E-B443BEECDE9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F4EEC09-1286-49DE-9D5E-B443BEECDE9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F4EEC09-1286-49DE-9D5E-B443BEECDE9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F4EEC09-1286-49DE-9D5E-B443BEECDE9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E14FED45-1E4C-4EC6-83B3-89AA3823BAAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E14FED45-1E4C-4EC6-83B3-89AA3823BAAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E14FED45-1E4C-4EC6-83B3-89AA3823BAAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E14FED45-1E4C-4EC6-83B3-89AA3823BAAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA0699CB-E86E-4922-8FDB-4DA564D1BA58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA0699CB-E86E-4922-8FDB-4DA564D1BA58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA0699CB-E86E-4922-8FDB-4DA564D1BA58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA0699CB-E86E-4922-8FDB-4DA564D1BA58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

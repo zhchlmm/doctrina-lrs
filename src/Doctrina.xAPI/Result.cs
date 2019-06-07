@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Doctrina.xAPI.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -8,8 +9,8 @@ namespace Doctrina.xAPI
     public class Result : JsonModel
     {
         public Result() { }
-        public Result(JsonString jsonString) : this(jsonString.ToJToken()) { }
-        public Result(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+
+        public Result(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
 
         public Result(JToken result, ApiVersion version)
         {

@@ -1,7 +1,7 @@
 ﻿using Doctrina.Application.AgentProfiles.Commands;
 using Doctrina.Application.AgentProfiles.Queries;
 using Doctrina.xAPI.Documents;
-using Doctrina.xAPI.LRS.Mvc.Filters;
+using Doctrina.xAPI.Store.Mvc.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Controllers
+namespace Doctrina.xAPI.Store.Controllers
 {
     [HeadWithoutBody]
     [RequiredVersionHeader]

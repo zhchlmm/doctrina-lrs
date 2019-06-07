@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using Doctrina.xAPI.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Doctrina.xAPI.InteractionTypes

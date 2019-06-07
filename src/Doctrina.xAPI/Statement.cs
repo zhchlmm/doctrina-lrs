@@ -1,4 +1,4 @@
-﻿using Doctrina.xAPI.Json.Exceptions;
+﻿using Doctrina.xAPI.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;

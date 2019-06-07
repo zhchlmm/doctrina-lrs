@@ -1,11 +1,11 @@
-﻿using Doctrina.xAPI.Http;
+﻿using Doctrina.xAPI.Client.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Mvc.Filters
+namespace Doctrina.xAPI.Store.Mvc.Filters
 {
     /// <summary>
     /// Ensures the request has a supported 'X-Experience-Api-Version' header.

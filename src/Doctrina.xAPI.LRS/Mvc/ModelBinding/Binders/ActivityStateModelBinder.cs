@@ -1,4 +1,6 @@
-﻿using Doctrina.xAPI.LRS.Models;
+﻿using Doctrina.xAPI.Client.Http;
+using Doctrina.xAPI.Store.Exceptions;
+using Doctrina.xAPI.Store.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,7 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
+namespace Doctrina.xAPI.Store.Mvc.ModelBinding
 {
     public class ActivityStateModelBinder : IModelBinder
     {
@@ -37,7 +39,10 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
                 if (contentType.MediaType == MediaTypes.Application.Json)
                 {
                     string jsonString = System.Text.Encoding.UTF8.GetString(model.Content);
-                    ValidateJson(jsonString, bindingContext.ModelState);
+                    if(!IsValidJson(jsonString))
+                    {
+                        throw new BadRequestException("Not valid json.");
+                    }
                 }
             }
 
@@ -45,25 +50,17 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
             return Task.CompletedTask;
         }
 
-        public string ValidateJson(string jsonString, ModelStateDictionary modelState)
+        public bool IsValidJson(string jsonString)
         {
             try
             {
-                var obj = JToken.Parse(jsonString);
-                return jsonString;
+                JToken.Parse(jsonString);
+                return false;
             }
-            catch (JsonReaderException jex)
+            catch (JsonReaderException)
             {
-                //Exception in parsing json
-                Console.WriteLine(jex.Message);
-                modelState.AddModelError(jex.Path, jex.Message);
+                return false;
             }
-            catch (Exception ex) //some other exception
-            {
-                modelState.AddModelError(ex.Source, ex.Message);
-            }
-
-            return null;
         }
     }
 }

@@ -87,8 +87,7 @@ namespace Doctrina.xAPI
         {
             if (value is string)
             {
-                Mbox mbox = null;
-                if (Mbox.TryParse(value as string, out mbox))
+                if (Mbox.TryParse(value as string, out Mbox mbox))
                 {
                     return mbox;
                 }

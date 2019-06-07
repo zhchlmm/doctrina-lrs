@@ -47,7 +47,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Doctrina.Application\Doctrina.Application.csproj" />
     <ProjectReference Include="..\Doctrina.Persistence\Doctrina.Persistence.csproj" />
-    <ProjectReference Include="..\Doctrina.xAPI.LRS\Doctrina.xAPI.LRS.csproj" />
+    <ProjectReference Include="..\Doctrina.xAPI.LRS\Doctrina.xAPI.Store.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties wwwroot_4schemas_4group_1schema_1json__JSONSchema="http://json-schema.org/draft-04/schema" wwwroot_4schemas_4agent_1schema_1json__JSONSchema="http://json-schema.org/draft-04/schema" /></VisualStudio></ProjectExtensions>

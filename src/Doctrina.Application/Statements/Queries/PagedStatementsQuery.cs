@@ -1,5 +1,6 @@
 ﻿using Doctrina.Application.Statements.Models;
 using Doctrina.xAPI;
+using Doctrina.xAPI.Client.Http;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,7 +13,7 @@ namespace Doctrina.Application.Statements.Queries
         [FromQuery(Name = "token")]
         public string Token { get; set; }
 
-        [FromHeader(Name = xAPI.Http.Headers.XExperienceApiVersion)]
+        [FromHeader(Name = Headers.XExperienceApiVersion)]
         public string Version { get; set; }
 
         [FromHeader(Name = "Accept-Languge")]

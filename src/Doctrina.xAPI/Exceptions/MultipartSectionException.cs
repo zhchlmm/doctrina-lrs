@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Doctrina.xAPI.Exceptions
+namespace Doctrina.xAPI.Consumer.Exceptions
 {
     public class MultipartSectionException : Exception
     {

@@ -1,12 +1,11 @@
-﻿using Doctrina.xAPI.Collections;
-using Doctrina.xAPI.Http;
-using Doctrina.xAPI.LRS.Http;
-using Doctrina.xAPI.LRS.Models;
+﻿using Doctrina.xAPI.Client;
+using Doctrina.xAPI.Store.Exceptions;
+using Doctrina.xAPI.Store.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
+namespace Doctrina.xAPI.Store.Mvc.ModelBinding
 {
     public class PostStatementsModelBinder : IModelBinder
     {
@@ -23,17 +22,14 @@ namespace Doctrina.xAPI.LRS.Mvc.ModelBinding
 
             var contentType = MediaTypeHeaderValue.Parse(request.ContentType);
 
-            var jsonModelReader = new JsonModelReader(contentType, request.Body);
-            model.Statements = await jsonModelReader.ReadAs<StatementCollection>();
-
-            // TODO: Throw exception with parsing errors
-            JsonModelErrorsCollection parsingErrors = model.Statements.GetErrorsOfDescendantsAndSelf();
-            if (parsingErrors.Count > 0)
+            try
             {
-                foreach (var item in parsingErrors)
-                {
-                    bindingContext.ModelState.AddModelError(item.Name, item.ErrorMessage);
-                }
+                var jsonModelReader = new JsonModelReader(contentType, request.Body);
+                model.Statements = await jsonModelReader.ReadAs<StatementCollection>();
+            }
+            catch (JsonModelReaderException ex)
+            {
+                throw new BadRequestException(ex.Message);
             }
 
             if(model.Statements == null)

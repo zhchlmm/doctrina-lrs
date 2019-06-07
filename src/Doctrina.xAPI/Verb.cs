@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace Doctrina.xAPI

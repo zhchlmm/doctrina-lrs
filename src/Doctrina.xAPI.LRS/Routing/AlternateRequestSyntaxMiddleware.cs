@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Doctrina.xAPI.LRS.Routing
+namespace Doctrina.xAPI.Store.Routing
 {
     public class AlternateRequestMiddleware
     {

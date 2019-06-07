@@ -1,8 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Doctrina.xAPI.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace Doctrina.xAPI
 {
@@ -11,15 +10,9 @@ namespace Doctrina.xAPI
         public Context()
         {
         }
-
-        public Context(JsonString jsonString) : this(jsonString.ToJToken())
+        public Context(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest())
         {
         }
-
-        public Context(JToken context) : this(context, ApiVersion.GetLatest())
-        {
-        }
-
         public Context(JToken context, ApiVersion version)
         {
             GuardType(context, JTokenType.Object);
@@ -29,14 +22,7 @@ namespace Doctrina.xAPI
             {
                 GuardType(registration, JTokenType.String);
 
-                if (Guid.TryParse(registration.Value<string>(), out Guid id))
-                {
-                    Registration = id;
-                }
-                else
-                {
-                    ParsingErrors.Add(registration.Path, "Invalid UUID.");
-                }
+                Registration = ParseGuid(registration);
             }
 
             var instructor = context["instructor"];

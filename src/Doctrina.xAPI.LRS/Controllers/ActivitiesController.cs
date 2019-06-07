@@ -1,10 +1,10 @@
 ﻿using Doctrina.Application.Activities.Queries;
-using Doctrina.xAPI.LRS.Mvc.Filters;
+using Doctrina.xAPI.Store.Mvc.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace Doctrina.xAPI.LRS.Controllers
+namespace Doctrina.xAPI.Store.Controllers
 {
     [HeadWithoutBody]
     [RequiredVersionHeader]

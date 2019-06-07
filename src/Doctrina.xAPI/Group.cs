@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Doctrina.xAPI.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,8 +9,9 @@ namespace Doctrina.xAPI
     public class Group : Agent
     {
         public Group() { }
-        public Group(JsonString jsonString) : this(jsonString.ToJToken()) { }
-        public Group(JToken jobj) : this(jobj, ApiVersion.GetLatest()) { }
+
+        public Group(JsonString jsonString) : this(jsonString.ToJToken(), ApiVersion.GetLatest()) { }
+
         public Group(JToken group, ApiVersion version) : base(group, version)
         {
             GuardType(group, JTokenType.Object);
